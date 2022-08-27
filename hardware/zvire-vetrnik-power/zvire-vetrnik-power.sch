@@ -601,13 +601,13 @@ Wire Wire Line
 $Comp
 L Connector_Generic:Conn_01x04 J3
 U 1 1 630F8C0A
-P 5300 2800
-F 0 "J3" H 5500 2700 50  0000 C CNN
-F 1 "UART" H 5450 2800 50  0000 C CNN
-F 2 "Connector_Molex:Molex_KK-254_AE-6410-04A_1x04_P2.54mm_Vertical" H 5300 2800 50  0001 C CNN
-F 3 "~" H 5300 2800 50  0001 C CNN
-	1    5300 2800
-	-1   0    0    1   
+P 5300 2700
+F 0 "J3" H 5500 2600 50  0000 C CNN
+F 1 "UART" H 5450 2700 50  0000 C CNN
+F 2 "Connector_Molex:Molex_KK-254_AE-6410-04A_1x04_P2.54mm_Vertical" H 5300 2700 50  0001 C CNN
+F 3 "~" H 5300 2700 50  0001 C CNN
+	1    5300 2700
+	-1   0    0    -1  
 $EndComp
 $Comp
 L power:GND #PWR?
@@ -1618,4 +1618,48 @@ $EndComp
 Wire Wire Line
 	3700 5900 3600 5900
 Connection ~ 3600 5900
+$Comp
+L Mechanical:MountingHole H1
+U 1 1 630F4A2F
+P 750 700
+F 0 "H1" H 850 746 50  0000 L CNN
+F 1 "MountingHole" H 850 655 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 750 700 50  0001 C CNN
+F 3 "~" H 750 700 50  0001 C CNN
+	1    750  700 
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H3
+U 1 1 630F8913
+P 1500 700
+F 0 "H3" H 1600 746 50  0000 L CNN
+F 1 "MountingHole" H 1600 655 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 1500 700 50  0001 C CNN
+F 3 "~" H 1500 700 50  0001 C CNN
+	1    1500 700 
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H2
+U 1 1 630F8C70
+P 750 900
+F 0 "H2" H 850 946 50  0000 L CNN
+F 1 "MountingHole" H 850 855 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 750 900 50  0001 C CNN
+F 3 "~" H 750 900 50  0001 C CNN
+	1    750  900 
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H4
+U 1 1 630F8ECB
+P 1500 900
+F 0 "H4" H 1600 946 50  0000 L CNN
+F 1 "MountingHole" H 1600 855 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 1500 900 50  0001 C CNN
+F 3 "~" H 1500 900 50  0001 C CNN
+	1    1500 900 
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
