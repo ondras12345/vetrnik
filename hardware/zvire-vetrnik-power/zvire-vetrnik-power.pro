@@ -1,4 +1,4 @@
-update=Pá 26. srpna 2022, 20:27:20
+update=So 27. srpna 2022, 14:45:05
 version=1
 last_client=kicad
 [general]
@@ -39,6 +39,8 @@ TrackWidth8=8
 TrackWidth9=10
 ViaDiameter1=1.2
 ViaDrill1=0.8
+ViaDiameter2=1.5
+ViaDrill2=0.8
 dPairWidth1=0.8
 dPairGap1=0.25
 dPairViaGap1=0.25

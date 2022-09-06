@@ -73,3 +73,7 @@
 - TODO PCB rivets
 
 - TODO jistic s pomocnym kontaktem
+- TODO svorkovnice na 50A
+- TODO 6mm^2 lanko
+- TODO faston 6mm^2
+- TODO ACS712 nebo bocnik a extra PCB
