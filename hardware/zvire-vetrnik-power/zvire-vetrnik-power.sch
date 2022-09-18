@@ -1661,4 +1661,6 @@ Text Notes 6250 6350 0    50   ~ 0
 bc846 replaced by bc847
 Text Notes 1750 6550 0    50   ~ 0
 TODO PS1 recommends 200mA slow blow input fuse
+Text Notes 2450 1800 0    50   ~ 0
+TODO 4-pin PC fan connector
 $EndSCHEMATC
