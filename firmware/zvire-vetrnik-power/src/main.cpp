@@ -34,6 +34,8 @@ bool set_mode(mode_t new_mode)
                 if (mode != const_duty) return false;
                 // TODO switch all relays on
                 Hbridge_set_duty(255);
+                // Not setting duty to be able to recover after enable input
+                // goes back up
                 mode_prev_millis = millis();
             }
             mode = stopping;
@@ -47,6 +49,7 @@ bool set_mode(mode_t new_mode)
                 digitalWrite(pin_SHORT, HIGH);
                 Hbridge_set_duty(duty);
             }
+            mode = const_duty;
             break;
 
         case start:
@@ -55,6 +58,7 @@ bool set_mode(mode_t new_mode)
                 if (emergency) return false;
                 if (!enabled) return false;
                 Hbridge_set_duty(0);
+                duty = 0;
                 Hbridge_set_enabled(true);
                 digitalWrite(pin_SHORT, HIGH);
             }
@@ -144,6 +148,10 @@ void loop()
     if (!enabled && mode != stopping && mode != shorted)
     {
         set_mode(stopping);
+    }
+    if (enabled && mode == stopping)
+    {
+        set_mode(const_duty);
     }
 
     switch (mode)
