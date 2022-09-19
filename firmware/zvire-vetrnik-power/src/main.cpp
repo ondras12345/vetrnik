@@ -124,7 +124,7 @@ void setup()
         // reset by watchdog
         for (;;)
         {
-            Serial.print(F("Reset by watchdog "));
+            Serial.print(F("RST by WDT "));
             Serial.println(mcusr_mirror);
             delay(500);
         }

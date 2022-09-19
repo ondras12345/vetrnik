@@ -115,48 +115,48 @@ static datapoint_t datapoints[] = {
 
 static void report()
 {
-    Serial.print("t");
+    Serial.print('t');
     Serial.print(millis() / 1000UL);
-    Serial.print(" ");
+    Serial.print(' ');
 
-    Serial.print("m");
+    Serial.print('m');
     Serial.print(mode);
-    Serial.print(" ");
+    Serial.print(' ');
 
-    Serial.print("d");
+    Serial.print('d');
     Serial.print(duty);
-    Serial.print(" ");
+    Serial.print(' ');
 
-    Serial.print("r");
+    Serial.print('r');
     Serial.print(RPM);
-    Serial.print(" ");
+    Serial.print(' ');
 
-    Serial.print("v");
+    Serial.print('v');
     Serial.print(voltage);
-    Serial.print(" ");
+    Serial.print(' ');
 
-    Serial.print("e");
+    Serial.print('e');
     Serial.print(enabled);
-    Serial.print(" ");
+    Serial.print(' ');
 
-    Serial.print("T");
+    Serial.print('T');
     Serial.print(temperature_heatsink);
-    Serial.print(" ");
+    Serial.print(' ');
 
-    Serial.print("f");
+    Serial.print('f');
     Serial.print(fan);
-    Serial.print(" ");
+    Serial.print(' ');
 
-    Serial.print("E");
+    Serial.print('E');
     Serial.print(errm_count);
 
-    Serial.print(" ");
-    Serial.print("$");
+    Serial.print(' ');
+    Serial.print('$');
     Serial.print(setting_index);
-    Serial.print("=");
+    Serial.print('=');
     Serial.print(settings[setting_index].value);
 
-    Serial.print("\r\n");
+    Serial.println();
 }
 
 
@@ -202,7 +202,7 @@ void uart_loop()
         if (buff_index >= sizeof buff / sizeof buff[0])
         {
             // message too long
-            Serial.println(F(">comm msg too long"));
+            Serial.println(F(">comm too long"));
             in_msg = false;
             buff_index = 0;
             continue;
@@ -238,10 +238,10 @@ void uart_loop()
         {
             Serial.print(F(">err "));
             Serial.print(i);
-            Serial.print(" ");
+            Serial.print(' ');
             Serial.print(errm_errors[i].errortemplate->text);
             Serial.print(errm_errors[i].code);
-            Serial.print(" ");
+            Serial.print(' ');
             Serial.println((now - errm_errors[i].when) / 1000UL);
         }
         Serial.println();
