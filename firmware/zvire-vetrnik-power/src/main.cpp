@@ -24,7 +24,7 @@ bool set_mode(mode_t new_mode)
     switch (new_mode)
     {
         case shorted:
-            digitalWrite(pin_SHORT, LOW);
+            gpio_clr(pin_SHORT);
             Hbridge_set_enabled(false);
             mode = shorted;
             break;
@@ -46,7 +46,7 @@ bool set_mode(mode_t new_mode)
                 if (mode != stopping) return false;
                 // Stopping mode can sometimes SHORT if it detects it is not
                 // effective by itself.
-                digitalWrite(pin_SHORT, HIGH);
+                gpio_set(pin_SHORT);
                 Hbridge_set_duty(duty);
             }
             mode = const_duty;
@@ -60,7 +60,7 @@ bool set_mode(mode_t new_mode)
                 Hbridge_set_duty(0);
                 duty = 0;
                 Hbridge_set_enabled(true);
-                digitalWrite(pin_SHORT, HIGH);
+                gpio_set(pin_SHORT);
             }
             mode = const_duty;
             break;
@@ -97,23 +97,21 @@ void setup()
 {
     errm_create_callback = error_create_callback;
 
-    pinMode(pin_FAN, OUTPUT);
-    digitalWrite(pin_FAN, HIGH);
-    pinMode(pin_SHORT, OUTPUT);
-    digitalWrite(pin_SHORT, LOW);
+    gpio_conf(pin_FAN, OUTPUT, 1);
+    gpio_conf(pin_SHORT, OUTPUT, 0);
 
     uart_init();
     settings_init();
 
-    pinMode(pin_REL1, OUTPUT);
-    pinMode(pin_REL2, OUTPUT);
-    pinMode(pin_REL3, OUTPUT);
-    pinMode(pin_REL4, OUTPUT);
+    gpio_conf(pin_REL1, OUTPUT, 0);
+    gpio_conf(pin_REL2, OUTPUT, 0);
+    gpio_conf(pin_REL3, OUTPUT, 0);
+    gpio_conf(pin_REL4, OUTPUT, 0);
 
-    //pinMode(pin_VSENSE, INPUT);
-    //pinMode(pin_ACS712, INPUT);
-    //pinMode(pin_ACS712_2, INPUT);
-    //pinMode(pin_NTC1, INPUT);
+    //gpio_conf(pin_VSENSE, INPUT, NOPULLUP);
+    //gpio_conf(pin_ACS712, INPUT, NOPULLUP);
+    //gpio_conf(pin_ACS712_2, INPUT, NOPULLUP);
+    //gpio_conf(pin_NTC1, INPUT, NOPULLUP);
 
     RPM_init();
     ADC_init();
@@ -130,7 +128,7 @@ void setup()
         }
     }
 
-    pinMode(pin_ENABLE, INPUT_PULLUP);
+    gpio_conf(pin_ENABLE, INPUT, PULLUP);
     delay(100);
 
     wdt_enable(WDTO_1S);
@@ -145,7 +143,7 @@ void loop()
     ADC_loop();
     uart_loop();
 
-    enabled = !digitalRead(pin_ENABLE);
+    enabled = !gpio_rd8(PIN, pin_ENABLE);
     if (!enabled && mode != stopping && mode != shorted)
     {
         set_mode(stopping);
@@ -162,7 +160,7 @@ void loop()
             {
                 if (RPM >= stopping_RPM)
                 {
-                    digitalWrite(pin_SHORT, LOW);
+                    gpio_clr(pin_SHORT);
                 }
             }
             break;

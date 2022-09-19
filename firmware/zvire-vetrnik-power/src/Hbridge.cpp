@@ -1,6 +1,7 @@
 #include "Hbridge.h"
 #include "globals.h"
 #include "settings.h"
+#include "hardware.h"
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -37,11 +38,11 @@ void Hbridge_set_enabled(bool value)
 
 void Hbridge_init()
 {
-    //pinMode(pin_PWM1, OUTPUT);
-    //pinMode(pin_PWM2, OUTPUT);
-    DDRB |= (1<<PB1) | (1<<PB2);  // OC1A and OC1B are outputs
+    // must be PB1 and PB2 (OC1A, OC1B)
+    gpio_conf(pin_PWM1, OUTPUT, 0);
+    gpio_conf(pin_PWM2, OUTPUT, 0);
 
-    DDRD |= (1<<PD7);  // pin_SD
+    gpio_conf(pin_SD, OUTPUT, 0);
     Hbridge_set_enabled(false);
 
     // start timer

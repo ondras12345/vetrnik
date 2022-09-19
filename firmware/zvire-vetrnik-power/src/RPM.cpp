@@ -10,10 +10,11 @@ static volatile unsigned long last_time = 0;
 static volatile bool RPM_new = false;
 
 
-static void RPM_ISR()
+ISR(INT0_vect)
 {
     unsigned long now = micros();
     period = now - last_time;
+    //if (period < 500) return;  // low pass filter (2 kHz), doesn't work too well
     last_time = now;
     RPM_new = true;
 }
@@ -21,10 +22,12 @@ static void RPM_ISR()
 
 void RPM_init()
 {
-    pinMode(pin_RPM_1, INPUT);
-    pinMode(pin_RPM_2, INPUT);
+    gpio_conf(pin_RPM_1, INPUT, NOPULLUP);
+    gpio_conf(pin_RPM_2, INPUT, NOPULLUP);
 
-    attachInterrupt(digitalPinToInterrupt(pin_RPM_1), RPM_ISR, FALLING);
+    //attachInterrupt(digitalPinToInterrupt(pin_RPM_1), RPM_ISR, FALLING);
+    MCUCR = (MCUCR & ~((1 << ISC00) | (1 << ISC01))) | (FALLING << ISC00);
+    GICR |= (1 << INT0);
 }
 
 

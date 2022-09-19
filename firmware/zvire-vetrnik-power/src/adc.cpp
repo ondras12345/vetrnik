@@ -135,7 +135,11 @@ void ADC_loop()
             //else if (temperature_heatsink > fan_temperature_full) fan = 255;
             //fan = map_uint16(temperature_heatsink, fan_temperature_off, fan_temperature_full, fan_power_min, 255);
             fan = (temperature_heatsink > (fan_temperature_off + (fan ? 0 : 1))) ? 255 : 0;
-            analogWrite(pin_FAN, fan);
+            // TODO PD5 cannot do PWM on ATmega8...
+            if (fan < 128)
+                gpio_clr(pin_FAN);
+            else
+                gpio_set(pin_FAN);
         }
 
         if (voltage <= voltage_protection_start && OVP_stop)
