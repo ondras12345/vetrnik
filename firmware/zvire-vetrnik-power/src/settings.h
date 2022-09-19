@@ -1,3 +1,5 @@
+#pragma once
+
 #define voltage_protection_start 500  // 50V
 #define voltage_protection_stop 1400  // 140V
 #define voltage_protection_short 1600  // 160V
@@ -23,3 +25,24 @@
 #define fan_temperature_off 25
 #define fan_power_min 0
 #define heatsink_temperature_max 40
+
+#include <stdint.h>
+
+typedef enum {
+    kHBridgeFrequency = 0,  // 0 ... 50Hz ; 1 ... 400 Hz
+    kRPMConversion = 1,
+    kSettingsEnd,
+} setting_index_t;
+
+
+typedef struct {
+    setting_index_t index;
+    uint8_t default_value;
+    uint8_t value;
+} setting_t;
+
+extern setting_t settings[kSettingsEnd];
+
+void settings_reset();
+void settings_init();
+void settings_write(uint8_t index, uint8_t value);

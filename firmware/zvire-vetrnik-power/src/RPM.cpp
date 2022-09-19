@@ -47,7 +47,7 @@ void RPM_loop()
         }
         else
         {
-            RPM = 1000000UL * RPM_conversion / t;
+            RPM = 1000000UL * settings[kRPMConversion].value / t;
             RPM = avg.process(RPM);
         }
     }

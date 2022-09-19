@@ -103,6 +103,7 @@ void setup()
     digitalWrite(pin_SHORT, LOW);
 
     uart_init();
+    settings_init();
 
     pinMode(pin_REL1, OUTPUT);
     pinMode(pin_REL2, OUTPUT);

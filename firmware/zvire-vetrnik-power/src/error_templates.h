@@ -4,6 +4,7 @@
 
 // error weights:
 // 10 - emergency stop
+const errm_template etemplate_settings_changed = { 1, "sett changed" };  // should reset to apply
 const errm_template etemplate_comms_arg = { 1, "comms arg" };
 const errm_template etemplate_comms_mode = { 1, "comms mode" };
 const errm_template etemplate_comms_malformed = { 1, "comms malformed" };

@@ -1,9 +1,11 @@
 #include "Hbridge.h"
 #include "globals.h"
+#include "settings.h"
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+#define Hbridge_frequency 50  // Hz ; do NOT modify (even when switching prescaler to 400 Hz mode)
 
 static constexpr uint16_t top_value = (F_CPU / (Hbridge_frequency * 2 * 64));
 static constexpr uint32_t duty_conversion = top_value / 51; // (top_value / 255 / 2 * 10)
@@ -20,32 +22,6 @@ void Hbridge_set_duty(uint8_t duty_cycle)
     OCR1A = a;
     OCR1B = b;
     SREG = oldSREG;
-}
-
-
-static void start_timer()
-{
-    cli();
-    TCCR1B =
-        (1<<WGM13)  // mode 8: PWM, phase correct and frequency correct
-        | (1<<CS11) | (1<<CS10)  // clkio / 64
-        ;
-
-    // ICR1 is TOP value in mode 8
-    ICR1 = top_value;
-
-    set_duty(0);
-
-    TCCR1A =
-        // Clear OC1A on Compare Match when upcounting.
-        // Set OC1A on Compare Match when downcounting.
-        (1<<COM1A1)
-        // Set OC1B on Compare Match when upcounting.
-        // Clear OC1B on Compare Match when downcounting.
-        | (1<<COM1B0) | (1<<COM1B1)
-        ;
-
-    sei();
 }
 
 
@@ -68,5 +44,30 @@ void Hbridge_init()
     DDRD |= (1<<PD7);  // pin_SD
     Hbridge_set_enabled(false);
 
-    start_timer();
+    // start timer
+    cli();
+    // 0b011 ... clkio / 64
+    // 0b010 ... clkio / 8
+    uint8_t CS_prescaler = settings[kHBridgeFrequency].value ? 0b010 : 0b011;
+    TCCR1B =
+        (1<<WGM13)  // mode 8: PWM, phase correct and frequency correct
+        // TODO EEPROM setting - switch between clkio / 64 (50 Hz) and clkio / 8 (400 Hz)
+        | ((CS_prescaler & 0x07) << CS10);
+        ;
+
+    // ICR1 is TOP value in mode 8
+    ICR1 = top_value;
+
+    set_duty(0);
+
+    TCCR1A =
+        // Clear OC1A on Compare Match when upcounting.
+        // Set OC1A on Compare Match when downcounting.
+        (1<<COM1A1)
+        // Set OC1B on Compare Match when upcounting.
+        // Clear OC1B on Compare Match when downcounting.
+        | (1<<COM1B0) | (1<<COM1B1)
+        ;
+
+    sei();
 }

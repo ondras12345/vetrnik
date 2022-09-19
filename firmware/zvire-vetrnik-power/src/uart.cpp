@@ -27,11 +27,11 @@
 typedef struct {
     const char name;
     void (*process_value)(uint8_t);
-    unsigned long last_updated;
     // If value isn't received at least every refresh_interval milliseconds,
     // an error is thrown.
     // Setting refresh_interval to 0 disables this feature.
     unsigned long refresh_interval;
+    unsigned long last_updated;
 } datapoint_t;
 
 
@@ -81,11 +81,32 @@ static void cmnd_errors(uint8_t value)
     errm_clear();
 }
 
+static uint8_t setting_index = 0;
+static void cmnd_setting_choose(uint8_t value)
+{
+    if (value >= kSettingsEnd)
+    {
+        errm_add(errm_create(&etemplate_comms_arg, uint8_t('$')));
+        return;
+    }
+    setting_index = value;
+}
+
+static void cmnd_setting_set(uint8_t value)
+{
+    settings_write(setting_index, value);
+}
+
 
 static datapoint_t datapoints[] = {
-    {'d', cmnd_duty, 0, 2100},  // duty
-    {'m', cmnd_mode, 0, 5100},  // mode
-    {'E', cmnd_errors, 0, 0},  // clear errors
+    {'d', cmnd_duty, 2100},  // duty
+    {'m', cmnd_mode, 5100},  // mode
+    {'E', cmnd_errors},      // clear errors
+    // The following commands allow settings to be read ($index, wait for next
+    // status message) and written ($index=value)
+    {'$', cmnd_setting_choose},
+    {'=', cmnd_setting_set},
+    // TODO reset command ??
 };
 
 #define FOR_EACH_DP for (uint8_t i = 0; i < sizeof datapoints / sizeof datapoints[0]; i++)
@@ -128,6 +149,12 @@ static void report()
 
     Serial.print("E");
     Serial.print(errm_count);
+
+    Serial.print(" ");
+    Serial.print("$");
+    Serial.print(setting_index);
+    Serial.print("=");
+    Serial.print(settings[setting_index].value);
 
     Serial.print("\r\n");
 }
