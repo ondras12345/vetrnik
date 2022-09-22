@@ -43,6 +43,5 @@ typedef struct {
 
 extern setting_t settings[kSettingsEnd];
 
-void settings_reset();
 void settings_init();
 void settings_write(uint8_t index, uint8_t value);

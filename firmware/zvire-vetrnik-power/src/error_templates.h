@@ -5,6 +5,7 @@
 // error weights:
 // 10 - emergency stop
 const errm_template etemplate_settings_changed = { 1, "sett chng" };  // should reset to apply
+const errm_template etemplate_settings_reset = { 10, "sett rst" };  // EEPROM contained garbage
 const errm_template etemplate_comms_arg = { 1, "com arg" };
 const errm_template etemplate_comms_mode = { 1, "com mode" };
 const errm_template etemplate_comms_malformed = { 1, "com malformed" };

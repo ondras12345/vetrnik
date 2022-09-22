@@ -29,7 +29,7 @@ static bool magic_verify(uint8_t start = 0)
 }
 
 
-void settings_reset()
+static void settings_reset()
 {
     magic_write(0);
 
@@ -40,7 +40,9 @@ void settings_reset()
         EEPROM.update(i + EEPROM_magic_length, default_value);
     }
 
-    magic_write(kSettingsEnd);
+    magic_write(kSettingsEnd + EEPROM_magic_length);
+
+    errm_add(errm_create(&etemplate_settings_reset));
 }
 
 
@@ -57,8 +59,10 @@ void settings_init()
         settings[i].value = EEPROM.read(i + EEPROM_magic_length);
     }
 
-    if (!magic_verify(kSettingsEnd))
+    if (!magic_verify(kSettingsEnd + EEPROM_magic_length))
+    {
         settings_reset();
+    }
 }
 
 
@@ -67,5 +71,5 @@ void settings_write(uint8_t index, uint8_t value)
     if (index >= kSettingsEnd) return;
     EEPROM.update(index + EEPROM_magic_length, value);
     // not updating settings array, need to reset
-    errm_add(errm_create(&etemplate_settings_changed));
+    errm_add(errm_create(&etemplate_settings_changed, index));
 }
