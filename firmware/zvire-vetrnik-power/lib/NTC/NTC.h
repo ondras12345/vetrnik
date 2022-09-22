@@ -22,10 +22,11 @@ class NTC
             uint32_t R_thermistor = ((uint32_t)(Rdiv_) * ADC_MAX) / ADC_reading - Rdiv_;
             if (R_thermistor == 0) return 65535;  // This shouldn't happen, and log wouldn't like it.
 
-            // Floating point division seems to be faster than uint32_t
+            // Floating point division takes about 200B of FLASH space,
+            // got rid of it by using log(a/b) = log(a) - log(b)
             uint16_t temperature_kelvin =
                 (uint32_t(beta_) * ROOM_TEMPERATURE_KELVIN) /
-                (beta_ + ROOM_TEMPERATURE_KELVIN * log(float(R_thermistor) / R_nom_));
+                (uint32_t)(beta_ + ROOM_TEMPERATURE_KELVIN * (log(float(R_thermistor)) - log(R_nom_)));
 
             if (temperature_kelvin < 273) return 0;  // negative temperatures not supported
             return temperature_kelvin - 273;
