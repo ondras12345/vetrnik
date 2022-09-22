@@ -1050,8 +1050,8 @@ void test_NTC()
 #else
         b = results[i];
 #endif
-        //TEST_ASSERT_EQUAL_UINT16(b, ntc.getC(i));
-        printf("%u %u %d\n", i, b, ntc.getC(i));
+        TEST_ASSERT_EQUAL_UINT16(b, ntc.getC(i));
+        //printf("%u %u %d\n", i, b, ntc.getC(i));
     }
 }
 
