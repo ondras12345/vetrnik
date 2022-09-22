@@ -11,11 +11,27 @@ setting_t settings[kSettingsEnd] = {
 #define EEPROM_magic_length 4
 static const uint8_t EEPROM_magic[EEPROM_magic_length] = { 0x00, 0x55, 0xAA, 0xFF };
 
+static void magic_write(uint8_t start = 0)
+{
+    for (uint8_t i = 0; i < EEPROM_magic_length; i++)
+        EEPROM.update(i + start, EEPROM_magic[i]);
+}
+
+
+static bool magic_verify(uint8_t start = 0)
+{
+    for (uint8_t i = 0; i < EEPROM_magic_length; i++)
+    {
+        if (EEPROM.read(i+start) != EEPROM_magic[i])
+            return false;
+    }
+    return true;
+}
+
 
 void settings_reset()
 {
-    for (uint8_t i = 0; i < EEPROM_magic_length; i++)
-        EEPROM.update(i, EEPROM_magic[i]);
+    magic_write(0);
 
     for (uint8_t i = 0; i < kSettingsEnd; i++)
     {
@@ -24,20 +40,16 @@ void settings_reset()
         EEPROM.update(i + EEPROM_magic_length, default_value);
     }
 
-    for (uint8_t i = 0; i < EEPROM_magic_length; i++)
-        EEPROM.update(i + kSettingsEnd, EEPROM_magic[i]);
+    magic_write(kSettingsEnd);
 }
 
 
 void settings_init()
 {
-    for (uint8_t i = 0; i < EEPROM_magic_length; i++)
+    if (!magic_verify())
     {
-        if (EEPROM.read(i) != EEPROM_magic[i])
-        {
-            settings_reset();
-            return;
-        }
+        settings_reset();
+        return;
     }
 
     for (uint8_t i = 0; i < kSettingsEnd; i++)
@@ -45,15 +57,10 @@ void settings_init()
         settings[i].value = EEPROM.read(i + EEPROM_magic_length);
     }
 
-    for (uint8_t i = 0; i < EEPROM_magic_length; i++)
-    {
-        if (EEPROM.read(i + kSettingsEnd) != EEPROM_magic[i])
-        {
-            settings_reset();
-            return;
-        }
-    }
+    if (!magic_verify(kSettingsEnd))
+        settings_reset();
 }
+
 
 void settings_write(uint8_t index, uint8_t value)
 {
