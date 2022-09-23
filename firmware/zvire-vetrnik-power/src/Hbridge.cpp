@@ -52,7 +52,6 @@ void Hbridge_init()
     uint8_t CS_prescaler = settings[kHBridgeFrequency].value ? 0b010 : 0b011;
     TCCR1B =
         (1<<WGM13)  // mode 8: PWM, phase correct and frequency correct
-        // TODO EEPROM setting - switch between clkio / 64 (50 Hz) and clkio / 8 (400 Hz)
         | ((CS_prescaler & 0x07) << CS10);
         ;
 
