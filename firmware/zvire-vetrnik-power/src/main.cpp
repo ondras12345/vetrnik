@@ -100,7 +100,8 @@ void setup()
     gpio_conf(pin_FAN, OUTPUT, 1);
     gpio_conf(pin_SHORT, OUTPUT, 0);
 
-    delay(10);  // Vcc should be stable before EEPROM is written to.
+    // We don't use Arduino's yield, so _delay_ms should be OK (less flash space)
+    _delay_ms(10);  // Vcc should be stable before EEPROM is written to.
 
     uart_init();
     settings_init();
@@ -126,12 +127,12 @@ void setup()
         {
             Serial.print(F("RST by WDT "));
             Serial.println(mcusr_mirror);
-            delay(500);
+            _delay_ms(500);
         }
     }
 
     gpio_conf(pin_ENABLE, INPUT, PULLUP);
-    delay(100);
+    _delay_ms(100);
 
     wdt_enable(WDTO_1S);
     wdt_reset();
