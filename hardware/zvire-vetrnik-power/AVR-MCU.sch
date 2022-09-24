@@ -552,7 +552,7 @@ F 3 "" H 4500 5950 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	4500 5800 4500 6000
-Text Label 4850 5300 2    50   ~ 0
+Text Label 5350 5300 2    50   ~ 0
 RPM
 Text Label 6750 3800 2    50   ~ 0
 RPM
@@ -723,7 +723,7 @@ $EndComp
 Wire Wire Line
 	4500 5300 4500 5400
 Wire Wire Line
-	4850 5300 4500 5300
+	5350 5300 5000 5300
 Connection ~ 4500 5300
 $Comp
 L Device:R R44
@@ -780,34 +780,34 @@ $EndComp
 $Comp
 L Device:R R43
 U 1 1 63099CF9
-P 4000 5800
-F 0 "R43" H 4070 5846 50  0000 L CNN
-F 1 "100k" H 4070 5755 50  0000 L CNN
-F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder" V 3930 5800 50  0001 C CNN
-F 3 "~" H 4000 5800 50  0001 C CNN
-	1    4000 5800
+P 4150 5800
+F 0 "R43" H 4220 5846 50  0000 L CNN
+F 1 "100k" H 4220 5755 50  0000 L CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder" V 4080 5800 50  0001 C CNN
+F 3 "~" H 4150 5800 50  0001 C CNN
+	1    4150 5800
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3650 5600 4000 5600
+	3650 5600 3750 5600
 Wire Wire Line
-	4000 5650 4000 5600
-Connection ~ 4000 5600
+	4150 5650 4150 5600
+Connection ~ 4150 5600
 Wire Wire Line
-	4000 5600 4200 5600
+	4150 5600 4200 5600
 $Comp
 L power:GNDPWR #PWR085
 U 1 1 630AFFFF
-P 4000 6000
-F 0 "#PWR085" H 4000 5800 50  0001 C CNN
-F 1 "GNDPWR" H 4004 5846 50  0000 C CNN
-F 2 "" H 4000 5950 50  0001 C CNN
-F 3 "" H 4000 5950 50  0001 C CNN
-	1    4000 6000
+P 4150 6000
+F 0 "#PWR085" H 4150 5800 50  0001 C CNN
+F 1 "GNDPWR" H 4154 5846 50  0000 C CNN
+F 2 "" H 4150 5950 50  0001 C CNN
+F 3 "" H 4150 5950 50  0001 C CNN
+	1    4150 6000
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	4000 6000 4000 5950
+	4150 6000 4150 5950
 Wire Wire Line
 	1350 5750 2200 5750
 Text HLabel 8750 1500 0    50   Input ~ 0
@@ -1283,4 +1283,66 @@ F 3 "http://www.us.liteon.com/downloads/LTV-817-827-847.PDF" H 3000 5400 50  000
 $EndComp
 Text Label 6750 3100 2    50   ~ 0
 ADC2_ACS712_2
+Text Notes 3600 6500 0    50   ~ 0
+C33 didn't help for noise filtering,\nhad to install C34\n(both are bodged in THT caps at the bottom side of the board)
+Text Notes 7250 3600 0    50   ~ 0
+TODO PD5 cannot do PWM on ATmega8 - only other choice would be PB3 (i think)
+$Comp
+L Device:C C33
+U 1 1 63304B82
+P 3750 5800
+F 0 "C33" H 3865 5846 50  0000 L CNN
+F 1 "10n" H 3865 5755 50  0000 L CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder" H 3788 5650 50  0001 C CNN
+F 3 "~" H 3750 5800 50  0001 C CNN
+	1    3750 5800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3750 5650 3750 5600
+Connection ~ 3750 5600
+Wire Wire Line
+	3750 5600 4150 5600
+$Comp
+L power:GNDPWR #PWR014
+U 1 1 6332AD1C
+P 3750 6000
+F 0 "#PWR014" H 3750 5800 50  0001 C CNN
+F 1 "GNDPWR" H 3754 5846 50  0000 C CNN
+F 2 "" H 3750 5950 50  0001 C CNN
+F 3 "" H 3750 5950 50  0001 C CNN
+	1    3750 6000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3750 6000 3750 5950
+$Comp
+L Device:C C34
+U 1 1 63334906
+P 5000 5650
+F 0 "C34" H 5115 5696 50  0000 L CNN
+F 1 "10n" H 5115 5605 50  0000 L CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.33x1.80mm_HandSolder" H 5038 5500 50  0001 C CNN
+F 3 "~" H 5000 5650 50  0001 C CNN
+	1    5000 5650
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GNDPWR #PWR021
+U 1 1 63334EB6
+P 5000 6000
+F 0 "#PWR021" H 5000 5800 50  0001 C CNN
+F 1 "GNDPWR" H 5004 5846 50  0000 C CNN
+F 2 "" H 5000 5950 50  0001 C CNN
+F 3 "" H 5000 5950 50  0001 C CNN
+	1    5000 6000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5000 6000 5000 5800
+Wire Wire Line
+	5000 5500 5000 5300
+Connection ~ 5000 5300
+Wire Wire Line
+	5000 5300 4500 5300
 $EndSCHEMATC
