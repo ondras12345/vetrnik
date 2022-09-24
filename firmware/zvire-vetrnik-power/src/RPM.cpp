@@ -13,8 +13,13 @@ static volatile bool RPM_new = false;
 ISR(INT0_vect)
 {
     unsigned long now = micros();
+    if (RPM_new)
+    {
+        last_time = now;
+        return;
+    }
     period = now - last_time;
-    //if (period < 500) return;  // low pass filter (2 kHz), doesn't work too well
+    if (period < 500) return;  // low pass filter (2 kHz), doesn't work too well
     last_time = now;
     RPM_new = true;
 }
@@ -37,11 +42,11 @@ void RPM_loop()
     static unsigned long lt;
     if (RPM_new)
     {
-        RPM_new = false;
         uint32_t t;
         cli();
         t = period;
         lt = last_time;
+        RPM_new = false;
         sei();
         if (t == 0)
         {
