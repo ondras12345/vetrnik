@@ -115,8 +115,12 @@ static datapoint_t datapoints[] = {
 
 static void report()
 {
+    // TODO evaluate max length and increase TX buffer size
+
     Serial.print('t');
-    Serial.print(millis() / 1000UL);
+    // Don't print out too many digits. Filling the TX buffer is not a good
+    // thing.
+    Serial.print((millis() / 1000UL) & 0xFFFF);
     Serial.print(' ');
 
     Serial.print('m');
@@ -133,6 +137,10 @@ static void report()
 
     Serial.print('v');
     Serial.print(voltage);
+    Serial.print(' ');
+
+    Serial.print('i');
+    Serial.print(current);
     Serial.print(' ');
 
     Serial.print('e');
