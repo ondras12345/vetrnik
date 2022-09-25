@@ -98,6 +98,20 @@ static void cmnd_setting_set(uint8_t value)
 }
 
 
+static void cmnd_test(uint8_t value)
+{
+#if defined(DEBUG) && DEBUG
+    if (value == 0xAA)
+    {
+        // Watchdog test
+        for (;;);
+        return;
+    }
+    errm_add(errm_create(&etemplate_comms_arg, uint8_t('T')));
+#endif
+}
+
+
 static datapoint_t datapoints[] = {
     {'d', cmnd_duty, 2100},  // duty
     {'m', cmnd_mode, 5100},  // mode
@@ -106,7 +120,7 @@ static datapoint_t datapoints[] = {
     // status message) and written ($index=value)
     {'$', cmnd_setting_choose},
     {'=', cmnd_setting_set},
-    // TODO reset command ??
+    {'T', cmnd_test},
 };
 
 #define FOR_EACH_DP for (uint8_t i = 0; i < sizeof datapoints / sizeof datapoints[0]; i++)
