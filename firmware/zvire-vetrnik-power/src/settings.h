@@ -26,6 +26,8 @@
 #define fan_power_min 0
 #define heatsink_temperature_max 40
 
+#define current_offset 512
+
 #include <stdint.h>
 
 typedef enum {

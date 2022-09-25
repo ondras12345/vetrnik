@@ -114,8 +114,10 @@ void ADC_loop()
         uint16_t voltage_mV = RMS_voltage.process(ADC_values[0]) * 320000UL >> 16;  // same as *5000 / 1024
         voltage = voltage_mV * (voltage_R1 + voltage_R2) / voltage_R2 / 100UL;  // voltage is *10 fixed-point
         // TODO OVP on peak voltage
-        // TODO current
-        current = ADC_values[1];
+        current = (ADC_values[1] > current_offset) ? ADC_values[1] - current_offset : 0;
+        static RMSFilter<> RMS_current;
+        current = RMS_current.process(current);
+        // TODO current scale
         MovingAverage<4> avg_NTC;
         ADC_values[3] = avg_NTC.process(ADC_values[3]);
 
