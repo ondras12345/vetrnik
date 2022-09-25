@@ -33,6 +33,7 @@
 typedef enum {
     kHBridgeFrequency = 0,  // 0 ... 50Hz ; 1 ... 400 Hz
     kRPMConversion = 1,
+    KCurrentConversion = 2,
     kSettingsEnd,
 } setting_index_t;
 

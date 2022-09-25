@@ -5,6 +5,7 @@
 setting_t settings[kSettingsEnd] = {
     {kHBridgeFrequency, 0},
     {kRPMConversion, 10},
+    {KCurrentConversion, 50},
 };
 
 

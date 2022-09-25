@@ -117,7 +117,7 @@ void ADC_loop()
         current = (ADC_values[1] > current_offset) ? ADC_values[1] - current_offset : 0;
         static RMSFilter<> RMS_current;
         current = RMS_current.process(current);
-        // TODO current scale
+        current = current * settings[KCurrentConversion].value / 10;
         MovingAverage<4> avg_NTC;
         ADC_values[3] = avg_NTC.process(ADC_values[3]);
 
