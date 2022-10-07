@@ -125,7 +125,7 @@ void setup()
         // reset by watchdog
         for (;;)
         {
-            Serial.print(F("RST by WDT "));
+            Serial.print(F(">RST by WDT "));
             Serial.println(mcusr_mirror);
             _delay_ms(500);
         }
@@ -136,7 +136,7 @@ void setup()
 
     wdt_enable(WDTO_1S);
     wdt_reset();
-    Serial.println(F("boot"));
+    Serial.println(F(">boot"));
 }
 
 
