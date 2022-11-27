@@ -54,9 +54,8 @@ void cmnd_conf(char *args, Stream *response)
     response->println("Configuration changes are only applied after a reset.");
     response->println();
 
-    // strsep instead of strtok allows empty strings to be input as two spaces
     char * setting_name = strsep(&args, " ");
-    char * setting_value = strsep(&args, " ");
+    char * setting_value = args;
     if (setting_name == nullptr)
     {
         // this is ok, just print out config
