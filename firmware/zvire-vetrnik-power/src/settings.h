@@ -26,7 +26,7 @@
 #define fan_power_min 0
 #define heatsink_temperature_max 40
 
-#define current_offset 512
+#define current_offset 104  // 500 mV .. 102; seems to want 104
 
 #include <stdint.h>
 

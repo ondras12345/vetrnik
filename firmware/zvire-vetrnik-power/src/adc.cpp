@@ -119,6 +119,8 @@ void ADC_loop()
         current = (ADC_values[1] > current_offset) ? ADC_values[1] - current_offset : 0;
         static RMSFilter<> RMS_current;
         current = RMS_current.process(current);
+        // ACS712-20A: 5000 mV / 1024 / 100 mV/A * 1000 mA/A = 48
+        // ACS770LCB-50U: 50000 mV / 1024 / 80 mV/A * 1000 mA/A = 61
         uint8_t current_conversion = settings[KCurrentConversion].value;
         static uint16_t max_current = (current_conversion == 0) ? 0 : 65535U / current_conversion;
         if (current >= max_current)
