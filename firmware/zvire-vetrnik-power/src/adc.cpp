@@ -110,6 +110,8 @@ void ADC_loop()
     if (ADC_done)
     {
         // ADC_values cannot change if ADC_done is true (see ISRs)
+        // TODO fix start value of RMS filters
+        // TODO tweak filter constants (how many samples per second?)
         static RMSFilter<> RMS_voltage;
         uint16_t voltage_mV = RMS_voltage.process(ADC_values[0]) * 320000UL >> 16;  // same as *5000 / 1024
         voltage = voltage_mV * (voltage_R1 + voltage_R2) / voltage_R2 / 100UL;  // voltage is *10 fixed-point

@@ -39,7 +39,7 @@ typedef enum {
 
 
 typedef struct {
-    setting_index_t index;
+    setting_index_t index;  // TODO isn't this redundant ?
     uint8_t default_value;
     uint8_t value;
 } setting_t;

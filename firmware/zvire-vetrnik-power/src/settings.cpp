@@ -6,6 +6,7 @@ setting_t settings[kSettingsEnd] = {
     {kHBridgeFrequency, 0},
     {kRPMConversion, 10},
     {KCurrentConversion, 50},
+    // TODO infinite loop after adding new setting?
 };
 
 
