@@ -116,12 +116,15 @@ void ADC_loop()
         uint16_t voltage_mV = RMS_voltage.process(ADC_values[0]) * 320000UL >> 16;  // same as *5000 / 1024
         voltage = voltage_mV * (voltage_R1 + voltage_R2) / voltage_R2 / 100UL;  // voltage is *10 fixed-point
         // TODO OVP on peak voltage
+
+        static uint16_t current_offset =
+            settings[kCurrentOffsetL].value |
+            settings[kCurrentOffsetH].value << 8;
+        static uint8_t current_conversion = settings[KCurrentConversion].value;
+
         current = (ADC_values[1] > current_offset) ? ADC_values[1] - current_offset : 0;
         static RMSFilter<> RMS_current;
         current = RMS_current.process(current);
-        // ACS712-20A: 5000 mV / 1024 / 100 mV/A * 1000 mA/A = 48
-        // ACS770LCB-50U: 50000 mV / 1024 / 80 mV/A * 1000 mA/A = 61
-        uint8_t current_conversion = settings[KCurrentConversion].value;
         static uint16_t max_current = (current_conversion == 0) ? 0 : 65535U / current_conversion;
         if (current >= max_current)
             current = 65535U;

@@ -26,20 +26,19 @@
 #define fan_power_min 0
 #define heatsink_temperature_max 40
 
-#define current_offset 104  // 500 mV .. 102; seems to want 104
-
 #include <stdint.h>
 
 typedef enum {
     kHBridgeFrequency = 0,  // 0 ... 50Hz ; 1 ... 400 Hz
     kRPMConversion = 1,
     KCurrentConversion = 2,
+    kCurrentOffsetL = 3,
+    kCurrentOffsetH = 4,
     kSettingsEnd,
 } setting_index_t;
 
 
 typedef struct {
-    setting_index_t index;  // TODO isn't this redundant ?
     uint8_t default_value;
     uint8_t value;
 } setting_t;

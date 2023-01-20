@@ -3,9 +3,17 @@
 #include "error_templates.h"
 
 setting_t settings[kSettingsEnd] = {
-    {kHBridgeFrequency, 0},
-    {kRPMConversion, 10},
-    {KCurrentConversion, 50},
+    {0},  // kHBridgeFrequency
+    {10},  // kRPMConversion
+
+    // ACS712-20A: 5000 mV / 1024 / 100 mV/A * 1000 mA/A = 48
+    // ACS770LCB-50U: 50000 mV / 1024 / 80 mV/A * 1000 mA/A = 61
+    {61},  // KCurrentConversion
+
+    // 500 mV .. 102; seems to want 104
+    {104},  // kCurrentOffsetL
+    {0},  // kCurrentOffsetH
+
     // TODO infinite loop after adding new setting?
 };
 
