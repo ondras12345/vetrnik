@@ -27,9 +27,9 @@ extern bool OVP_stop;
 extern mode_t OVP_mode;
 extern uint8_t duty;
 extern uint16_t RPM;
-extern uint16_t voltage;  // *10
-extern uint16_t current;  // mA
-extern uint16_t temperature_heatsink;  // *10
+extern uint16_t voltage;  ///< V, *10
+extern uint16_t current;  ///< mA
+extern uint16_t temperature_heatsink;  ///< 'C, *10
 extern uint8_t fan;
 
 extern mode_t mode;

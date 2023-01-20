@@ -16,6 +16,7 @@ class NTC
             Rdiv_(Rdiv), beta_(beta), R_nom_(R_nom)
             {};
 
+        /// returns (temperature in 'C) * 10
         uint16_t getC(uint16_t ADC_reading)
         {
             if (ADC_reading == 0) return 0;
@@ -25,11 +26,11 @@ class NTC
             // Floating point division takes about 200B of FLASH space,
             // got rid of it by using log(a/b) = log(a) - log(b)
             uint16_t temperature_kelvin =
-                (uint32_t(beta_) * ROOM_TEMPERATURE_KELVIN) /
+                ((uint32_t)(beta_) * ROOM_TEMPERATURE_KELVIN * 10) /
                 (uint32_t)(beta_ + ROOM_TEMPERATURE_KELVIN * (log(float(R_thermistor)) - log(R_nom_)));
 
-            if (temperature_kelvin < 273) return 0;  // negative temperatures not supported
-            return temperature_kelvin - 273;
+            if (temperature_kelvin < 273*10) return 0;  // negative temperatures not supported
+            return temperature_kelvin - 273*10;
         }
     private:
         uint16_t Rdiv_;

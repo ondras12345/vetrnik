@@ -141,14 +141,14 @@ void ADC_loop()
             NTC_prev_millis = millis();
             NTC ntc_heatsink(NTC_heatsink_Rdiv, NTC_heatsink_beta, NTC_heatsink_R_nom);
             temperature_heatsink = ntc_heatsink.getC(ADC_values[3]);
-            if (temperature_heatsink == 0 || temperature_heatsink > heatsink_temperature_max)
+            if (temperature_heatsink == 0 || temperature_heatsink > HEATSINK_TEMPERATURE_MAX)
             {
-                errm_add(errm_create(&etemplate_temperature, (temperature_heatsink & 0xFF)));
+                errm_add(errm_create(&etemplate_temperature, ((temperature_heatsink/10) & 0xFF)));
             }
             //if (temperature_heatsink < fan_temperature_off) fan = fan_power_min;
             //else if (temperature_heatsink > fan_temperature_full) fan = 255;
             //fan = map_uint16(temperature_heatsink, fan_temperature_off, fan_temperature_full, fan_power_min, 255);
-            fan = (temperature_heatsink > (fan_temperature_off + (fan ? 0 : 1))) ? 255 : 0;
+            fan = (temperature_heatsink > (FAN_TEMPERATURE_OFF + (fan ? 0 : 10))) ? 255 : 0;
             // TODO PD5 cannot do PWM on ATmega8...
             if (fan < 128)
                 gpio_clr(pin_FAN);
