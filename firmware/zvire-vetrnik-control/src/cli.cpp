@@ -10,6 +10,7 @@
 #include "Stream_utils.h"
 #include "uart_power.h"
 #include "power_datapoints.h"
+#include "power_board.h"
 
 Shellminator shell(&Serial);
 Commander commander;
@@ -194,6 +195,39 @@ void cmnd_dp_rx(char *args, Stream *response)
 }
 
 
+void cmnd_power(char *args, Stream *response)
+{
+    response->println("power board status:");
+#define printStat(name) \
+    response->print("" #name ": "); \
+    response->println(power_board_status.name);
+#define printStatU(name, unit) \
+    response->print("" #name ": "); \
+    response->print(power_board_status.name); \
+    response->println(" " unit);
+#define printStatC(name, conversion, dp, unit) \
+    response->print("" #name ": "); \
+    response->print(power_board_status.name * conversion, dp); \
+    response->println(" " unit); \
+
+    printStat(retrieved_millis);
+    printStat(valid);
+    printStatU(time, "s");
+    printStat(mode);
+    printStatU(duty, "(0-255)");
+    printStatU(RPM, "RPM");
+    printStatC(voltage, 0.1, 1, "V");
+    printStatC(current, 0.001, 3, "A");
+    printStat(enabled);
+    printStatC(temperature_heatsink, 0.1, 1, "'C");
+    printStat(fan);
+    printStat(error_count);
+#undef printStat
+#undef printStatU
+#undef printStatC
+}
+
+
 void cmnd_reset(char *args, Stream *response)
 {
     response->println("Resetting");
@@ -272,6 +306,7 @@ Commander::API_t API_tree[] = {
     apiElement("tx",            "Set value of TX datapoint.",               cmnd_tx),
     apiElement("rx_raw",        "Toggle printing of messages from power board.", cmnd_rx_raw),
     apiElement("dp_rx",         "Print out RX_datapoints.",                 cmnd_dp_rx),
+    apiElement("power",         "Print out status of power PCB.",           cmnd_power),
     apiElement("dfu",           "Switch to DFU firmware download mode.",    cmnd_dfu),
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),
     apiElement("ver",           "Print out version info.",                  cmnd_ver),

@@ -9,6 +9,7 @@
 #include "mqtt.h"
 #include "cli.h"
 #include "debug.h"
+#include "power_board.h"
 
 void setup()
 {
@@ -38,7 +39,12 @@ void setup()
 
 void loop()
 {
-    uart_power_loop();
+    bool status_complete = uart_power_loop();
+    if (status_complete)
+    {
+         power_board_status = power_board_status_read();
+    }
+
     CLI_loop();
     MQTT_loop();
 #ifdef watchdog_time

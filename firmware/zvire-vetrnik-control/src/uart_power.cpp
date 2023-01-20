@@ -53,7 +53,10 @@ void uart_power_init()
 }
 
 
-void uart_power_loop()
+/**
+ * @return true if RX_datapoints has been completely updated
+ */
+bool uart_power_loop()
 {
     static uint8_t buff_i = 0;
     static char name = '\0';
@@ -100,6 +103,8 @@ void uart_power_loop()
         {
             parse_char('\0', name, value);
             value = 0;
+            return true;
         }
     }
+    return false;
 }

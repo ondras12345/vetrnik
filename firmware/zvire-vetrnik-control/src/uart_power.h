@@ -12,4 +12,4 @@ extern bool power_text_message_complete;
 
 void uart_power_init();
 
-void uart_power_loop();
+bool uart_power_loop();
