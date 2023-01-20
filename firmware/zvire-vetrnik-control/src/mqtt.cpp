@@ -5,6 +5,7 @@
 #include "power_datapoints.h"
 #include "uart_power.h"
 #include "debug.h"
+#include "power_board.h"
 
 static EthernetClient ethClient;
 static void MQTTcallback(char* topic, byte* payload, unsigned int length);
@@ -127,6 +128,48 @@ void MQTT_loop()
         MQTTClient.publish(MQTTtopic_tele_raw_errors, power_text_message);
         power_text_message_complete = false;
     }
+
+
+    static power_board_status_t prev_pb_status = {0};
+
+#define PB(name, topic, maketmp) \
+    if (power_board_status.name != prev_pb_status.name || force_report) \
+    { \
+        prev_pb_status.name = power_board_status.name; \
+        maketmp \
+        MQTTClient.publish(MQTTtopic_tele_power_board topic, tmp, true); \
+    }
+#define maketmp_uint16(v) \
+    char tmp[3*sizeof(v) + 1]; \
+    snprintf(tmp, sizeof tmp, "%u", v);
+#define PB_uint16(name, topic) \
+    PB(name, topic, maketmp_uint16(power_board_status.name))
+#define PB_bool(name, topic) \
+    PB(name, topic, char tmp[2]; tmp[1] = '\0'; tmp[0] = (power_board_status.name ? '1' : '0');)
+#define maketmp_decimal(v, dp) \
+    char tmp[3*sizeof(v) + 1 + 1]; /* int + decimal point + null*/ \
+    snprintf(tmp, sizeof tmp, "%u.%0" #dp "u", v / uint16_t(1E ## dp), v % uint16_t(1E ## dp));
+#define PB_decimal(name, topic, dp) \
+    PB(name, topic, maketmp_decimal(power_board_status.name, dp))
+
+    PB_bool(valid, "valid")
+    PB_uint16(time, "time")
+    PB_uint16(mode, "mode")
+    PB_uint16(duty, "duty")
+    PB_uint16(RPM, "RPM")
+    PB_decimal(voltage, "voltage", 1)
+    PB_decimal(current, "current", 3)
+    PB_bool(enabled, "enabled")
+    PB_decimal(temperature_heatsink, "temperature_heatsink", 1)
+    PB_uint16(fan, "fan");
+    PB_uint16(error_count, "error_count");
+
+#undef PB
+#undef maketmp_uint16
+#undef PB_uint16
+#undef PB_bool
+#undef maketmp_decimal
+#undef PB_decimal
 }
 
 

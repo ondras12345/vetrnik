@@ -12,6 +12,7 @@
 #define MQTTtopic_cmnd_raw                  MQTTtopic_cmnd "raw/"
 #define MQTTtopic_tele_raw_RX               MQTTtopic_tele "raw/RX/"
 #define MQTTtopic_tele_raw_errors           MQTTtopic_tele "raw/errors"
+#define MQTTtopic_tele_power_board          MQTTtopic_tele "power_board/"
 
 #define watchdog_time 16000UL  // WDT is only used if this is defined
 
