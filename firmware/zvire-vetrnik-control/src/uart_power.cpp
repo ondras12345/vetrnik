@@ -12,10 +12,16 @@ char power_text_message[51] = "";  // size doesn't matter too much
 bool power_text_message_complete = false;
 
 
+/**
+ * Parse a single character from power board's UART.
+ *
+ * @return true at the end of a valid word (when value is complete), else false
+ */
 static bool parse_char(char c, char & name, unsigned long & value)
 {
-    static char now_parsing = '\0';
+    static char now_parsing = '\0';  // name of the currently parsed value
 
+    // Used at the end of a line
     if (c == '\0')
     {
         now_parsing = '\0';
@@ -31,8 +37,8 @@ static bool parse_char(char c, char & name, unsigned long & value)
     {
         name = now_parsing;
         now_parsing = c;
-        if ((name >= 'a' && name <= 'z') ||
-            (name >= 'A' && name <= 'Z'))
+
+        if (name >= '!' && name <= '~')
         {
             return true;
         }

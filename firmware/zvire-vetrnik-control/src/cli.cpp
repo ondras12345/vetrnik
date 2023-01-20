@@ -15,6 +15,7 @@ Shellminator shell(&Serial);
 Commander commander;
 static char watch_command[SHELLMINATOR_BUFF_LEN - sizeof("watch ") + 1 + 1] = "";
 
+
 void cmnd_ifconfig(char *args, Stream *response)
 {
     response->print("HW: ");
@@ -35,6 +36,7 @@ void cmnd_ifconfig(char *args, Stream *response)
     stream_print_MAC(response, settings.ETH_MAC);
     response->println();
 }
+
 
 void cmnd_mqtt_status(char *args, Stream *response)
 {
