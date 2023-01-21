@@ -2,6 +2,22 @@
 #include "power_datapoints.h"
 #include <Arduino.h>
 
+#define X_STR(name, value) #name,
+/**
+ * Array with strings corresponding to power_board_mode_t values.
+ * Terminated by nullptr.
+ *
+ * Should NOT be used for printing out states from power_board_status_t
+ * as the power board might have newer firmware than this, and could thus know
+ * more states (out-of-bounds).
+ *
+ * Useful for performing reverse lookup.
+ */
+const char * power_board_modes[] = {
+    POWER_BOARD_MODES(X_STR)
+    nullptr
+};
+#undef X_STR
 
 power_board_status_t power_board_status = { 0 };
 
@@ -25,4 +41,31 @@ power_board_status_t power_board_status_read()
     ret.fan = RX_datapoints_get('f').value;
     ret.error_count = RX_datapoints_get('E').value;
     return ret;
+}
+
+
+/**
+ * Set requested duty cycle on power board.
+ */
+void power_board_set_duty(uint8_t duty)
+{
+    TX_datapoints_set('d', duty);
+}
+
+
+/**
+ * Set requested mode on power board.
+ */
+void power_board_set_mode(power_board_mode_t mode)
+{
+    TX_datapoints_set('m', mode);
+}
+
+
+/**
+ * Clear all errors on power board.
+ */
+void power_board_clear_errors()
+{
+    TX_datapoints_set('E', 0);
 }

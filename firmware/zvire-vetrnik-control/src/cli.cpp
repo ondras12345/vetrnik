@@ -195,7 +195,7 @@ void cmnd_dp_rx(char *args, Stream *response)
 }
 
 
-void cmnd_power(char *args, Stream *response)
+void print_power_board_status(Stream *response)
 {
     response->println("power board status:");
 #define printStat(name) \
@@ -225,6 +225,77 @@ void cmnd_power(char *args, Stream *response)
 #undef printStat
 #undef printStatU
 #undef printStatC
+}
+
+
+void cmnd_power(char *args, Stream *response)
+{
+    char * setting_name = strsep(&args, " ");
+    char * setting_value = args;
+    if (setting_name == nullptr)
+    {
+        // do nothing, just print out status
+        print_power_board_status(response);
+    }
+
+    // subcommands that need no value
+    else if (strcmp(setting_name, "clear_errors") == 0)
+    {
+        power_board_clear_errors();
+        response->println("Power board errors cleared.");
+    }
+
+    else if (setting_value == nullptr)
+    {
+        response->println("Missing value");
+        response->println("Usage: power [[duty|mode] value | clear_errors]");
+        goto bad;
+    }
+
+    // subcommands that need setting_value
+    else if (strcmp(setting_name, "duty") == 0)
+    {
+        unsigned int duty;
+        sscanf(setting_value, "%u", &duty);
+        if (duty > 255) {
+            response->println("duty must be 0-255");
+            goto bad;
+        }
+        power_board_set_duty(duty);
+        response->print("Setting duty to ");
+        response->println(duty);
+    }
+    else if (strcmp(setting_name, "mode") == 0)
+    {
+        bool found = false;
+        for (size_t i = 0; power_board_modes[i] != nullptr; i++)
+        {
+            if (strcmp(setting_value, power_board_modes[i]) == 0)
+            {
+                found = true;
+                power_board_mode_t mode = (power_board_mode_t)i;
+                response->print("Setting mode to ");
+                response->println(mode);
+                power_board_set_mode(mode);
+            }
+        }
+        if (!found)
+        {
+            response->print("Unknown mode: ");
+            response->println(setting_value);
+            response->print("modes: ");
+            for (size_t i = 0; power_board_modes[i] != nullptr; i++)
+            {
+                response->print(power_board_modes[i]);
+                response->print(' ');
+            }
+            response->println();
+        }
+
+    }
+
+bad:
+    return;
 }
 
 
@@ -306,7 +377,7 @@ Commander::API_t API_tree[] = {
     apiElement("tx",            "Set value of TX datapoint.",               cmnd_tx),
     apiElement("rx_raw",        "Toggle printing of messages from power board.", cmnd_rx_raw),
     apiElement("dp_rx",         "Print out RX_datapoints.",                 cmnd_dp_rx),
-    apiElement("power",         "Print out status of power PCB.",           cmnd_power),
+    apiElement("power",         "Print status of power PCB or set params.", cmnd_power),
     apiElement("dfu",           "Switch to DFU firmware download mode.",    cmnd_dfu),
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),
     apiElement("ver",           "Print out version info.",                  cmnd_ver),

@@ -80,6 +80,7 @@ void MQTT_loop()
                )
             {
                 MQTTClient.subscribe(MQTTtopic_cmnd_raw "+");
+                MQTTClient.subscribe(MQTTtopic_cmnd_power_board "+");
 
                 MQTTClient.publish(MQTTtopic_availability, "online", true);
 
@@ -171,6 +172,8 @@ void MQTT_loop()
 #undef PB_bool
 #undef maketmp_decimal
 #undef PB_decimal
+
+    // TODO publish supported power_board modes ??
 }
 
 
@@ -184,10 +187,12 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
         DEBUG.print(' ');
     }
     DEBUG.println();
+
     if (length == 0) return;
 
     if (strstr(topic, MQTTtopic_cmnd_raw) != NULL)
     {
+        // 1 character longer
         if (strlen(topic) != sizeof MQTTtopic_cmnd_raw)
             return;
 
@@ -205,5 +210,36 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
         TX_datapoints_set(name, value);
 
         return;
+    }
+
+    if (strcmp(topic, MQTTtopic_cmnd_power_board "duty") == 0)
+    {
+        if (length > 3) return;
+        char buff[4];
+        memcpy(buff, payload, length);
+        buff[length] = '\0';
+        unsigned int duty;
+        sscanf(buff, "%u", &duty);
+        if (duty > 255) return;
+        power_board_set_duty(duty);
+    }
+
+    if (strcmp(topic, MQTTtopic_cmnd_power_board "clear_errors") == 0)
+    {
+        if (payload[0] != '1') return;
+        power_board_clear_errors();
+    }
+
+    if (strcmp(topic, MQTTtopic_cmnd_power_board "mode") == 0)
+    {
+        for (size_t i = 0; power_board_modes[i] != nullptr; i++)
+        {
+            if (strncmp((const char *)payload, power_board_modes[i], length) == 0)
+            {
+                power_board_mode_t mode = (power_board_mode_t)i;
+                power_board_set_mode(mode);
+                return;
+            }
+        }
     }
 }
