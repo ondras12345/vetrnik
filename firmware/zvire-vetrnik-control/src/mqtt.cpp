@@ -148,7 +148,8 @@ void MQTT_loop()
     PB(name, topic, char tmp[2]; tmp[1] = '\0'; tmp[0] = (power_board_status.name ? '1' : '0');)
 #define maketmp_decimal(v, dp) \
     char tmp[3*sizeof(v) + 1 + 1]; /* int + decimal point + null*/ \
-    snprintf(tmp, sizeof tmp, "%u.%0" #dp "u", v / uint16_t(1E ## dp), v % uint16_t(1E ## dp));
+    /* Type cast of the whole value because of cppcheck. I don't think it is really needed. */ \
+    snprintf(tmp, sizeof tmp, "%u.%0" #dp "u", uint16_t(v / uint16_t(1E ## dp)), uint16_t(v % uint16_t(1E ## dp)));
 #define PB_decimal(name, topic, dp) \
     PB(name, topic, maketmp_decimal(power_board_status.name, dp))
 
