@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "settings.h"
 
-#ifdef watchdog_time
+#ifdef WATCHDOG_TIME
 #include <IWatchdog.h>
 #endif
 
@@ -27,9 +27,9 @@ void setup()
     settings_init();
     DEBUG.flush();
     MQTT_init();
-#ifdef watchdog_time
+#ifdef WATCHDOG_TIME
     // Only do this after MQTT_init (DHCP is slow)
-    IWatchdog.begin(watchdog_time*1000UL);
+    IWatchdog.begin(WATCHDOG_TIME*1000UL);
 #endif
     uart_power_init();
     INFO.println("boot");
@@ -47,7 +47,7 @@ void loop()
 
     CLI_loop();
     MQTT_loop();
-#ifdef watchdog_time
+#ifdef WATCHDOG_TIME
     IWatchdog.reload();
 #endif
 }
