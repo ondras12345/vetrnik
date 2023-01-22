@@ -10,6 +10,9 @@
 #include "cli.h"
 #include "debug.h"
 #include "power_board.h"
+#ifdef LISP_REPL
+#include "lisp.h"
+#endif
 
 void setup()
 {
@@ -32,6 +35,9 @@ void setup()
     IWatchdog.begin(WATCHDOG_TIME*1000UL);
 #endif
     uart_power_init();
+#ifdef LISP_REPL
+    lisp_init();
+#endif
     INFO.println("boot");
     CLI_init();
 }
