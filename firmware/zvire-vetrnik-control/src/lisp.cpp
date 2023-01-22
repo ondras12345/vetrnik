@@ -14,9 +14,20 @@ static Stream * lisp_error_stream = nullptr;
 
 static void lisp_onerror(fe_Context *ctx, const char *msg, fe_Object *cl)
 {
-    (void)ctx; (void)cl;
     if (lisp_error_stream != nullptr)
+    {
         lisp_error_stream->printf("lisp error: %s\r\n", msg);
+
+        // Stack trace
+        // There doesn't seem to be an isnil() function,
+        // but fe_cdr returns it's argument when it's nil.
+        for (; cl != fe_cdr(ctx, cl); cl = fe_cdr(ctx, cl))
+        {
+            char buf[64];
+            fe_tostring(ctx, fe_car(ctx, cl), buf, sizeof(buf));
+            lisp_error_stream->printf("=> %s\r\n", buf);
+        }
+    }
     longjmp(lisp_error_jmp, -1);
 }
 
