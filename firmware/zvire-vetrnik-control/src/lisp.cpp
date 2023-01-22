@@ -7,16 +7,16 @@ extern "C" {
 #include <setjmp.h>
 
 
-static jmp_buf lisp_error_jmp;
+static jmp_buf error_jmp;
 static char lisp_buf[8*1024];
 
-static Stream * lisp_error_stream = nullptr;
+static Stream * error_stream = nullptr;
 
-static void lisp_onerror(fe_Context *ctx, const char *msg, fe_Object *cl)
+static void onerror(fe_Context *ctx, const char *msg, fe_Object *cl)
 {
-    if (lisp_error_stream != nullptr)
+    if (error_stream != nullptr)
     {
-        lisp_error_stream->printf("lisp error: %s\r\n", msg);
+        error_stream->printf("lisp error: %s\r\n", msg);
 
         // Stack trace
         // There doesn't seem to be an isnil() function,
@@ -25,10 +25,10 @@ static void lisp_onerror(fe_Context *ctx, const char *msg, fe_Object *cl)
         {
             char buf[64];
             fe_tostring(ctx, fe_car(ctx, cl), buf, sizeof(buf));
-            lisp_error_stream->printf("=> %s\r\n", buf);
+            error_stream->printf("=> %s\r\n", buf);
         }
     }
-    longjmp(lisp_error_jmp, -1);
+    longjmp(error_jmp, -1);
 }
 
 
@@ -132,7 +132,7 @@ static fe_Context *ctx;
 void lisp_init()
 {
     ctx = fe_open(lisp_buf, sizeof(lisp_buf));
-    fe_handlers(ctx)->error = lisp_onerror;
+    fe_handlers(ctx)->error = onerror;
 
     gc = fe_savegc(ctx);
 
@@ -157,7 +157,7 @@ void lisp_init()
 static fe_Object * lisp_execute(lisp_str_t * lstr)
 {
     bool jumped_in = false;
-    setjmp(lisp_error_jmp);
+    setjmp(error_jmp);
     if (jumped_in) return nullptr;
     jumped_in = true;
 
@@ -182,7 +182,7 @@ static fe_Object * lisp_execute(lisp_str_t * lstr)
  */
 void lisp_run_blind(const char * code, size_t length)
 {
-    lisp_error_stream = nullptr;
+    error_stream = nullptr;
     lisp_str_t lstr = { code, length, 0 };
     // don't care about the result, execute all root-level expressions
     while (lisp_execute(&lstr) != nullptr);
@@ -210,7 +210,7 @@ void lisp_run_blind(const char * code)
  */
 bool lisp_process(const char * code, size_t length, Stream * response)
 {
-    lisp_error_stream = response;
+    error_stream = response;
 
     lisp_str_t lstr = { code, length, 0 };
     fe_Object * obj = lisp_execute(&lstr);
