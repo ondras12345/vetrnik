@@ -16,6 +16,7 @@
 #define MQTTtopic_tele_power_board          MQTTtopic_tele "power_board/"
 
 #define watchdog_time 16000UL  // WDT is only used if this is defined
+#define SHELL_TELNET
 
 
 typedef struct {
@@ -24,8 +25,10 @@ typedef struct {
     uint8_t MQTTserver[4];  // IPv4
     char MQTTuser[16];
     char MQTTpassword[32];
+    bool shell_telnet : 1;
     // remember to adjust stream_print_settings in Stream_utils
     // and cmnd_conf in cli.cpp
+    // and default in settings.cpp
 } settings_t;
 
 extern settings_t settings;

@@ -14,6 +14,7 @@ settings_t settings_default = {
     { 0, 0, 0, 0},
     "",
     "",
+    false,
 };
 
 #define EEPROM_magic_length 4

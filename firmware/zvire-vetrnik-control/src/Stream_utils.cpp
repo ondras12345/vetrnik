@@ -27,4 +27,7 @@ void stream_print_settings(Stream *response, settings_t s)
 
     response->print("conf MQTTpassword ");
     response->println(s.MQTTpassword);
+
+    response->print("conf shell_telnet ");
+    response->println(s.shell_telnet ? '1' : '0');
 }

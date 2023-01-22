@@ -12,9 +12,17 @@
 #include "power_datapoints.h"
 #include "power_board.h"
 
+#ifdef SHELL_TELNET
+#include <TelnetStream.h>
+Shellminator shell_telnet(&TelnetStream);
+#endif
+
 Shellminator shell(&Serial);
 Commander commander;
 static char watch_command[SHELLMINATOR_BUFF_LEN - sizeof("watch ") + 1 + 1] = "";
+static Stream * watch_response = nullptr;
+
+// TODO make most functions static ??
 
 
 void cmnd_ifconfig(char *args, Stream *response)
@@ -116,6 +124,12 @@ void cmnd_conf(char *args, Stream *response)
     }
     String_conf(MQTTuser)
     String_conf(MQTTpassword)
+#define Bool_conf(name) \
+    else if (strcmp(setting_name, #name) == 0) \
+    { \
+        s.name = (setting_value[0] == '1'); \
+    }
+    Bool_conf(shell_telnet)
     else
     {
         response->print("Invalid config option: ");
@@ -299,6 +313,20 @@ bad:
 }
 
 
+#ifdef SHELL_TELNET
+void cmnd_telnet_quit(char *args, Stream *response)
+{
+    if (!settings.shell_telnet)
+    {
+        response->println("shell_telnet is disabled in conf");
+        return;
+    }
+    TelnetStream.flush();
+    TelnetStream.stop();
+}
+#endif
+
+
 void cmnd_reset(char *args, Stream *response)
 {
     response->println("Resetting");
@@ -358,6 +386,7 @@ void cmnd_watch(char *args, Stream *response)
     if (strlen(args) < sizeof(watch_command))
     {
         strcpy(watch_command, args);
+        watch_response = response;
     }
     else
     {
@@ -378,6 +407,9 @@ Commander::API_t API_tree[] = {
     apiElement("rx_raw",        "Toggle printing of messages from power board.", cmnd_rx_raw),
     apiElement("dp_rx",         "Print out RX_datapoints.",                 cmnd_dp_rx),
     apiElement("power",         "Print status of power PCB or set params.", cmnd_power),
+#ifdef SHELL_TELNET
+    apiElement("telnet_quit",   "Stop the telnet session.",                 cmnd_telnet_quit),
+#endif
     apiElement("dfu",           "Switch to DFU firmware download mode.",    cmnd_dfu),
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),
     apiElement("ver",           "Print out version info.",                  cmnd_ver),
@@ -388,35 +420,67 @@ Commander::API_t API_tree[] = {
 
 void CLI_init()
 {
-  // Clear the terminal
-  shell.clear();
+#ifdef SHELL_TELNET
+    if (settings.shell_telnet)
+    {
+        TelnetStream.begin();
+    }
+#endif
 
-  // Attach the logo.
-  //shell.attachLogo( logo );
+    // Clear the terminal
+    shell.clear();
 
-  // There is an option to attach a debug channel to Commander.
-  // It can be handy to find any problems during the initialization
-  // phase.
-  //commander.attachDebugChannel( &Serial );
+    // Attach the logo.
+    //shell.attachLogo( logo );
 
-  commander.attachTree(API_tree);
+    // There is an option to attach a debug channel to Commander.
+    // It can be handy to find any problems during the initialization
+    // phase.
+    //commander.attachDebugChannel( &Serial );
 
-  commander.init();
+    commander.attachTree(API_tree);
 
-  shell.attachCommander(&commander);
+    commander.init();
 
-  shell.begin("vetrnik-control");
+    shell.attachCommander(&commander);
+
+    shell.begin("vetrnik-control");
+
+#ifdef SHELL_TELNET
+    if (settings.shell_telnet)
+    {
+        shell_telnet.attachCommander(&commander);
+        shell_telnet.begin("vetrnik-control");
+    }
+#endif
 }
 
 
 void CLI_loop()
 {
     shell.update();
+
     unsigned long now = millis();
+
+#ifdef SHELL_TELNET
+    if (settings.shell_telnet)
+    {
+        static unsigned long telnet_prev_millis = 0;
+        if (now - telnet_prev_millis >= 1000UL)
+        {
+            telnet_prev_millis = now;
+            // TODO this is critical, otherwise telnet starts refusing connections
+            TelnetStream.write('\a');
+        }
+
+        shell_telnet.update();
+    }
+#endif
+
     static unsigned long watch_prev_millis = 0;
     if (now - watch_prev_millis >= 1000UL && watch_command[0] != '\0')
     {
         watch_prev_millis = now;
-        commander.execute(watch_command, &Serial);
+        if (watch_response) commander.execute(watch_command, watch_response);
     }
 }
