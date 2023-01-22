@@ -17,6 +17,7 @@
 
 #define WATCHDOG_TIME 16000UL  // WDT is only used if this is defined
 #define SHELL_TELNET
+#define LISP_REPL
 
 
 typedef struct {
