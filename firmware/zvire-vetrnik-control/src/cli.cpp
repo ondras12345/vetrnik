@@ -27,7 +27,7 @@ extern "C" {
 
 Shellminator shell(&Serial);
 Commander commander;
-static char watch_command[SHELLMINATOR_BUFF_LEN - sizeof("watch ") + 1 + 1] = "";
+static char watch_command[COMMANDER_MAX_COMMAND_SIZE - sizeof("watch ") + 1 + 1] = "";
 static Stream * watch_response = nullptr;
 
 // TODO make most functions static ??
