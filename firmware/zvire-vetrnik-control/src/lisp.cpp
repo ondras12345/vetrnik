@@ -29,7 +29,7 @@ static void lisp_write_Stream(fe_Context *ctx, void *udata, char chr)
 
 
 typedef struct lisp_str {
-    char * str;
+    const char * str;
     size_t length;
     size_t i;
 } lisp_str_t;
@@ -106,7 +106,7 @@ static fe_Object* lisp_power_set(fe_Context *ctx, fe_Object *arg)
     // there should be no need to clear_errors
     else
     {
-        fe_error(ctx, "invalid power_set command");
+        fe_error(ctx, "invalid pwrs command");
         return nullptr; // this should never happen, fe_error either exits or longjmps
     }
 
@@ -122,6 +122,9 @@ void lisp_init()
 {
     ctx = fe_open(lisp_buf, sizeof(lisp_buf));
     fe_handlers(ctx)->error = lisp_onerror;
+
+    gc = fe_savegc(ctx);
+
     fe_set(ctx, fe_symbol(ctx, "pwrg"), fe_cfunc(ctx, lisp_power_get));
     fe_set(ctx, fe_symbol(ctx, "pwrs"), fe_cfunc(ctx, lisp_power_set));
 
@@ -133,7 +136,10 @@ void lisp_init()
         fe_set(ctx, fe_symbol(ctx, buff), fe_number(ctx, i));
     }
 
-    gc = fe_savegc(ctx);
+    fe_restoregc(ctx, gc);
+
+    // Add an empty control function
+    lisp_run_blind("(= control (fn () ))");
 }
 
 
@@ -163,7 +169,7 @@ static fe_Object * lisp_execute(lisp_str_t * lstr)
  * @param code Array of characters without null terminator
  * @param length Length of code array
  */
-void lisp_run_blind(char * code, size_t length)
+void lisp_run_blind(const char * code, size_t length)
 {
     lisp_error_stream = nullptr;
     lisp_str_t lstr = { code, length, 0 };
@@ -178,7 +184,7 @@ void lisp_run_blind(char * code, size_t length)
  *
  * @param code null-terminated string containing the code to run
  */
-void lisp_run_blind(char * code)
+void lisp_run_blind(const char * code)
 {
     lisp_run_blind(code, -1);
 }
@@ -191,7 +197,7 @@ void lisp_run_blind(char * code)
  * @param length Length of code array
  * @param response Stream to print the result to
  */
-bool lisp_process(char * code, size_t length, Stream * response)
+bool lisp_process(const char * code, size_t length, Stream * response)
 {
     lisp_error_stream = response;
 
@@ -212,7 +218,7 @@ bool lisp_process(char * code, size_t length, Stream * response)
  * @param code null-terminated string containing the code to run
  * @param response Stream to print the result to
  */
-bool lisp_process(char * code, Stream * response)
+bool lisp_process(const char * code, Stream * response)
 {
     return lisp_process(code, -1, response);
 }
