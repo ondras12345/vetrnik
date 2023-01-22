@@ -7,6 +7,10 @@
 #include "debug.h"
 #include "power_board.h"
 
+#ifdef LISP_REPL
+#include "lisp.h"
+#endif
+
 static EthernetClient ethClient;
 static void MQTTcallback(char* topic, byte* payload, unsigned int length);
 PubSubClient MQTTClient(ethClient);
@@ -81,6 +85,9 @@ void MQTT_loop()
             {
                 MQTTClient.subscribe(MQTTtopic_cmnd_raw "+");
                 MQTTClient.subscribe(MQTTtopic_cmnd_power_board "+");
+#ifdef LISP_REPL
+                MQTTClient.subscribe(MQTTtopic_cmnd_lisp);
+#endif
 
                 MQTTClient.publish(MQTTtopic_availability, "online", true);
 
@@ -222,12 +229,14 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
         sscanf(buff, "%u", &duty);
         if (duty > 255) return;
         power_board_set_duty(duty);
+        return;
     }
 
     if (strcmp(topic, MQTTtopic_cmnd_power_board "clear_errors") == 0)
     {
         if (payload[0] != '1') return;
         power_board_clear_errors();
+        return;
     }
 
     if (strcmp(topic, MQTTtopic_cmnd_power_board "mode") == 0)
@@ -241,5 +250,14 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
                 return;
             }
         }
+        return;
     }
+
+#ifdef LISP_REPL
+    if (strcmp(topic, MQTTtopic_cmnd_lisp) == 0)
+    {
+        lisp_run_blind((char*)payload, length);
+        return;
+    }
+#endif
 }
