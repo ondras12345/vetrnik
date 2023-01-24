@@ -13,6 +13,7 @@
 #ifdef LISP_REPL
 #include "lisp.h"
 #endif
+#include "control.h"
 
 void setup()
 {
@@ -38,6 +39,7 @@ void setup()
 #ifdef LISP_REPL
     lisp_init();
 #endif
+    control_init();
     INFO.println("boot");
     CLI_init();
 }
@@ -49,7 +51,9 @@ void loop()
     if (status_complete)
     {
          power_board_status = power_board_status_read();
+         control_new_state();
     }
+    // TODO invalidate status after some time and run control loop ??
 
     CLI_loop();
     MQTT_loop();

@@ -7,10 +7,18 @@ extern "C" {
 #include <setjmp.h>
 
 
+// TODO extra lib for generic cfuncs (native pio test)
+// TODO expose millis ??
+
+
 static jmp_buf error_jmp;
 static char lisp_buf[8*1024];
 
 static Stream * error_stream = nullptr;
+
+/// Set to true in onerror. If you want to use it, you must set it to false
+/// before you start.
+static bool error_occured = false;
 
 static void onerror(fe_Context *ctx, const char *msg, fe_Object *cl)
 {
@@ -28,6 +36,7 @@ static void onerror(fe_Context *ctx, const char *msg, fe_Object *cl)
             error_stream->printf("=> %s\r\n", buf);
         }
     }
+    error_occured = true;
     longjmp(error_jmp, -1);
 }
 
@@ -167,9 +176,6 @@ void lisp_init()
     }
 
     fe_restoregc(ctx, gc);
-
-    // Add an empty control function
-    lisp_run_blind("(= control (fn () ))");
 }
 
 
@@ -198,13 +204,16 @@ static fe_Object * lisp_execute(lisp_str_t * lstr)
  *
  * @param code Array of characters without null terminator
  * @param length Length of code array
+ * @return true on success, false if error occurred.
  */
-void lisp_run_blind(const char * code, size_t length)
+bool lisp_run_blind(const char * code, size_t length)
 {
+    error_occured = false;
     error_stream = nullptr;
     lisp_str_t lstr = { code, length, 0 };
     // don't care about the result, execute all root-level expressions
     while (lisp_execute(&lstr) != nullptr);
+    return !error_occured;
 }
 
 
@@ -213,10 +222,11 @@ void lisp_run_blind(const char * code, size_t length)
  * Errors will NOT be printed out.
  *
  * @param code null-terminated string containing the code to run
+ * @return true on success, false if error occurred.
  */
-void lisp_run_blind(const char * code)
+bool lisp_run_blind(const char * code)
 {
-    lisp_run_blind(code, -1);
+    return lisp_run_blind(code, -1);
 }
 
 
