@@ -3,18 +3,18 @@
 #include <stdint.h>
 
 typedef enum {
-    // Generator output shorted by three-phase contactor.
-    // Fault condition or fresh start.
+    /// Generator output shorted by three-phase contactor.
+    /// Fault condition or fresh start.
     shorted = 0,
 
-    // Trying to stop the turbine without directly shorting it.
-    // Used when target water temperature reached.
+    /// Trying to stop the turbine without directly shorting it.
+    /// Used when target water temperature is reached.
     stopping = 1,
 
-    // Constant duty cycle.
+    /// Constant duty cycle.
     const_duty = 2,
 
-    // Start from shorted state to const_duty.
+    /// Start from shorted state to const_duty.
     start = 3,
 
     // Trying to maintain constant RPM.

@@ -3,7 +3,9 @@
 #include "error_templates.h"
 
 setting_t settings[kSettingsEnd] = {
+    // 0 ... 50Hz ; 1 ... 400 Hz
     {0},  // kHBridgeFrequency
+
     {10},  // kRPMConversion
 
     // ACS712-20A: 5000 mV / 1024 / 100 mV/A * 1000 mA/A = 48
