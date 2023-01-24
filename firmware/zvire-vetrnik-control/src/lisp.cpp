@@ -28,7 +28,7 @@ static void onerror(fe_Context *ctx, const char *msg, fe_Object *cl)
 
         // Stack trace
         // There doesn't seem to be an isnil() function,
-        // but fe_cdr returns it's argument when it's nil.
+        // but fe_cdr returns its argument when it's nil.
         for (; cl != fe_cdr(ctx, cl); cl = fe_cdr(ctx, cl))
         {
             char buf[64];

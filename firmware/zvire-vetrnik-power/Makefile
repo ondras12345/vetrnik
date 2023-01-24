@@ -27,7 +27,7 @@ test:           ## Run native tests.
 	pio test -e native
 
 .PHONY: test_embedded
-test_embedded:           ## Run native tests.
+test_embedded:           ## Run embedded tests on an Arduino uno.
 	pio test -e uno
 
 .PHONY: disassemble

@@ -31,7 +31,7 @@ typedef struct
 {
     //! Pointer to the template. @see errm_template
     const errm_template *errortemplate;
-    //! `millis()` taken when the error occured
+    //! `millis()` taken when the error occurred
     unsigned long when;
     //! code of the error
     uint8_t code;
