@@ -56,7 +56,25 @@ static char lisp_read_str(fe_Context *ctx, void *udata)
 }
 
 
-static fe_Object* lisp_power_get(fe_Context *ctx, fe_Object *arg)
+/**
+ * Remainder function
+ *
+ * rem performs the operation truncate on number and divisor and returns the
+ * remainder of the truncate operation.
+ *
+ * https://stackoverflow.com/questions/5706398/how-to-get-the-modulus-in-lisp
+ *
+ * Seemed easier to implement than mod.
+ */
+static fe_Object* cfunc_rem(fe_Context *ctx, fe_Object *arg)
+{
+    int x = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    int y = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    return fe_number(ctx, x % y);
+}
+
+
+static fe_Object* cfunc_power_get(fe_Context *ctx, fe_Object *arg)
 {
     char name[32];
     fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
@@ -84,7 +102,7 @@ static fe_Object* lisp_power_get(fe_Context *ctx, fe_Object *arg)
     }
 }
 
-static fe_Object* lisp_power_set(fe_Context *ctx, fe_Object *arg)
+static fe_Object* cfunc_power_set(fe_Context *ctx, fe_Object *arg)
 {
     char name[10];
     fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
@@ -136,8 +154,9 @@ void lisp_init()
 
     gc = fe_savegc(ctx);
 
-    fe_set(ctx, fe_symbol(ctx, "pwrg"), fe_cfunc(ctx, lisp_power_get));
-    fe_set(ctx, fe_symbol(ctx, "pwrs"), fe_cfunc(ctx, lisp_power_set));
+    fe_set(ctx, fe_symbol(ctx, "pwrg"), fe_cfunc(ctx, cfunc_power_get));
+    fe_set(ctx, fe_symbol(ctx, "pwrs"), fe_cfunc(ctx, cfunc_power_set));
+    fe_set(ctx, fe_symbol(ctx, "rem"), fe_cfunc(ctx, cfunc_rem));
 
     // Add variables for power modes
     for (size_t i = 0; power_board_modes[i] != nullptr; i++)
