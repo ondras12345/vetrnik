@@ -353,42 +353,38 @@ void cmnd_reset(char *args, Stream *response)
 
 
 
+// https://stm32f4-discovery.net/2017/04/tutorial-jump-system-memory-software-stm32/
+// https://github.com/markusgritsch/SilF4ware/blob/12d0371ac2f5fd561d653acd041caff73cf3cff4/SilF4ware/drv_reset.c
+#define SYSTEM_MEMORY_START 0x1FFF0000
+static void jump_to_bootloader()
+{
+    __enable_irq();
+    HAL_RCC_DeInit();
+    HAL_DeInit();
+    SysTick->CTRL = 0;
+    SysTick->LOAD = 0;
+    SysTick->VAL = 0;
+    __HAL_SYSCFG_REMAPMEMORY_SYSTEMFLASH();
 
-//#include "stm32f4xx_hal.h"
-//
-//#define SYSMEM_RESET_VECTOR            0x1fffC804
-//#define RESET_TO_BOOTLOADER_MAGIC_CODE 0xDEADBEEF
-//#define BOOTLOADER_STACK_POINTER       0x20002250  // TODO probably wrong
-//
-//uint32_t dfu_reset_to_bootloader_magic;
-//
-//void __initialize_hardware_early(void)
-//{
-//    if (dfu_reset_to_bootloader_magic == RESET_TO_BOOTLOADER_MAGIC_CODE) {
-//        void (*bootloader)(void) = (void (*)(void)) (*((uint32_t *) SYSMEM_RESET_VECTOR));
-//        dfu_reset_to_bootloader_magic = 0;
-//        __set_MSP(BOOTLOADER_STACK_POINTER);
-//        bootloader();
-//        while (42);
-//    } else {
-//        SystemInit();
-//    }
-//}
-//
-//void dfu_run_bootloader()
-//{
-//    dfu_reset_to_bootloader_magic = RESET_TO_BOOTLOADER_MAGIC_CODE;
-//    NVIC_SystemReset();
-//}
+    // Set stack pointer
+    // This will break local variables in this function
+    const uint32_t p = (*((uint32_t *) SYSTEM_MEMORY_START));
+    __set_MSP(p);
+
+    void (*SysMemBootJump)(void);
+    SysMemBootJump = (void (*)(void)) (*((uint32_t *)(SYSTEM_MEMORY_START+4)));
+    SysMemBootJump();
+
+    for (;;);
+}
+#undef SYSTEM_MEMORY_START
+
 
 void cmnd_dfu(char *args, Stream *response)
 {
-    // https://community.arm.com/support-forums/f/keil-forum/36389/stm32f411vetx-enabling-dfu-mode-from-application-code
-    //*((unsigned long *)0x2001FFF0) = 0xDEADBEEF; // Write a scratch location at end of RAM (or wherever)
-    //NVIC_SystemReset();
-    // TODO https://stackoverflow.com/questions/28288453/how-do-you-jump-to-the-bootloader-dfu-mode-in-software-on-the-stm32-f072
-    response->println("Unimplemented");
-    //dfu_run_bootloader();
+    response->println("Jumping to DFU bootloader");
+    response->flush();
+    jump_to_bootloader();
 }
 
 void cmnd_ver(char *args, Stream *response)
