@@ -36,10 +36,11 @@ void setup()
     IWatchdog.begin(WATCHDOG_TIME*1000UL);
 #endif
     uart_power_init();
+    control_init();
 #ifdef LISP_REPL
     lisp_init();
+    control_init_lisp();
 #endif
-    control_init();
     INFO.println("boot");
     CLI_init();
 }

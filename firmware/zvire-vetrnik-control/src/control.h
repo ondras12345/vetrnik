@@ -9,5 +9,6 @@
 
 
 void control_init();
+void control_init_lisp();
 
 void control_new_state();

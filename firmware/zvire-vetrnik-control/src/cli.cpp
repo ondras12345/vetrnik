@@ -11,6 +11,7 @@
 #include "uart_power.h"
 #include "power_datapoints.h"
 #include "power_board.h"
+#include "control.h"
 
 #ifdef SHELL_TELNET
 #include <TelnetStream.h>
@@ -340,6 +341,13 @@ void cmnd_lisp(char *args, Stream *response)
     response->print("Success: ");
     response->println(success);
 }
+
+
+void cmnd_lisp_reset(char *args, Stream *response)
+{
+    lisp_reinit();
+    control_init_lisp();
+}
 #endif
 
 
@@ -413,6 +421,7 @@ void cmnd_watch(char *args, Stream *response)
 Commander::API_t API_tree[] = {
     apiElement("ifconfig",      "Print out networking information.",        cmnd_ifconfig),
     apiElement("mqtt_status",   "Print out MQTT status.",                   cmnd_mqtt_status),
+    // ping would be nice, but seems hard to implement
     apiElement("conf",          "Get or set configuration options.",        cmnd_conf),
     apiElement("tx_raw",        "Transmit message to power board.",         cmnd_tx_raw),
     apiElement("tx",            "Set value of TX datapoint.",               cmnd_tx),
@@ -424,6 +433,7 @@ Commander::API_t API_tree[] = {
 #endif
 #ifdef LISP_REPL
     apiElement("lisp",          "Process a line of Lisp",                   cmnd_lisp),
+    apiElement("lisp_reset",    "Reinit Lisp interpreter",                  cmnd_lisp_reset),
 #endif
     apiElement("dfu",           "Switch to DFU firmware download mode.",    cmnd_dfu),
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),

@@ -179,6 +179,13 @@ void lisp_init()
 }
 
 
+void lisp_reinit()
+{
+    fe_close(ctx);
+    lisp_init();
+}
+
+
 static fe_Object * lisp_execute(lisp_str_t * lstr)
 {
     bool jumped_in = false;

@@ -7,10 +7,15 @@
 #endif
 
 
-/**
- * Must be called after lisp is initialized.
- */
 void control_init()
+{
+}
+
+
+/**
+ * Must be called whenever lisp is (re)initialized.
+ */
+void control_init_lisp()
 {
     // Add an empty control function
     lisp_run_blind("(= control (fn () ))");
