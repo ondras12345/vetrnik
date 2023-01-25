@@ -196,7 +196,7 @@ static void cmnd_rx_raw(char *args, Stream *response)  // cppcheck-suppress cons
 }
 
 
-static void cmnd_dp_rx(char *args, Stream *response)
+static void cmnd_rx(char *args, Stream *response)
 {
     response->println("Non-zero RX datapoints:");
     for (char c = '!'; c <= '~'; c++)
@@ -424,7 +424,7 @@ Commander::API_t API_tree[] = {
     apiElement("tx_raw",        "Transmit message to power board.",         cmnd_tx_raw),
     apiElement("tx",            "Set value of TX datapoint.",               cmnd_tx),
     apiElement("rx_raw",        "Toggle printing of messages from power board.", cmnd_rx_raw),
-    apiElement("dp_rx",         "Print out RX_datapoints.",                 cmnd_dp_rx),
+    apiElement("rx",            "Print out RX_datapoints.",                 cmnd_rx),
     apiElement("power",         "Print status of power PCB or set params.", cmnd_power),
 #ifdef SHELL_TELNET
     apiElement("telnet_quit",   "Stop the telnet session.",                 cmnd_telnet_quit),
