@@ -15,22 +15,20 @@
 
 #ifdef SHELL_TELNET
 #include <TelnetStream.h>
-Shellminator shell_telnet(&TelnetStream);
+static Shellminator shell_telnet(&TelnetStream);
 #endif
 
 #ifdef LISP_REPL
 #include "lisp.h"
 #endif
 
-Shellminator shell(&Serial);
-Commander commander;
+static Shellminator shell(&Serial);
+static Commander commander;
 static char watch_command[COMMANDER_MAX_COMMAND_SIZE - sizeof("watch ") + 1 + 1] = "";
 static Stream * watch_response = nullptr;
 
-// TODO make most functions static ??
 
-
-void cmnd_ifconfig(char *args, Stream *response)
+static void cmnd_ifconfig(char *args, Stream *response)
 {
     response->print("HW: ");
     response->println((uint8_t)Ethernet.hardwareStatus());
@@ -52,7 +50,7 @@ void cmnd_ifconfig(char *args, Stream *response)
 }
 
 
-void cmnd_mqtt_status(char *args, Stream *response)
+static void cmnd_mqtt_status(char *args, Stream *response)
 {
     response->print("state: ");
     response->println(MQTTClient.state());
@@ -61,7 +59,7 @@ void cmnd_mqtt_status(char *args, Stream *response)
 }
 
 
-void cmnd_conf(char *args, Stream *response)
+static void cmnd_conf(char *args, Stream *response)
 {
     static settings_t s = settings;
 
@@ -151,13 +149,13 @@ void cmnd_conf(char *args, Stream *response)
 }
 
 
-void cmnd_tx_raw(char *args, Stream *response)
+static void cmnd_tx_raw(char *args, Stream *response)
 {
     PSerial.println(args);
 }
 
 
-void cmnd_tx(char *args, Stream *response)
+static void cmnd_tx(char *args, Stream *response)
 {
     char dp = args[0];
     int value = 0;
@@ -190,7 +188,7 @@ usage:
 }
 
 
-void cmnd_rx_raw(char *args, Stream *response)  // cppcheck-suppress constParameter
+static void cmnd_rx_raw(char *args, Stream *response)  // cppcheck-suppress constParameter
 {
     print_RX = (args[0] == '1') ? response : nullptr;  // TODO is response guaranteed to live after this function finishes ?
     response->print("print_RX: ");
@@ -198,7 +196,7 @@ void cmnd_rx_raw(char *args, Stream *response)  // cppcheck-suppress constParame
 }
 
 
-void cmnd_dp_rx(char *args, Stream *response)
+static void cmnd_dp_rx(char *args, Stream *response)
 {
     response->println("Non-zero RX datapoints:");
     for (char c = '!'; c <= '~'; c++)
@@ -214,7 +212,7 @@ void cmnd_dp_rx(char *args, Stream *response)
 }
 
 
-void print_power_board_status(Stream *response)
+static void print_power_board_status(Stream *response)
 {
     response->println("power board status:");
 #define printStat(name) \
@@ -247,7 +245,7 @@ void print_power_board_status(Stream *response)
 }
 
 
-void cmnd_power(char *args, Stream *response)
+static void cmnd_power(char *args, Stream *response)
 {
     char * setting_name = strsep(&args, " ");
     char * setting_value = args;
@@ -319,7 +317,7 @@ bad:
 
 
 #ifdef SHELL_TELNET
-void cmnd_telnet_quit(char *args, Stream *response)
+static void cmnd_telnet_quit(char *args, Stream *response)
 {
     if (!settings.shell_telnet)
     {
@@ -333,7 +331,7 @@ void cmnd_telnet_quit(char *args, Stream *response)
 
 
 #ifdef LISP_REPL
-void cmnd_lisp(char *args, Stream *response)
+static void cmnd_lisp(char *args, Stream *response)
 {
     response->printf("Executing: '%s'\r\n", args);
     bool success = lisp_process(args, response);
@@ -343,7 +341,7 @@ void cmnd_lisp(char *args, Stream *response)
 }
 
 
-void cmnd_lisp_reset(char *args, Stream *response)
+static void cmnd_lisp_reset(char *args, Stream *response)
 {
     lisp_reinit();
     control_init_lisp();
@@ -351,7 +349,7 @@ void cmnd_lisp_reset(char *args, Stream *response)
 #endif
 
 
-void cmnd_reset(char *args, Stream *response)
+static void cmnd_reset(char *args, Stream *response)
 {
     response->println("Resetting");
     delay(100);
@@ -388,20 +386,20 @@ static void jump_to_bootloader()
 #undef SYSTEM_MEMORY_START
 
 
-void cmnd_dfu(char *args, Stream *response)
+static void cmnd_dfu(char *args, Stream *response)
 {
     response->println("Jumping to DFU bootloader");
     response->flush();
     jump_to_bootloader();
 }
 
-void cmnd_ver(char *args, Stream *response)
+static void cmnd_ver(char *args, Stream *response)
 {
     response->println(__DATE__ " " __TIME__);
 }
 
 
-void cmnd_watch(char *args, Stream *response)
+static void cmnd_watch(char *args, Stream *response)
 {
     if (strlen(args) < sizeof(watch_command))
     {
