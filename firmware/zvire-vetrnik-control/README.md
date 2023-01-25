@@ -57,6 +57,11 @@ included. It can be used by calling the `lisp` CLI command or via MQTT.
 The intention is that the user can write a custom control algorithm and have
 it run directly on the device without updating its firmware.
 
+
+### Built-in functions
+See https://github.com/rxi/fe/blob/ed4cda96bd582cbb08520964ba627efb40f3dd91/doc/lang.md
+
+
 ### Custom functions
 The `pwrg` function is used to get values from the power board state object.
 Numerical values (in SI units without metric prefix) are returned.
@@ -67,7 +72,6 @@ This expressions should return the power consumed by the load in W:
 ```
 
 The `pwrs` function is used to set parameters on the power board.
-
 ```lisp
 (pwrs "duty" 10)
 ```
@@ -77,6 +81,34 @@ They are prefixed with `pwr_`.
 ```lisp
 (pwrs "mode" pwr_start)
 ```
+
+
+The `rem` function performs the operation truncate on number and divisor and
+returns the remainder of the truncate operation.
+```lisp
+(rem 3 2) ; 1
+(rem -3 2) ; -1
+```
+
+The `round` function returns the closest integer to x, rounding to even when x
+is halfway between two integers.
+```lisp
+(round 0.4999) ; 0
+(round 0.5) ; 0
+(round 0.5001) ; 1
+
+(round 1.4999) ; 1
+(round 1.5) ; 2
+(round 1.5001) ; 2
+```
+
+The `map` function works similar to Arduino's `map`, but it does the
+computation in `float`.
+```lisp
+; (map value from_min from_max to_min to_max)
+(map 10 0 100 -1 0) ; -0.9
+```
+
 
 ### `control` function
 The `control` function is empty by default. If set up for `LISP` control
@@ -117,6 +149,28 @@ received.
       (< r 20) 20
       (< r 30) 40
       (< r 60) 100
+      255
+    )
+  )
+))
+```
+
+```lisp
+; linear mapping from RPM to duty
+
+; included as a cfunc in newer firmware
+;(= map (fn (v fl fh tl th)
+;  (+ tl
+;    (/ (* (- v fl) (- th tl)) (- fh fl))
+;  )
+;))
+
+(= control (fn ()
+  (let r (pwrg "RPM")) ; current RPM
+  (pwrs "duty"
+    (if
+      (< r 10) 0
+      (< r 60) (map r 10 60 0 255)
       255
     )
   )

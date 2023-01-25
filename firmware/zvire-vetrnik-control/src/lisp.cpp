@@ -83,6 +83,46 @@ static fe_Object* cfunc_rem(fe_Context *ctx, fe_Object *arg)
 }
 
 
+/**
+ * Arduino-like map function, but less broken (uses floats).
+ *
+ * (map value from_min from_max to_min to_max)
+ *
+ * This could be easily implemented in Lisp, but a cfunc takes up less memory.
+ * (= map (fn (v fl fh tl th)
+ *   (+ tl
+ *     (/ (* (- v fl) (- th tl)) (- fh fl))
+ *   )
+ * ))
+ * OOM test: Lisp 303, cfunc 326
+ */
+static fe_Object* cfunc_map(fe_Context *ctx, fe_Object *arg)
+{
+    float x = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    float from_min = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    float from_max = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    float to_min = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    float to_max = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    return fe_number(ctx,
+        (x - from_min) * (to_max - to_min) / (from_max - from_min) + to_min
+    );
+}
+
+
+/**
+ * Round returns the closest integer to x,
+ * rounding to even when x is halfway between two integers.
+ */
+static fe_Object* cfunc_round(fe_Context *ctx, fe_Object *arg)
+{
+    float x = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    // roundf would round half away from zero
+    // FE_TONEAREST should be the default rounding mode
+    x = nearbyintf(x);
+    return fe_number(ctx, x);
+}
+
+
 static fe_Object* cfunc_power_get(fe_Context *ctx, fe_Object *arg)
 {
     char name[32];
@@ -166,6 +206,8 @@ void lisp_init()
     fe_set(ctx, fe_symbol(ctx, "pwrg"), fe_cfunc(ctx, cfunc_power_get));
     fe_set(ctx, fe_symbol(ctx, "pwrs"), fe_cfunc(ctx, cfunc_power_set));
     fe_set(ctx, fe_symbol(ctx, "rem"), fe_cfunc(ctx, cfunc_rem));
+    fe_set(ctx, fe_symbol(ctx, "round"), fe_cfunc(ctx, cfunc_round));
+    fe_set(ctx, fe_symbol(ctx, "map"), fe_cfunc(ctx, cfunc_map));
 
     // Add variables for power modes
     for (size_t i = 0; power_board_modes[i] != nullptr; i++)
