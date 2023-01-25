@@ -191,7 +191,7 @@ static fe_Object * lisp_execute(lisp_str_t * lstr)
     bool jumped_in = false;
     setjmp(error_jmp);
     if (jumped_in) return nullptr;
-    jumped_in = true;
+    jumped_in = true;  //cppcheck-suppress unreadVariable
 
     fe_Object *obj;
     obj = fe_read(ctx, lisp_read_str, lstr);
