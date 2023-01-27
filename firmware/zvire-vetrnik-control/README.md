@@ -110,8 +110,8 @@ computation in `float`.
 ```
 
 
-### `control` function
-The `control` function is empty by default. If set up for `LISP` control
+### `ctrl` control function
+The `ctrl` function is empty by default. If set up for `LISP` control
 strategy, the device will call this function each time a new state object is
 received.
 
@@ -121,7 +121,7 @@ received.
 (= dh 200) ; duty for high
 (= p 5) ; period in seconds
 (= pt 0) ; prev time
-(= control (fn ()
+(= ctrl (fn ()
   ; t is used for "true", do not overwrite - named ti instead
   (let ti (pwrg "time"))
   ; max time is 65535 (see power report()), so no problem with rem
@@ -139,7 +139,7 @@ received.
 
 ```lisp
 ; simple RPM threshold control function
-(= control (fn ()
+(= ctrl (fn ()
   (let r (pwrg "RPM")) ; current RPM
   (pwrs "duty"
     (if
@@ -165,7 +165,7 @@ received.
 ;  )
 ;))
 
-(= control (fn ()
+(= ctrl (fn ()
   (let r (pwrg "RPM")) ; current RPM
   (pwrs "duty"
     (if
@@ -174,6 +174,74 @@ received.
       255
     )
   )
+))
+```
+
+
+```lisp
+; A more realistic MPPT control function
+
+; previous values
+(= pv 0)
+(= pp 0)
+
+(= s 0) ; step
+(= d 0) ; duty
+
+(= lim (fn (x l h)
+  (if
+    (< x l) l
+    (< h x) h
+    x
+  )
+))
+
+(= ctrla (fn ()
+  (let v (pwrg "voltage"))
+  (let i (pwrg "current"))
+  (let r (pwrg "RPM"))
+  (let p (* v i)) ; power
+  (= s
+    (if
+      (< s 0) ; decreasing load
+        (if
+          (<= p pp) 1 ; power is decreasing
+          -1 ; power is increasing, continue decreasing
+        )
+      ; increasing load
+      (if
+        (<= p pp) -1 ; power is decreasing
+        1
+      )
+    )
+  )
+
+  ;(= pv v)
+  (= pp p)
+
+  ; RPM limits
+  (= d
+    (if
+      (< r 10) 0
+      (< 800 r) 255
+      ; our control loop does not run extremely often,
+      ; so better give step (s) more authority
+      (+ d (* s 15))
+    )
+  )
+  ; duty limits
+  (= d (lim d 0 255))
+  (pwrs "duty" d)
+))
+
+; the RMS filter for current is way too slow, need to slow down the control loop
+(= pt 0)
+(= ctrl (fn ()
+  (let ti (pwrg "time"))
+  (if
+    (and (is (rem ti 2) 0) (not (is pt ti))) (ctrla)
+  )
+  (= pt ti)
 ))
 ```
 

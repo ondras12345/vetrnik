@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# exapmle usage:
+# - copy lisp code
+# xsel -b -o | ./tools/lisp-minify | mosquitto_pub -h localhost -t vetrnik/cmnd/lisp --stdin-line
+
+input_file="-"
+
+if [ -n "$1" ]; then
+    input_file="$1"
+fi
+
+sed -e '/^[[:blank:]]*;.*$/d;' \
+    -e '/^[[:blank:]]*$/d;' \
+    -e 's/[[:blank:]]*;.*$//' \
+    -e 's/^[[:blank:]]*//;' \
+    $input_file |
+tr '\n' ' ' |
+sed -e 's/ \?) \?/)/g' \
+    -e 's/ \?( \?/(/g' |
+{
+    i=0
+    while IFS= read -r -n1 c; do
+        if [ "$c" = "(" ]; then
+            i=$((i+=1))
+        fi
+        if [ "$c" = ")" ]; then
+            i=$((i-=1))
+        fi
+        printf '%s' "$c"
+        if [ $i -eq 0 ]; then
+            printf '\n'
+        fi
+    done
+}

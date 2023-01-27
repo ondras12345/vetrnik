@@ -18,7 +18,7 @@ void control_init()
 void control_init_lisp()
 {
     // Add an empty control function
-    lisp_run_blind("(= control (fn () ))");
+    lisp_run_blind("(= ctrl (fn () ))");
 }
 
 
@@ -28,6 +28,6 @@ void control_init_lisp()
 void control_new_state()
 {
 #ifdef LISP_REPL
-    lisp_run_blind("(control)");  // TODO switch to other strategy on error
+    lisp_run_blind("(ctrl)");  // TODO switch to other strategy on error
 #endif
 }
