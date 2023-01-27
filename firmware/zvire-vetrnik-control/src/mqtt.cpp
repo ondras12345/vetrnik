@@ -115,17 +115,28 @@ void MQTT_loop()
     // and + in topic names
     for (char c = ','; c <= '~'; c++)
     {
-        RX_datapoint_t dp = RX_datapoints_get(c);
-        if (dp.changed || force_report)
+        char top[sizeof MQTTtopic_tele_raw_RX + 1] = MQTTtopic_tele_raw_RX;
+        top[sizeof MQTTtopic_tele_raw_RX - 1] = c;
+        top[sizeof MQTTtopic_tele_raw_RX] = '\0';
+        if (settings.report_raw)
         {
-            char tmp[3*sizeof(RX_datapoint_t) + 1];  // >= number of digits required + null
-            snprintf(tmp, sizeof tmp, "%lu", dp.value);
-            char top[sizeof MQTTtopic_tele_raw_RX + 1] = MQTTtopic_tele_raw_RX;
-            top[sizeof MQTTtopic_tele_raw_RX - 1] = c;
-            top[sizeof MQTTtopic_tele_raw_RX] = '\0';
-            MQTTClient.publish(top, tmp, true);
-            dp.changed = false;
-            RX_datapoints_set(c, dp);
+            RX_datapoint_t dp = RX_datapoints_get(c);
+            if (dp.changed || force_report)
+            {
+                char tmp[3*sizeof(RX_datapoint_t) + 1];  // >= number of digits required + null
+                snprintf(tmp, sizeof tmp, "%lu", dp.value);
+                MQTTClient.publish(top, tmp, true);
+                dp.changed = false;
+                RX_datapoints_set(c, dp);
+            }
+        }
+        else
+        {
+            if (force_report)
+            {
+                // clean up retained messages
+                MQTTClient.publish(top, "", true);
+            }
         }
     }
 

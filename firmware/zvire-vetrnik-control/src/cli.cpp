@@ -134,6 +134,7 @@ static void cmnd_conf(char *args, Stream *response)
         s.name = (setting_value[0] == '1'); \
     }
     Bool_conf(shell_telnet)
+    Bool_conf(report_raw)
     else
     {
         response->print("Invalid config option: ");

@@ -30,6 +30,9 @@ void stream_print_settings(Stream *response, settings_t s)
 
     response->print("conf shell_telnet ");
     response->println(s.shell_telnet ? '1' : '0');
+
+    response->print("conf report_raw ");
+    response->println(s.report_raw ? '1' : '0');
 }
 
 

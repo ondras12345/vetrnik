@@ -31,6 +31,7 @@ typedef struct {
     char MQTTuser[16];
     char MQTTpassword[32];
     bool shell_telnet : 1;
+    bool report_raw : 1; /// MQTT report of raw datapoints
     // remember to adjust stream_print_settings in Stream_utils
     // and cmnd_conf in cli.cpp
     // and default in settings.cpp
