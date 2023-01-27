@@ -1,6 +1,6 @@
 #include "settings.h"
-#include <EEPROM.h>
 #include "debug.h"
+#include <SerialFlash.h>
 
 /*
  * https://github.com/stm32duino/wiki/wiki/API#EEPROM-Emulation
@@ -17,77 +17,86 @@ settings_t settings_default = {
     false,
 };
 
-#define EEPROM_magic_length 4
-static const uint8_t EEPROM_magic[EEPROM_magic_length] = { 0x00, 0x55, 0xAA, 0xFF };
 
-static void magic_write(uint8_t start = 0)
-{
-    for (uint8_t i = 0; i < EEPROM_magic_length; i++)
-        eeprom_buffered_write_byte(i + start, EEPROM_magic[i]);
-}
-
-
-static bool magic_verify(uint8_t start = 0)
-{
-    for (uint8_t i = 0; i < EEPROM_magic_length; i++)
-    {
-        if (eeprom_buffered_read_byte(i+start) != EEPROM_magic[i])
-            return false;
-    }
-    return true;
-}
+#define SETTINGS_FILENAME "settings"
+#define MAGIC_LENGTH 4
+static const uint8_t magic[MAGIC_LENGTH] = { 0x00, 0x55, 0xAA, 0xFF };
 
 
 static void settings_reset()
 {
     INFO.println("Settings reset");
     settings = settings_default;
-    magic_write(0);
-    magic_write(EEPROM_magic_length + sizeof(settings_t));
-    // eeprom_buffer_flush() is called in settings_write()
+    // Size doesn't matter, will be 64k since I need an erasable file
+    if (!SerialFlash.exists("settings"))
+    {
+        bool retry = false;
+tryagain:
+        if (!SerialFlash.createErasable("settings", 1024))
+        {
+            INFO.println("Cannot create file for settings, erasing chip");
+            if (!retry)
+            {
+                SerialFlash.eraseAll();
+                while (!SerialFlash.ready())
+                {
+                    // TODO reset WDT ??
+                }
+                retry = true;
+                goto tryagain;
+            }
+            INFO.println("Failed to create file for settings, even after erase");
+        }
+    }
     settings_write(settings);
-}
-
-
-template<typename T> T eeprom_buffered_get(int idx, T &t)
-{
-    uint8_t *ptr = (uint8_t *) &t;
-    for (int count = sizeof(T); count; count--, idx++)
-    {
-        *ptr++ = eeprom_buffered_read_byte(idx);
-    }
-    return t;
-}
-
-template<typename T> void eeprom_buffered_put(int idx, const T &t)
-{
-    const uint8_t *ptr = (const uint8_t *) &t;
-    for (int count = sizeof(T); count; count--, idx++)
-    {
-        eeprom_buffered_write_byte(idx, *ptr++);
-    }
 }
 
 
 void settings_init()
 {
-    eeprom_buffer_fill();
-    if (!magic_verify() ||
-        !magic_verify(EEPROM_magic_length + sizeof(settings_t)))
+    DEBUG.println("reading settings");
+    SerialFlashFile f = SerialFlash.open(SETTINGS_FILENAME);
+    if (!f)
     {
         settings_reset();
+        f = SerialFlash.open(SETTINGS_FILENAME);
+        if (!f)
+        {
+            INFO.println("Settings error: could not open");
+            return;
+        }
     }
-    DEBUG.println("EEPROM reading settings");
-    // EEPROM.get(EEPROM_magic_length, settings);
-    eeprom_buffered_get(EEPROM_magic_length, settings);
+
+    uint8_t buf[sizeof(settings_t) + sizeof(magic)];
+    f.read(buf, sizeof buf);
+    if (memcmp(buf + sizeof(settings_t), magic, sizeof magic) != 0)
+    {
+        INFO.println("Settings: invalid magic");
+        f.close();
+        settings_reset();
+        f = SerialFlash.open(SETTINGS_FILENAME);
+        if (!f)
+        {
+            INFO.println("Settings error: could not open");
+            return;
+        }
+        f.read(buf, sizeof buf);
+        // magic must be right, because we just wrote it
+    }
+    f.close();
+    memcpy(&settings, buf, sizeof settings);
 }
 
 
 void settings_write(const settings_t & s)
 {
     DEBUG.println("Settings write");
-    // EEPROM emulation does 1 flash page write per written byte
-    // EEPROM.put(EEPROM_magic_length, s);
-    eeprom_buffered_put(EEPROM_magic_length, s);
-    eeprom_buffer_flush();
+    SerialFlashFile f = SerialFlash.open(SETTINGS_FILENAME);
+    if (!f) return;
+    f.erase();
+    uint8_t buf[sizeof(settings_t) + sizeof(magic)];
+    memcpy(buf, &s, sizeof s);
+    memcpy(buf+sizeof s, magic, sizeof magic);
+    f.write(buf, sizeof buf);
+    f.close();
 }
