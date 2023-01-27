@@ -441,7 +441,7 @@ static void cmnd_SPIflash(char *args, Stream *response)
                 address = f.getFlashAddress();
                 f.close();
             }
-            response->printf("%08x\t%s\t%u\r\n", address, filename, filesize);
+            response->printf("%06x\t%s\t%u\r\n", address, filename, filesize);
         }
     }
 
