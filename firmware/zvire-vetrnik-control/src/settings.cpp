@@ -15,6 +15,7 @@ settings_t settings_default = {
     "",
     "",
     false,
+    false
 };
 
 
@@ -92,7 +93,11 @@ void settings_write(const settings_t & s)
 {
     DEBUG.println("Settings write");
     SerialFlashFile f = SerialFlash.open(SETTINGS_FILENAME);
-    if (!f) return;
+    if (!f)
+    {
+        INFO.println("Could not open file during settings_write");
+        return;
+    }
     f.erase();
     uint8_t buf[sizeof(settings_t) + sizeof(magic)];
     memcpy(buf, &s, sizeof s);
