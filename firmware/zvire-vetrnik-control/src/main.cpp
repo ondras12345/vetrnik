@@ -6,6 +6,7 @@
 #endif
 
 #include "uart_power.h"
+#include "power_datapoints.h"
 #include "mqtt.h"
 #include "cli.h"
 #include "debug.h"
@@ -48,6 +49,7 @@ void setup()
 
 void loop()
 {
+    power_datapoints_loop();
     bool status_complete = uart_power_loop();
     if (status_complete)
     {
