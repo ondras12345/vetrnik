@@ -11,6 +11,7 @@
 #include "uart_power.h"
 #include "power_datapoints.h"
 #include "power_board.h"
+#include "lisp.h"
 #include "control.h"
 #include <SerialFlash.h>
 
@@ -19,9 +20,6 @@
 static Shellminator shell_telnet(&TelnetStream);
 #endif
 
-#ifdef LISP_REPL
-#include "lisp.h"
-#endif
 
 static Shellminator shell(&Serial);
 static Commander commander;
@@ -318,6 +316,61 @@ bad:
 }
 
 
+static void cmnd_control(char *args, Stream *response)
+{
+    char * setting_name = strsep(&args, " ");
+    char * setting_value = args;
+    if (setting_name == nullptr)
+    {
+        // do nothing, just print out status
+        response->print("strategy: ");
+        response->println(control_strategies[control_get_strategy()]);
+    }
+
+    // subcommands that need no value
+    // (currently none)
+
+    else if (setting_value == nullptr)
+    {
+        goto bad;
+    }
+
+    // subcommands that need setting_value
+    else if (strcmp(setting_name, "strategy") == 0)
+    {
+        bool found = false;
+        for (size_t i = 0; control_strategies[i] != nullptr; i++)
+        {
+            if (strcmp(setting_value, control_strategies[i]) == 0)
+            {
+                found = true;
+                control_strategy_t strategy = (control_strategy_t)i;
+                response->print("Setting strategy to ");
+                response->println(strategy);
+                control_set_strategy(strategy);
+            }
+        }
+        if (!found)
+        {
+            response->print("Unknown strategy: ");
+            response->println(setting_value);
+            response->print("strategies: ");
+            for (size_t i = 0; control_strategies[i] != nullptr; i++)
+            {
+                response->print(control_strategies[i]);
+                response->print(' ');
+            }
+            response->println();
+        }
+    }
+
+    return;
+bad:
+    response->println("Missing value");
+    response->println("Usage: control [strategy s]");
+}
+
+
 #ifdef SHELL_TELNET
 static void cmnd_telnet_quit(char *args, Stream *response)
 {
@@ -332,7 +385,6 @@ static void cmnd_telnet_quit(char *args, Stream *response)
 #endif
 
 
-#ifdef LISP_REPL
 static void cmnd_lisp(char *args, Stream *response)
 {
     response->printf("Executing: '%s'\r\n", args);
@@ -348,7 +400,6 @@ static void cmnd_lisp_reset(char *args, Stream *response)
     lisp_reinit();
     control_init_lisp();
 }
-#endif
 
 
 static void cmnd_reset(char *args, Stream *response)
@@ -569,13 +620,12 @@ Commander::API_t API_tree[] = {
     apiElement("rx_raw",        "Toggle printing of messages from power board.", cmnd_rx_raw),
     apiElement("rx",            "Print out RX_datapoints.",                 cmnd_rx),
     apiElement("power",         "Print status of power PCB or set params.", cmnd_power),
+    apiElement("control",       "Get or set params of control algorithm.",  cmnd_control),
 #ifdef SHELL_TELNET
     apiElement("telnet_quit",   "Stop the telnet session.",                 cmnd_telnet_quit),
 #endif
-#ifdef LISP_REPL
     apiElement("lisp",          "Process a line of Lisp",                   cmnd_lisp),
     apiElement("lisp_reset",    "Reinit Lisp interpreter",                  cmnd_lisp_reset),
-#endif
     apiElement("SPIflash",      "Issue commands to SPI flash",              cmnd_SPIflash),
     apiElement("dfu",           "Switch to DFU firmware download mode.",    cmnd_dfu),
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),

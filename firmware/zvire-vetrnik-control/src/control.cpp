@@ -1,14 +1,29 @@
 #include "control.h"
 #include "settings.h"
 #include "power_board.h"
-
-#ifdef LISP_REPL
 #include "lisp.h"
-#endif
+#include "debug.h"
+
+static control_strategy_t strategy = control_shorted;
+
+
+#define X_STR(name, value) #name,
+/**
+ * Array with strings corresponding to control_strategy_t values.
+ * Terminated by nullptr.
+ *
+ * Useful for performing reverse lookup.
+ */
+const char * control_strategies[] = {
+    CONTROL_STRATEGIES(X_STR)
+    nullptr
+};
+#undef X_STR
 
 
 void control_init()
 {
+    control_set_strategy(control_shorted);
 }
 
 
@@ -27,7 +42,39 @@ void control_init_lisp()
  */
 void control_new_state()
 {
-#ifdef LISP_REPL
-    lisp_run_blind("(ctrl)");  // TODO switch to other strategy on error
-#endif
+    switch (strategy)
+    {
+        case control_shorted:
+            if (power_board_status.mode != shorted)
+                power_board_set_mode(shorted);
+            break;
+
+        case control_lisp:
+            bool success = lisp_run_blind("(ctrl)");
+            if (!success)
+            {
+                INFO.println("error in control_lisp, switching to control_shorted");
+                control_set_strategy(control_shorted);
+            }
+            break;
+    }
+}
+
+
+void control_set_strategy(control_strategy_t s)
+{
+    switch (s)
+    {
+        case control_shorted:
+            power_board_set_duty(0);
+            power_board_set_mode(shorted);
+            break;
+    }
+    strategy = s;
+}
+
+
+control_strategy_t control_get_strategy()
+{
+    return strategy;
 }

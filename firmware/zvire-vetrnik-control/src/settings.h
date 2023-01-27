@@ -15,13 +15,14 @@
 #define MQTTtopic_cmnd_raw                  MQTTtopic_cmnd "raw/"
 #define MQTTtopic_cmnd_power_board          MQTTtopic_cmnd "power_board/"
 #define MQTTtopic_cmnd_lisp                 MQTTtopic_cmnd "lisp"
+#define MQTTtopic_cmnd_control              MQTTtopic_cmnd "control/"
 #define MQTTtopic_tele_raw_RX               MQTTtopic_tele "raw/RX/"
 #define MQTTtopic_tele_raw_errors           MQTTtopic_tele "raw/errors"
 #define MQTTtopic_tele_power_board          MQTTtopic_tele "power_board/"
+#define MQTTtopic_tele_control              MQTTtopic_tele "control/"
 
 #define WATCHDOG_TIME 16000UL  // WDT is only used if this is defined
 #define SHELL_TELNET
-#define LISP_REPL
 
 
 typedef struct {

@@ -10,9 +10,7 @@
 #include "cli.h"
 #include "debug.h"
 #include "power_board.h"
-#ifdef LISP_REPL
 #include "lisp.h"
-#endif
 #include "control.h"
 #include <SerialFlash.h>
 
@@ -41,10 +39,8 @@ void setup()
 #endif
     uart_power_init();
     control_init();
-#ifdef LISP_REPL
     lisp_init();
     control_init_lisp();
-#endif
     INFO.println("boot");
     CLI_init();
 }

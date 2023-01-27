@@ -6,10 +6,8 @@
 #include "uart_power.h"
 #include "debug.h"
 #include "power_board.h"
-
-#ifdef LISP_REPL
 #include "lisp.h"
-#endif
+#include "control.h"
 
 static EthernetClient ethClient;
 static void MQTTcallback(char* topic, byte* payload, unsigned int length);
@@ -85,9 +83,8 @@ void MQTT_loop()
             {
                 MQTTClient.subscribe(MQTTtopic_cmnd_raw "+");
                 MQTTClient.subscribe(MQTTtopic_cmnd_power_board "+");
-#ifdef LISP_REPL
                 MQTTClient.subscribe(MQTTtopic_cmnd_lisp);
-#endif
+                MQTTClient.subscribe(MQTTtopic_cmnd_control "+");
 
                 MQTTClient.publish(MQTTtopic_availability, "online", true);
 
@@ -192,6 +189,15 @@ void MQTT_loop()
 #undef PB_decimal
 
     // TODO publish supported power_board modes ??
+
+    static control_strategy_t prev_control_strategy = control_shorted;
+    control_strategy_t control_strategy = control_get_strategy();
+    if (control_strategy != prev_control_strategy || force_report)
+    {
+        prev_control_strategy = control_strategy;
+        MQTTClient.publish(MQTTtopic_tele_control "strategy",
+                           control_strategies[control_strategy], true);
+    }
 }
 
 
@@ -254,7 +260,8 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
     {
         for (size_t i = 0; power_board_modes[i] != nullptr; i++)
         {
-            if (strncmp((const char *)payload, power_board_modes[i], length) == 0)
+            if (length == strlen(power_board_modes[i]) &&
+                strncmp((const char *)payload, power_board_modes[i], length) == 0)
             {
                 power_board_mode_t mode = (power_board_mode_t)i;
                 power_board_set_mode(mode);
@@ -264,11 +271,24 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
         return;
     }
 
-#ifdef LISP_REPL
     if (strcmp(topic, MQTTtopic_cmnd_lisp) == 0)
     {
         lisp_run_blind((char*)payload, length);
         return;
     }
-#endif
+
+    if (strcmp(topic, MQTTtopic_cmnd_control "strategy") == 0)
+    {
+        for (size_t i = 0; control_strategies[i] != nullptr; i++)
+        {
+            if (length == strlen(control_strategies[i]) &&
+                strncmp((const char *)payload, control_strategies[i], length) == 0)
+            {
+                control_strategy_t strategy = (control_strategy_t)i;
+                control_set_strategy(strategy);
+                return;
+            }
+        }
+        return;
+    }
 }
