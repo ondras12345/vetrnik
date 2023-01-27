@@ -12,6 +12,7 @@
 #include "power_datapoints.h"
 #include "power_board.h"
 #include "control.h"
+#include <SerialFlash.h>
 
 #ifdef SHELL_TELNET
 #include <TelnetStream.h>
@@ -386,6 +387,147 @@ static void jump_to_bootloader()
 #undef SYSTEM_MEMORY_START
 
 
+static void cmnd_SPIflash(char *args, Stream *response)
+{
+    char * subcommand_name = strsep(&args, " ");
+    char * subcommand_args = args;
+    if (subcommand_name == nullptr)
+    {
+        // do nothing, just print out status
+        response->print("ready: ");
+        response->println(SerialFlash.ready());
+        response->print("ID:");
+        uint8_t id[5];
+        SerialFlash.readID(id);
+        for (uint8_t i = 0; i < sizeof id; i++)
+        {
+            response->printf(" %02x", id[i]);
+        }
+        response->println();
+        // Not supported by this chip (reads all FFs):
+        //response->print("serial NR:");
+        //uint8_t serial[8];
+        //SerialFlash.readSerialNumber(serial);
+        //for (uint8_t i = 0; i < sizeof serial; i++)
+        //{
+        //    response->printf(" %02x", serial[i]);
+        //}
+        //response->println();
+        response->print("capacity: ");
+        response->println(SerialFlash.capacity(id));
+        response->print("block size: ");
+        response->println(SerialFlash.blockSize());
+    }
+
+    // subcommands that need no args
+    else if (strcmp(subcommand_name, "erase") == 0)
+    {
+        SerialFlash.eraseAll();
+        response->println("Erasing");
+    }
+    else if (strcmp(subcommand_name, "ls") == 0)
+    {
+        response->println("Files:");
+        response->println("address (HEX)\tname\tsize (Bytes)");
+        SerialFlash.opendir();
+        char filename[32];
+        uint32_t filesize;
+        uint32_t address = 0;
+        while (SerialFlash.readdir(filename, sizeof filename, filesize))
+        {
+            SerialFlashFile f = SerialFlash.open(filename);
+            if (f)
+            {
+                address = f.getFlashAddress();
+                f.close();
+            }
+            response->printf("%08x\t%s\t%u\r\n", address, filename, filesize);
+        }
+    }
+
+    else if (subcommand_args == nullptr)
+    {
+        response->println("Missing subcommand args");
+        goto bad;
+    }
+
+    // subcommands that need subcommand_args
+    else if (strcmp(subcommand_name, "rm") == 0)
+    {
+        response->println("rm does NOT reclaim space, just filename");
+        response->print("success: ");
+        response->println(SerialFlash.remove(subcommand_args));
+    }
+    else if (strcmp(subcommand_name, "create") == 0)
+    {
+        char * filename = strsep(&subcommand_args, " ");
+        char * lengthstr = strsep(&subcommand_args, " ");
+        char * erasablestr = subcommand_args;
+        if (filename == nullptr || lengthstr == nullptr || erasablestr == nullptr)
+        {
+            response->println("Invalid args");
+            goto bad;
+        }
+        unsigned int length = 0;
+        sscanf(lengthstr, "%u", &length);
+        bool erasable = erasablestr[0] == '1';
+        response->printf("Creating %sfile with name \"%s\" length %u\r\n",
+                         erasable ? "erasable " : "", filename, length);
+        response->print("success: ");
+        response->println(
+            erasable ? SerialFlash.createErasable(filename, length)
+            : SerialFlash.create(filename, length)
+        );
+    }
+    else if (strcmp(subcommand_name, "dump") == 0)
+    {
+        char * filename = strsep(&subcommand_args, " ");
+        char * startstr = subcommand_args;
+        if (filename == nullptr || startstr == nullptr)
+        {
+            response->println("Invalid args");
+            goto bad;
+        }
+
+        unsigned int start = strtoul(startstr, nullptr, 0);  // should accept hex 0x
+        SerialFlashFile f = SerialFlash.open(filename);
+        if (!f)
+        {
+            response->println("Cannot open file");
+            return;
+        }
+        uint8_t buf[256];
+        f.seek(start);
+        stream_hexdump(response, buf, f.read(buf, sizeof buf), start);
+        f.close();
+    }
+    else if (strcmp(subcommand_name, "dumpchip") == 0)
+    {
+        unsigned int start = strtoul(subcommand_args, nullptr, 0);  // should accept hex 0x
+        uint8_t id[5];
+        SerialFlash.readID(id);
+        uint32_t capacity = SerialFlash.capacity(id);
+        uint8_t buf[256];
+        if (start >= capacity)
+        {
+            response->println("Address out of range");
+            return;
+        }
+        uint32_t len = sizeof buf;
+        if (len > capacity - start) len = capacity - start;
+        SerialFlash.read(start, buf, len);
+        stream_hexdump(response, buf, len, start);
+    }
+
+    return;
+bad:
+    response->println(
+"Usage: SPIflash [erase|ls | create name length erasable | rm name\r\n"
+"   | dump name start | dumpchip start]"
+    );
+}
+
+
 static void cmnd_dfu(char *args, Stream *response)
 {
     response->println("Jumping to DFU bootloader");
@@ -433,6 +575,7 @@ Commander::API_t API_tree[] = {
     apiElement("lisp",          "Process a line of Lisp",                   cmnd_lisp),
     apiElement("lisp_reset",    "Reinit Lisp interpreter",                  cmnd_lisp_reset),
 #endif
+    apiElement("SPIflash",      "Issue commands to SPI flash",              cmnd_SPIflash),
     apiElement("dfu",           "Switch to DFU firmware download mode.",    cmnd_dfu),
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),
     apiElement("ver",           "Print out version info.",                  cmnd_ver),

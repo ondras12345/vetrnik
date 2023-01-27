@@ -1,6 +1,9 @@
 #pragma once
 #include <stdint.h>
 
+#define PIN_FLASH_SS PB2
+
+
 #define MQTTport 1883
 #define MQTTclientID "vetrnik"
 #define MQTTReconnectRate 20*1000  // in ms

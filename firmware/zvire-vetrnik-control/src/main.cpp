@@ -14,6 +14,8 @@
 #include "lisp.h"
 #endif
 #include "control.h"
+#include <SerialFlash.h>
+
 
 void setup()
 {
@@ -26,6 +28,8 @@ void setup()
         digitalWrite(LED_BUILTIN, HIGH);
         delay(100);
     }
+    DEBUG.print("Flash init: ");
+    DEBUG.println(SerialFlash.begin(PIN_FLASH_SS));
     DEBUG.println("settings_init");
     DEBUG.flush();
     settings_init();
