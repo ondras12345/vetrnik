@@ -204,7 +204,7 @@ void MQTT_loop()
 void MQTTcallback(char* topic, byte* payload, unsigned int length)
 {
     DEBUG_MQTT->printf("MQTT R l:%u t:%s\r\n", length, topic);
-    if (DEBUG_MQTT != DEBUG_noprint)
+    if (DEBUG_MQTT != &DEBUG_buffer)
     {
         DEBUG_MQTT->print(" p:");
         for (unsigned int i = 0; i < length; i++)

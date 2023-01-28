@@ -595,12 +595,7 @@ static void cmnd_log(char *args, Stream *response)
     if (setting_name == nullptr)
     {
         // print out the circular buffer
-        while (DEBUG_buffer.read_addr != DEBUG_buffer.write_addr)
-        {
-            response->write(DEBUG_buffer.buf[DEBUG_buffer.read_addr]);
-            DEBUG_buffer.read_addr++;
-            DEBUG_buffer.read_addr %= DEBUG_buffer.capacity;
-        }
+        DEBUG_buffer.print_out(response);
     }
     else if (setting_value == nullptr)
     {
@@ -609,13 +604,11 @@ static void cmnd_log(char *args, Stream *response)
     }
     else if (strcmp(setting_name, "power") == 0)
     {
-        if (setting_value[0] == '1') DEBUG_PB = INFO;
-        else DEBUG_PB = DEBUG_noprint;
+        log_set_DEBUG_PB(setting_value[0] == '1');
     }
     else if (strcmp(setting_name, "MQTT") == 0)
     {
-        if (setting_value[0] == '1') DEBUG_MQTT = INFO;
-        else DEBUG_MQTT = DEBUG_noprint;
+        log_set_DEBUG_MQTT(setting_value[0] == '1');
     }
     else
     {
@@ -683,32 +676,6 @@ Commander::API_t API_tree[] = {
 };
 
 
-/**
- * Also push INFO to TelnetStream.
- */
-class DoublePrint : public Print {
-    public:
-        DoublePrint (Print * a, Print * b) : _print1(a), _print2(b) { }
-
-        virtual size_t write(uint8_t c)
-        {
-            uint8_t buff = c;
-            return write(&buff, 1);
-        }
-
-        virtual size_t write(const uint8_t *data, size_t size)
-        {
-            if (_print1 != nullptr) _print1->write(data, size);
-            if (_print2 != nullptr) _print2->write(data, size);
-            return size;
-        }
-
-    protected:
-        Print * _print1;
-        Print * _print2;
-};
-
-
 void CLI_init()
 {
     print_RX_callback = print_RX;
@@ -718,10 +685,9 @@ void CLI_init()
     {
         TelnetStream.begin();
     }
-#endif
 
-    static DoublePrint DEBUG_doubleprint = DoublePrint(INFO, &TelnetStream);
-    INFO = &DEBUG_doubleprint;
+    log_add_INFO_backend(&TelnetStream);
+#endif
 
     // Clear the terminal
     shell.clear();

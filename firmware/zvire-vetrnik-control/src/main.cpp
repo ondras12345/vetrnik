@@ -19,7 +19,7 @@
 void setup()
 {
     Serial.begin();
-    INFO = &Serial;
+    log_add_INFO_backend(&Serial);
     pinMode(LED_BUILTIN, OUTPUT);
     for (uint8_t i = 0; i < 10; i++)
     {
