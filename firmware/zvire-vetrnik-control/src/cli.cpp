@@ -683,6 +683,32 @@ Commander::API_t API_tree[] = {
 };
 
 
+/**
+ * Also push INFO to TelnetStream.
+ */
+class DoublePrint : public Print {
+    public:
+        DoublePrint (Print * a, Print * b) : _print1(a), _print2(b) { }
+
+        virtual size_t write(uint8_t c)
+        {
+            uint8_t buff = c;
+            return write(&buff, 1);
+        }
+
+        virtual size_t write(const uint8_t *data, size_t size)
+        {
+            if (_print1 != nullptr) _print1->write(data, size);
+            if (_print2 != nullptr) _print2->write(data, size);
+            return size;
+        }
+
+    protected:
+        Print * _print1;
+        Print * _print2;
+};
+
+
 void CLI_init()
 {
     print_RX_callback = print_RX;
@@ -693,6 +719,9 @@ void CLI_init()
         TelnetStream.begin();
     }
 #endif
+
+    static DoublePrint DEBUG_doubleprint = DoublePrint(INFO, &TelnetStream);
+    INFO = &DEBUG_doubleprint;
 
     // Clear the terminal
     shell.clear();
