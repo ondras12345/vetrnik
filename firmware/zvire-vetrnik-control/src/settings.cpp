@@ -26,7 +26,7 @@ static const uint8_t magic[MAGIC_LENGTH] = { 0x00, 0x55, 0xAA, 0xFF };
 
 static void settings_reset()
 {
-    INFO.println("Settings reset");
+    INFO->println("Settings reset");
     settings = settings_default;
     // Size doesn't matter, will be 64k since I need an erasable file
     if (!SerialFlash.exists("settings"))
@@ -35,7 +35,7 @@ static void settings_reset()
 tryagain:
         if (!SerialFlash.createErasable("settings", 1024))
         {
-            INFO.println("Cannot create file for settings, erasing chip");
+            INFO->println("Cannot create file for settings, erasing chip");
             if (!retry)
             {
                 SerialFlash.eraseAll();
@@ -46,7 +46,7 @@ tryagain:
                 retry = true;
                 goto tryagain;
             }
-            INFO.println("Failed to create file for settings, even after erase");
+            INFO->println("Failed to create file for settings, even after erase");
         }
     }
     settings_write(settings);
@@ -55,7 +55,7 @@ tryagain:
 
 void settings_init()
 {
-    DEBUG.println("reading settings");
+    INFO->println("reading settings");
     SerialFlashFile f = SerialFlash.open(SETTINGS_FILENAME);
     if (!f)
     {
@@ -63,7 +63,7 @@ void settings_init()
         f = SerialFlash.open(SETTINGS_FILENAME);
         if (!f)
         {
-            INFO.println("Settings error: could not open");
+            INFO->println("Settings error: could not open");
             return;
         }
     }
@@ -72,13 +72,13 @@ void settings_init()
     f.read(buf, sizeof buf);
     if (memcmp(buf + sizeof(settings_t), magic, sizeof magic) != 0)
     {
-        INFO.println("Settings: invalid magic");
+        INFO->println("Settings: invalid magic");
         f.close();
         settings_reset();
         f = SerialFlash.open(SETTINGS_FILENAME);
         if (!f)
         {
-            INFO.println("Settings error: could not open");
+            INFO->println("Settings error: could not open");
             return;
         }
         f.read(buf, sizeof buf);
@@ -91,14 +91,14 @@ void settings_init()
 
 void settings_write(const settings_t & s)
 {
-    DEBUG.println("Settings write");
+    INFO->println("Settings write");
     SerialFlashFile f = SerialFlash.open(SETTINGS_FILENAME);
     if (!f)
     {
-        INFO.println("Could not open file during settings_write");
+        INFO->println("Could not open file during settings_write");
         return;
     }
-    f.erase();
+    f.erase();  // TODO write all the way to the end of the file, erase less often
     uint8_t buf[sizeof(settings_t) + sizeof(magic)];
     memcpy(buf, &s, sizeof s);
     memcpy(buf+sizeof s, magic, sizeof magic);

@@ -13,6 +13,7 @@
 #include "power_board.h"
 #include "lisp.h"
 #include "control.h"
+#include "debug.h"
 #include <SerialFlash.h>
 
 #ifdef SHELL_TELNET
@@ -580,6 +581,45 @@ bad:
 }
 
 
+static void cmnd_log(char *args, Stream *response)
+{
+    char * setting_name = strsep(&args, " ");
+    char * setting_value = args;
+    if (setting_name == nullptr)
+    {
+        // print out the circular buffer
+        while (DEBUG_buffer.read_addr != DEBUG_buffer.write_addr)
+        {
+            response->write(DEBUG_buffer.buf[DEBUG_buffer.read_addr]);
+            DEBUG_buffer.read_addr++;
+            DEBUG_buffer.read_addr %= DEBUG_buffer.capacity;
+        }
+    }
+    else if (setting_value == nullptr)
+    {
+        response->println("Missing value");
+        goto bad;
+    }
+    else if (strcmp(setting_name, "power") == 0)
+    {
+        if (setting_value[0] == '1') DEBUG_PB = INFO;
+        else DEBUG_PB = DEBUG_noprint;
+    }
+    else if (strcmp(setting_name, "MQTT") == 0)
+    {
+        if (setting_value[0] == '1') DEBUG_MQTT = INFO;
+        else DEBUG_MQTT = DEBUG_noprint;
+    }
+    else
+    {
+        goto bad;
+    }
+    return;
+bad:
+    response->println("Usage: log [[power|MQTT] (1|0)]");
+}
+
+
 static void cmnd_dfu(char *args, Stream *response)
 {
     response->println("Jumping to DFU bootloader");
@@ -627,6 +667,7 @@ Commander::API_t API_tree[] = {
     apiElement("lisp",          "Process a line of Lisp",                   cmnd_lisp),
     apiElement("lisp_reset",    "Reinit Lisp interpreter",                  cmnd_lisp_reset),
     apiElement("SPIflash",      "Issue commands to SPI flash",              cmnd_SPIflash),
+    apiElement("log",           "Filter debug messages",                    cmnd_log),
     apiElement("dfu",           "Switch to DFU firmware download mode.",    cmnd_dfu),
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),
     apiElement("ver",           "Print out version info.",                  cmnd_ver),

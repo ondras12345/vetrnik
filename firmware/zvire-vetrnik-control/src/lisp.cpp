@@ -1,5 +1,7 @@
 #include "lisp.h"
 #include "power_board.h"
+#include "debug.h"
+#include <math.h>
 
 extern "C" {
 #include <fe.h>
@@ -14,7 +16,7 @@ extern "C" {
 static jmp_buf error_jmp;
 static char lisp_buf[8*1024];
 
-static Stream * error_stream = nullptr;
+static Print * error_print = nullptr;
 
 /// Set to true in onerror. If you want to use it, you must set it to false
 /// before you start.
@@ -22,9 +24,9 @@ static bool error_occured = false;
 
 static void onerror(fe_Context *ctx, const char *msg, fe_Object *cl)
 {
-    if (error_stream != nullptr)
+    if (error_print != nullptr)
     {
-        error_stream->printf("lisp error: %s\r\n", msg);
+        error_print->printf("lisp error: %s\r\n", msg);
 
         // Stack trace
         // There doesn't seem to be an isnil() function,
@@ -33,7 +35,7 @@ static void onerror(fe_Context *ctx, const char *msg, fe_Object *cl)
         {
             char buf[64];
             fe_tostring(ctx, fe_car(ctx, cl), buf, sizeof(buf));
-            error_stream->printf("=> %s\r\n", buf);
+            error_print->printf("=> %s\r\n", buf);
         }
     }
     error_occured = true;
@@ -249,7 +251,7 @@ static fe_Object * lisp_execute(lisp_str_t * lstr)
 
 /**
  * Run lisp code and discard the output.
- * Errors will NOT be printed out.
+ * Errors will be printed out to INFO debug stream.
  *
  * @param code Array of characters without null terminator
  * @param length Length of code array
@@ -258,7 +260,7 @@ static fe_Object * lisp_execute(lisp_str_t * lstr)
 bool lisp_run_blind(const char * code, size_t length)
 {
     error_occured = false;
-    error_stream = nullptr;
+    error_print = INFO;
     lisp_str_t lstr = { code, length, 0 };
     // don't care about the result, execute all root-level expressions
     while (lisp_execute(&lstr) != nullptr);
@@ -288,7 +290,7 @@ bool lisp_run_blind(const char * code)
  */
 bool lisp_process(const char * code, size_t length, Stream * response)
 {
-    error_stream = response;
+    error_print = response;
 
     lisp_str_t lstr = { code, length, 0 };
     fe_Object * obj = lisp_execute(&lstr);

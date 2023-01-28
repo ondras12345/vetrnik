@@ -22,7 +22,7 @@ uint8_t MQTT_init()
 {
     //Ethernet.init(pin_ETH_SS);
 
-    DEBUG.print(F("Eth begin: "));
+    INFO->print(F("Eth begin: "));
     // 0.0.0.0 means "use DHCP"
     for (uint8_t i = 0; i < sizeof settings.ETH_IP; i++)
         if (settings.ETH_IP[i] != 0) DHCP_mode = false;
@@ -34,9 +34,9 @@ uint8_t MQTT_init()
     // Default timeout is 15 seconds.
     MQTTClient.setSocketTimeout(7);
 
-    DEBUG.println(result);
-    DEBUG.print(F("Eth IP: "));
-    DEBUG.println(Ethernet.localIP());
+    INFO->println(result);
+    INFO->print(F("Eth IP: "));
+    INFO->println(Ethernet.localIP());
 
     if (result == 0) eth_skip = true;
 
@@ -76,7 +76,7 @@ void MQTT_loop()
     {
         if((unsigned long)(millis() - MQTTLastReconnect) >= MQTTReconnectRate)
         {
-            DEBUG.println("Connecting MQTT...");
+            INFO->println("Connecting MQTT...");
             if (MQTTClient.connect(MQTTclientID, settings.MQTTuser, settings.MQTTpassword,
                         MQTTtopic_availability, 2, true, "offline")
                )
@@ -90,7 +90,7 @@ void MQTT_loop()
 
                 force_report = true;
 
-                DEBUG.println("MQTT connected");
+                INFO->println("MQTT connected");
             }
 
             MQTTLastReconnect = millis();
@@ -139,8 +139,8 @@ void MQTT_loop()
 
     if (power_text_message_complete)
     {
-        INFO.print("Raw text message: ");
-        INFO.println(power_text_message);
+        INFO->print("Raw text message: ");
+        INFO->println(power_text_message);
         MQTTClient.publish(MQTTtopic_tele_raw_errors, power_text_message);
         power_text_message_complete = false;
     }
@@ -203,14 +203,17 @@ void MQTT_loop()
 
 void MQTTcallback(char* topic, byte* payload, unsigned int length)
 {
-    DEBUG.printf("MQTTrecv l: %u t:%s", length, topic);
-    DEBUG.print(" p:");
-    for (unsigned int i = 0; i < length; i++)
+    DEBUG_MQTT->printf("MQTT R l:%u t:%s\r\n", length, topic);
+    if (DEBUG_MQTT != DEBUG_noprint)
     {
-        DEBUG.print(payload[i], HEX);
-        DEBUG.print(' ');
+        DEBUG_MQTT->print(" p:");
+        for (unsigned int i = 0; i < length; i++)
+        {
+            DEBUG_MQTT->print(payload[i], HEX);
+            DEBUG_MQTT->print(' ');
+        }
+        DEBUG_MQTT->println();
     }
-    DEBUG.println();
 
     if (length == 0) return;
 

@@ -19,6 +19,7 @@
 void setup()
 {
     Serial.begin();
+    INFO = &Serial;
     pinMode(LED_BUILTIN, OUTPUT);
     for (uint8_t i = 0; i < 10; i++)
     {
@@ -27,12 +28,12 @@ void setup()
         digitalWrite(LED_BUILTIN, HIGH);
         delay(100);
     }
-    DEBUG.print("Flash init: ");
-    DEBUG.println(SerialFlash.begin(PIN_FLASH_SS));
-    DEBUG.println("settings_init");
-    DEBUG.flush();
+    INFO->print("Flash init: ");
+    INFO->println(SerialFlash.begin(PIN_FLASH_SS));
+    INFO->println("settings_init");
+    INFO->flush();
     settings_init();
-    DEBUG.flush();
+    INFO->flush();
     MQTT_init();
 #ifdef WATCHDOG_TIME
     // Only do this after MQTT_init (DHCP is slow)
@@ -42,7 +43,7 @@ void setup()
     control_init();
     lisp_init();
     control_init_lisp();
-    INFO.println("boot");
+    INFO->println("boot");
     CLI_init();
 }
 

@@ -53,7 +53,7 @@ void control_new_state()
             bool success = lisp_run_blind("(ctrl)");
             if (!success)
             {
-                INFO.println("error in control_lisp, switching to control_shorted");
+                INFO->println("error in control_lisp, switching to control_shorted");
                 control_set_strategy(control_shorted);
             }
             break;
