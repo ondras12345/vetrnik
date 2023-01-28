@@ -6,10 +6,10 @@
 #include "mqtt.h"
 #include "power_datapoints.h"
 
-Stream * print_RX = nullptr;
-
 char power_text_message[51] = "";  // size doesn't matter too much
 bool power_text_message_complete = false;
+
+void (*print_RX_callback)(char) = nullptr;
 
 
 /**
@@ -65,7 +65,7 @@ bool uart_power_loop()
     while (PSerial.available())
     {
         char c = PSerial.read();
-        if (print_RX != nullptr) print_RX->print(c);
+        if (print_RX_callback != nullptr) print_RX_callback(c);
 
         if (text_message)
         {

@@ -189,11 +189,18 @@ usage:
 }
 
 
+static Stream * print_RX_response = nullptr;
+static void print_RX(char c)
+{
+    if (print_RX_response) print_RX_response->print(c);
+}
+
+
 static void cmnd_rx_raw(char *args, Stream *response)  // cppcheck-suppress constParameter
 {
-    print_RX = (args[0] == '1') ? response : nullptr;  // TODO is response guaranteed to live after this function finishes ?
-    response->print("print_RX: ");
-    response->println(print_RX != nullptr);
+    print_RX_response = (args[0] == '1') ? response : nullptr;
+    response->print("print raw RX: ");
+    response->println(print_RX_response != nullptr);
 }
 
 
@@ -678,6 +685,8 @@ Commander::API_t API_tree[] = {
 
 void CLI_init()
 {
+    print_RX_callback = print_RX;
+
 #ifdef SHELL_TELNET
     if (settings.shell_telnet)
     {
