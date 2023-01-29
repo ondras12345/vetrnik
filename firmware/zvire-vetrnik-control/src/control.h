@@ -4,8 +4,12 @@
 #define CONTROL_STRATEGIES(X) \
     /** Contactor shorted. */ \
     X(control_shorted, 0) \
+    /** Manual (CLI) control with no timeouts. */ \
+    X(control_manual, 1) \
+    /** MQTT remote control with timeout. */ \
+    X(control_MQTT, 2) \
     /** Control function written in lisp. */ \
-    X(control_lisp, 1)
+    X(control_lisp, 3)
 
 #define X_ENUM(name, value) name = value,
 typedef enum {

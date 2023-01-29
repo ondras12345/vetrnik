@@ -24,6 +24,7 @@ extern PubSubClient MQTTClient;
 extern bool eth_skip;
 extern bool MQTT_skip;
 extern bool DHCP_mode;
+extern unsigned long MQTT_last_command_ms;
 
 uint8_t MQTT_init();
 void MQTT_loop();

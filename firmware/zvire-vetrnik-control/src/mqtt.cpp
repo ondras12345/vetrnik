@@ -17,6 +17,12 @@ bool eth_skip = false;
 bool MQTT_skip = true;
 bool DHCP_mode = true;
 
+/**
+ * millis() time when last valid MQTT command for power_board or control
+ * was received
+ */
+unsigned long MQTT_last_command_ms = 0;
+
 
 uint8_t MQTT_init()
 {
@@ -236,7 +242,14 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
 
         TX_datapoints_set(name, value);
 
+        MQTT_last_command_ms = millis();
         return;
+    }
+
+    if (strstr(topic, MQTTtopic_cmnd_power_board) != NULL ||
+        strcmp(topic, MQTTtopic_cmnd_control "strategy") == 0)
+    {
+        MQTT_last_command_ms = millis();
     }
 
     if (strcmp(topic, MQTTtopic_cmnd_power_board "duty") == 0)

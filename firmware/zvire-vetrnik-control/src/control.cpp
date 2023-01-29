@@ -3,6 +3,8 @@
 #include "power_board.h"
 #include "lisp.h"
 #include "debug.h"
+#include "mqtt.h"
+#include <Arduino.h>
 
 static control_strategy_t strategy = control_shorted;
 
@@ -49,11 +51,19 @@ void control_new_state()
                 power_board_set_mode(shorted);
             break;
 
+        case control_MQTT:
+            if (millis() - MQTT_last_command_ms >= 30000UL)
+            {
+                INFO->println("MQTT control timeout");
+                control_set_strategy(control_shorted);
+            }
+            break;
+
         case control_lisp:
             bool success = lisp_run_blind("(ctrl)");
             if (!success)
             {
-                INFO->println("error in control_lisp, switching to control_shorted");
+                INFO->println("error in control_lisp");
                 control_set_strategy(control_shorted);
             }
             break;
@@ -63,6 +73,9 @@ void control_new_state()
 
 void control_set_strategy(control_strategy_t s)
 {
+    INFO->print("Switching to ");
+    INFO->println(control_strategies[s]);
+
     switch (s)
     {
         case control_shorted:
