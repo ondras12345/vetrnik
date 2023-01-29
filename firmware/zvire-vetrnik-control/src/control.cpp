@@ -57,7 +57,10 @@ void control_new_state()
     {
         case control_shorted:
             if (power_board_status.mode != shorted)
+            {
+                INFO->println("control_shorted, but mode != shorted");
                 power_board_set_mode(shorted);
+            }
             break;
 
         case control_MQTT:
