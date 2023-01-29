@@ -41,9 +41,18 @@ void control_init_lisp()
 
 /**
  * To be called when a new state object is received from power board.
+ * Also called when state is invalidated after timeout.
  */
 void control_new_state()
 {
+    if (!power_board_status.valid && strategy != control_shorted)
+    {
+        // If status becomes invalid, it means that communication with power
+        // board was lost. This function isn't called before the first status
+        // message is received, so no problems at startup.
+        control_set_strategy(control_shorted);
+    }
+
     switch (strategy)
     {
         case control_shorted:

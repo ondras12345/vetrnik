@@ -57,7 +57,13 @@ void loop()
          power_board_status = power_board_status_read();
          control_new_state();
     }
-    // TODO invalidate status after some time and run control loop ??
+    else if (power_board_status.valid &&
+             millis() - power_board_status.retrieved_millis >= 2000UL)
+    {
+        INFO->println("power_board_status timeout");
+        power_board_status.valid = false;
+        control_new_state();
+    }
 
     CLI_loop();
     MQTT_loop();
