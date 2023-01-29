@@ -8,6 +8,7 @@
 #include "power_board.h"
 #include "lisp.h"
 #include "control.h"
+#include "stats.h"
 
 static EthernetClient ethClient;
 static void MQTTcallback(char* topic, byte* payload, unsigned int length);
@@ -203,6 +204,16 @@ void MQTT_loop()
         prev_control_strategy = control_strategy;
         MQTTClient.publish(MQTTtopic_tele_control "strategy",
                            control_strategies[control_strategy], true);
+    }
+
+    static stats_t prev_stats = {0};
+    if (stats.energy != prev_stats.energy || force_report)
+    {
+        prev_stats.energy = stats.energy;
+        char buf[3+1+2 + 1];
+        snprintf(buf, sizeof buf, "%u.%02u",
+                 stats.energy / 100U, stats.energy % 100U);
+        MQTTClient.publish(MQTTtopic_tele_stats "energy", buf, true);
     }
 }
 

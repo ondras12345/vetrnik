@@ -13,6 +13,7 @@
 #include "power_board.h"
 #include "lisp.h"
 #include "control.h"
+#include "stats.h"
 #include <SerialFlash.h>
 
 
@@ -56,6 +57,7 @@ void loop()
     {
          power_board_status = power_board_status_read();
          control_new_state();
+         stats_new_state();
     }
     else if (power_board_status.valid &&
              millis() - power_board_status.retrieved_millis >= 2000UL)
@@ -63,6 +65,7 @@ void loop()
         INFO->println("power_board_status timeout");
         power_board_status.valid = false;
         control_new_state();
+        stats_new_state();
     }
 
     CLI_loop();

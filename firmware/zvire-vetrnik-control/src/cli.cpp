@@ -13,6 +13,7 @@
 #include "power_board.h"
 #include "lisp.h"
 #include "control.h"
+#include "stats.h"
 #include "debug.h"
 #include <SerialFlash.h>
 
@@ -379,6 +380,14 @@ bad:
 }
 
 
+static void cmnd_stats(char *args, Stream *response)
+{
+    response->println("stats:");
+    response->printf("energy: %u.%02u kWh\r\n",
+                     stats.energy / 100U, stats.energy % 100U);
+}
+
+
 #ifdef SHELL_TELNET
 static void cmnd_telnet_quit(char *args, Stream *response)
 {
@@ -661,6 +670,7 @@ Commander::API_t API_tree[] = {
     apiElement("rx",            "Print out RX_datapoints.",                 cmnd_rx),
     apiElement("power",         "Print status of power PCB or set params.", cmnd_power),
     apiElement("control",       "Get or set params of control algorithm.",  cmnd_control),
+    apiElement("stats",         "Get stats (energy, ...)",                  cmnd_stats),
 #ifdef SHELL_TELNET
     apiElement("telnet_quit",   "Stop the telnet session.",                 cmnd_telnet_quit),
 #endif
