@@ -23,53 +23,46 @@ void ADC_init()
             | (1<<ADIE)   // ADC interrupt enable
             | (1<<ADPS2) | (1<<ADPS1) | (1<<ADPS0)  // prescaler 128
             ;
+
+
+    // For 400Hz switching frequency, we need faster voltage / current sampling
+    ADCSRA |= (1<<ADSC);  // start conversion
+    return;
+
     // ATmega8 doesn't have ADCSRB, cannot trigger conversion with timer
     // compare match
 
     // Set up timer2 to start conversion every 1.024 ms
     // (It isn't easy to hijack timer0's interrupt)
     TCCR2 = (1<<CS22);  // prescaler 64
+
     // Enable interrupt on timer2 overflow
     TIMSK |= (1<<TOIE2);
 }
 
 
-ISR(TIMER2_OVF_vect)
-{
-    // Do not mess with loop() reading results. This should hopefully not
-    // happen. TODO add a metric for debugging
-    if (ADC_done) return;
-
-    // If a conversion is already running, reset by watchdog.
-    // This should never happen.
-    if (ADCSRA & (1<<ADSC))
-    {
-        for (;;);
-    }
-
-    // Start new conversion
-    // at channel 0 (set either by ADC_init or ISR(ADC_vect)
-    ADCSRA |= (1<<ADSC);
-}
-
-
-//#define RMS_INITIAL 512  /* Initial value of the filter memory. */
-//#define RMS_SAMPLES 512
-//uint16_t rms_filter(uint16_t sample)
+//ISR(TIMER2_OVF_vect)
 //{
-//    static uint16_t rms = RMS_INITIAL;
-//    static uint32_t sum_squares = 1UL * RMS_SAMPLES * RMS_INITIAL * RMS_INITIAL;
+//    // Do not mess with loop() reading results. This should hopefully not
+//    // happen. TODO add a metric for debugging
+//    if (ADC_done) return;
 //
-//    sum_squares -= sum_squares / RMS_SAMPLES;
-//    sum_squares += (uint32_t) sample * sample;
-//    if (rms == 0) rms = 1;    /* do not divide by zero */
-//    rms = (rms + sum_squares / RMS_SAMPLES / rms) / 2;
-//    return rms;
+//    // If a conversion is already running, reset by watchdog.
+//    // This should never happen.
+//    if (ADCSRA & (1<<ADSC))
+//    {
+//        for (;;);
+//    }
+//
+//    // Start new conversion
+//    // at channel 0 (set either by ADC_init or ISR(ADC_vect)
+//    ADCSRA |= (1<<ADSC);
 //}
+
 
 ISR(ADC_vect)
 {
-    uint8_t channel = ADMUX & 0x0f;
+    uint8_t channel = ADMUX & 0x0F;
     if (channel > 3)
     {
         for (;;);  // this should never happen, reset by watchdog
@@ -77,21 +70,38 @@ ISR(ADC_vect)
     }
 
     // get value
+    static uint16_t vals[4] = {0};
+    // ADCL must be read first.
     uint8_t low = ADCL;
     uint8_t high = ADCH;
-    // Advance to next channel
-    ADMUX = (ADMUX & 0xf0) | ((channel + 1) & 0x03);
-    if (channel == 3)
+    vals[channel] = (high << 8) | low;
+
+    uint8_t next_channel = (channel + 1) % 4;
+    if (next_channel == 2) next_channel = 3;  // unused channel
+    if (next_channel == 3)
     {
-        ADC_done = true;
-    }
-    else
-    {
-        // Start new conversion
-        ADCSRA |= (1<<ADSC);
+        // only sample NTC once in a while
+        static uint8_t NTC_counter = 0;
+        if (NTC_counter != 0) next_channel = 0;
+        NTC_counter++;
     }
 
-    ADC_values[channel] = (high << 8) | low;
+    // Advance to next channel
+    ADMUX = (ADMUX & 0xF0) | next_channel;
+
+
+    if (next_channel == 0)
+    {
+        ADC_values[0] = vals[0];
+        ADC_values[1] = vals[1];
+        //ADC_values[2] = vals[2];  // unused channel
+        ADC_values[3] = vals[3];
+        ADC_done = true;
+    }
+
+    // Start new conversion
+    // This works out to one conversion per 104 us
+    ADCSRA |= (1<<ADSC);
 }
 
 
@@ -105,15 +115,21 @@ uint16_t map_uint16(uint16_t x,
 
 void ADC_loop()
 {
-
-
     if (ADC_done)
     {
-        // ADC_values cannot change if ADC_done is true (see ISRs)
+        uint16_t vals[4];
+        cli();
+        ADC_done = false;
+        vals[0] = ADC_values[0];
+        vals[1] = ADC_values[1];
+        //vals[2] = ADC_values[2];  // unused channel
+        vals[3] = ADC_values[3];
+        sei();
+
         // TODO fix start value of RMS filters
         // TODO tweak filter constants (how many samples per second?)
         static RMSFilter<> RMS_voltage;
-        uint16_t voltage_mV = RMS_voltage.process(ADC_values[0]) * 320000UL >> 16;  // same as *5000 / 1024
+        uint16_t voltage_mV = RMS_voltage.process(vals[0]) * 320000UL >> 16;  // same as *5000 / 1024
         voltage = voltage_mV * (voltage_R1 + voltage_R2) / voltage_R2 / 100UL;  // voltage is *10 fixed-point
         // TODO OVP on peak voltage
 
@@ -122,7 +138,7 @@ void ADC_loop()
             settings[kCurrentOffsetH].value << 8;
         static uint8_t current_conversion = settings[KCurrentConversion].value;
 
-        current = (ADC_values[1] > current_offset) ? ADC_values[1] - current_offset : 0;
+        current = (vals[1] > current_offset) ? vals[1] - current_offset : 0;
         static RMSFilter<> RMS_current;
         current = RMS_current.process(current);
         static uint16_t max_current = (current_conversion == 0) ? 0 : 65535U / current_conversion;
@@ -130,17 +146,14 @@ void ADC_loop()
             current = 65535U;
         else
             current = current * current_conversion;
-        MovingAverage<4> avg_NTC;
-        ADC_values[3] = avg_NTC.process(ADC_values[3]);
-
-        ADC_done = false;  // unlock the interrupt as soon as possible
 
         static unsigned long NTC_prev_millis = 0;
-        if (millis() - NTC_prev_millis >= 500UL)
+        unsigned long now = millis();
+        if (now - NTC_prev_millis >= 500UL)
         {
-            NTC_prev_millis = millis();
+            NTC_prev_millis = now;
             NTC ntc_heatsink(NTC_heatsink_Rdiv, NTC_heatsink_beta, NTC_heatsink_R_nom);
-            temperature_heatsink = ntc_heatsink.getC(ADC_values[3]);
+            temperature_heatsink = ntc_heatsink.getC(vals[3]);
             if (temperature_heatsink == 0 || temperature_heatsink > HEATSINK_TEMPERATURE_MAX)
             {
                 errm_add(errm_create(&etemplate_temperature, ((temperature_heatsink/10) & 0xFF)));
@@ -173,7 +186,7 @@ void ADC_loop()
 
         if (voltage >= voltage_protection_short && !emergency)
         {
-            // Error with weight 10, call emergency_stop automatically
+            // Error with weight 10 will call emergency_stop automatically
             errm_add(errm_create(&etemplate_OVP_short));
         }
     }
