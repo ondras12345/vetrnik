@@ -28,36 +28,7 @@ void ADC_init()
     // For 400Hz switching frequency, we need faster voltage / current sampling
     ADCSRA |= (1<<ADSC);  // start conversion
     return;
-
-    // ATmega8 doesn't have ADCSRB, cannot trigger conversion with timer
-    // compare match
-
-    // Set up timer2 to start conversion every 1.024 ms
-    // (It isn't easy to hijack timer0's interrupt)
-    TCCR2 = (1<<CS22);  // prescaler 64
-
-    // Enable interrupt on timer2 overflow
-    TIMSK |= (1<<TOIE2);
 }
-
-
-//ISR(TIMER2_OVF_vect)
-//{
-//    // Do not mess with loop() reading results. This should hopefully not
-//    // happen. TODO add a metric for debugging
-//    if (ADC_done) return;
-//
-//    // If a conversion is already running, reset by watchdog.
-//    // This should never happen.
-//    if (ADCSRA & (1<<ADSC))
-//    {
-//        for (;;);
-//    }
-//
-//    // Start new conversion
-//    // at channel 0 (set either by ADC_init or ISR(ADC_vect)
-//    ADCSRA |= (1<<ADSC);
-//}
 
 
 ISR(ADC_vect)
