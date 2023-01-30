@@ -260,7 +260,7 @@ LCD display.
   (lcdn (pwrg "current") 2 3)
   (lcds "A ")
   ; 15
-  (lcdn (pwrg "valid") 1 0)
+  (lcdn (pwrg "mode") 1 0)
   ; 16
   (lcdw 0)
 ))
@@ -274,18 +274,24 @@ LCD display.
   ; 12
   (lcdw 0)
 ))
-(= disp (fn ()
-  (if
-    (<= d_v 2) (d_l0a)
-    (<= d_v 5) (d_l0b)
-  )
-  (= d_v (if (<= 5 d_v) 0 (+ d_v 1)))
-  ; d_l1
+(= d_l1a (fn ()
   ; 0
   (lcdn (stats "energy") 3 2)
   (lcds "kWh")
   ; 9
   (lcdw 1)
+))
+(= d_l1b (fn ()
+  ; 0
+  (lcds (ctrlg "strategy"))
+  (lcdw 1)
+))
+(= disp (fn ()
+  (if
+    (<= d_v 2) (do (d_l0a) (d_l1a))
+    (<= d_v 5) (do (d_l0b) (d_l1b))
+  )
+  (= d_v (if (<= 5 d_v) 0 (+ d_v 1)))
 ))
 ```
 

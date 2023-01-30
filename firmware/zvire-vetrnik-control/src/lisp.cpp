@@ -3,6 +3,7 @@
 #include "debug.h"
 #include "display.h"
 #include "stats.h"
+#include "control.h"
 #include <math.h>
 
 extern "C" {
@@ -233,6 +234,7 @@ static fe_Object* cfunc_power_get(fe_Context *ctx, fe_Object *arg)
     }
 }
 
+
 static fe_Object* cfunc_power_set(fe_Context *ctx, fe_Object *arg)
 {
     char name[10];
@@ -267,10 +269,48 @@ static fe_Object* cfunc_power_set(fe_Context *ctx, fe_Object *arg)
     else
     {
         fe_error(ctx, "invalid pwrs command");
-        return nullptr; // this should never happen, fe_error either exits or longjmps
+        return fe_bool(ctx, 0); // this should never happen, fe_error either exits or longjmps
     }
 
     return fe_bool(ctx, 0);  // nil
+}
+
+
+static fe_Object* cfunc_control_get(fe_Context *ctx, fe_Object *arg)
+{
+    char name[32];
+    fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
+    if (strcmp(name, "strategy") == 0)
+    {
+        return fe_string(ctx, control_strategies[control_get_strategy()]);
+    }
+    else
+    {
+        fe_error(ctx, "invalid control param name");
+        return fe_bool(ctx, 0); // this should never happen, fe_error either exits or longjmps
+    }
+}
+
+
+static fe_Object* cfunc_control_set(fe_Context *ctx, fe_Object *arg)
+{
+    char name[sizeof "strategy"];
+    fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
+    if (strcmp(name, "strategy") == 0)
+    {
+        char strategy_name[sizeof("control_shorted")+10];  // should be enough
+        fe_tostring(ctx, fe_nextarg(ctx, &arg), strategy_name, sizeof strategy_name);
+        if (!control_set_strategy(strategy_name))
+        {
+            fe_error(ctx, "invalid strategy");
+            return nullptr;
+        }
+    }
+    else
+    {
+        fe_error(ctx, "invalid control param name");
+    }
+    return fe_bool(ctx, 0);
 }
 
 
@@ -294,6 +334,8 @@ void lisp_init()
     fe_set(ctx, fe_symbol(ctx, "lcds"), fe_cfunc(ctx, cfunc_lcd_str));
     fe_set(ctx, fe_symbol(ctx, "lcdn"), fe_cfunc(ctx, cfunc_lcd_num));
     fe_set(ctx, fe_symbol(ctx, "stats"), fe_cfunc(ctx, cfunc_stats));
+    fe_set(ctx, fe_symbol(ctx, "ctrlg"), fe_cfunc(ctx, cfunc_control_get));
+    fe_set(ctx, fe_symbol(ctx, "ctrls"), fe_cfunc(ctx, cfunc_control_set));
 
     // Add variables for power modes
     for (size_t i = 0; power_board_modes[i] != nullptr; i++)

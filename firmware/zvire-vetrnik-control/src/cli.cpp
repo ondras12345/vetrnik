@@ -348,19 +348,7 @@ static void cmnd_control(char *args, Stream *response)
     // subcommands that need setting_value
     else if (strcmp(setting_name, "strategy") == 0)
     {
-        bool found = false;
-        for (size_t i = 0; control_strategies[i] != nullptr; i++)
-        {
-            if (strcmp(setting_value, control_strategies[i]) == 0)
-            {
-                found = true;
-                control_strategy_t strategy = (control_strategy_t)i;
-                response->print("Setting strategy to ");
-                response->println(strategy);
-                control_set_strategy(strategy);
-            }
-        }
-        if (!found)
+        if (!control_set_strategy(setting_value))
         {
             response->print("Unknown strategy: ");
             response->println(setting_value);

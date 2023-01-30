@@ -99,6 +99,20 @@ void control_set_strategy(control_strategy_t s)
 }
 
 
+bool control_set_strategy(const char * str)
+{
+    for (size_t i = 0; control_strategies[i] != nullptr; i++)
+    {
+        if (strcmp(str, control_strategies[i]) == 0)
+        {
+            control_set_strategy((control_strategy_t)i);
+            return true;
+        }
+    }
+    return false;
+}
+
+
 control_strategy_t control_get_strategy()
 {
     return strategy;

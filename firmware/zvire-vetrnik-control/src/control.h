@@ -26,4 +26,5 @@ void control_init_lisp();
 void control_new_state();
 
 void control_set_strategy(control_strategy_t s);
+bool control_set_strategy(const char * str);
 control_strategy_t control_get_strategy();
