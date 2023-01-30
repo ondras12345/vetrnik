@@ -246,6 +246,50 @@ received.
 ```
 
 
+### `disp` display function
+The `disp` function is run every 0.5 s. It is meant to be used to control the
+LCD display.
+
+```lisp
+(= d_v 0) ; display view
+(= d_l0a (fn ()
+  ; 0
+  (lcdn (pwrg "voltage") 3 1)
+  (lcds "V ")
+  ; 7
+  (lcdn (pwrg "current") 2 3)
+  (lcds "A ")
+  ; 15
+  (lcdn (pwrg "valid") 1 0)
+  ; 16
+  (lcdw 0)
+))
+(= d_l0b (fn ()
+  ; 0
+  (lcdn (pwrg "duty") 3 0)
+  (lcds "% ")
+  ; 5
+  (lcdn (pwrg "RPM") 3 0)
+  (lcds "RPM ")
+  ; 12
+  (lcdw 0)
+))
+(= disp (fn ()
+  (if
+    (<= d_v 2) (d_l0a)
+    (<= d_v 5) (d_l0b)
+  )
+  (= d_v (if (<= 5 d_v) 0 (+ d_v 1)))
+  ; d_l1
+  ; 0
+  (lcdn (stats "energy") 3 2)
+  (lcds "kWh")
+  ; 9
+  (lcdw 1)
+))
+```
+
+
 ### MISC Lisp code
 Test OOM:
 ```lisp

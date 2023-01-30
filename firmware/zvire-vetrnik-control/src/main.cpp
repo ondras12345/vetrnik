@@ -14,6 +14,7 @@
 #include "lisp.h"
 #include "control.h"
 #include "stats.h"
+#include "display.h"
 #include <SerialFlash.h>
 
 
@@ -46,6 +47,8 @@ void setup()
     control_init_lisp();
     INFO->println("boot");
     CLI_init();
+    display_init();
+    display_init_lisp();
 }
 
 
@@ -70,6 +73,7 @@ void loop()
 
     CLI_loop();
     MQTT_loop();
+    display_loop();
 #ifdef WATCHDOG_TIME
     IWatchdog.reload();
 #endif

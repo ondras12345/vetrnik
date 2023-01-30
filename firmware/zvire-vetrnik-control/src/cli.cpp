@@ -14,6 +14,7 @@
 #include "lisp.h"
 #include "control.h"
 #include "stats.h"
+#include "display.h"
 #include "debug.h"
 #include <SerialFlash.h>
 
@@ -416,6 +417,7 @@ static void cmnd_lisp_reset(char *args, Stream *response)
 {
     lisp_reinit();
     control_init_lisp();
+    display_init_lisp();
 }
 
 

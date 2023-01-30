@@ -1,6 +1,8 @@
 #include "lisp.h"
 #include "power_board.h"
 #include "debug.h"
+#include "display.h"
+#include "stats.h"
 #include <math.h>
 
 extern "C" {
@@ -123,6 +125,85 @@ static fe_Object* cfunc_round(fe_Context *ctx, fe_Object *arg)
 }
 
 
+/**
+ * Set LCD cursor position to specified column
+ */
+static fe_Object* cfunc_lcd_setc(fe_Context *ctx, fe_Object *arg)
+{
+    uint8_t col = (uint8_t)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    if (!display_set_cursor(col))
+    {
+        fe_error(ctx, "invalid lcd col");
+    }
+    return fe_bool(ctx, 0);  // nil
+}
+
+
+/**
+ * Write LCD buffer to specified line.
+ */
+static fe_Object* cfunc_lcd_write(fe_Context *ctx, fe_Object *arg)
+{
+    uint8_t row = (uint8_t)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    if (!display_commit(row))
+    {
+        fe_error(ctx, "invalid lcd row");
+    }
+    return fe_bool(ctx, 0);
+}
+
+
+/**
+ * Print string to lcd buffer
+ */
+static fe_Object* cfunc_lcd_str(fe_Context *ctx, fe_Object *arg)
+{
+    char buf[DISPLAY_COLS+1];
+    fe_tostring(ctx, fe_nextarg(ctx, &arg), buf, sizeof buf);
+    display_print(buf);
+    return fe_bool(ctx, 0);
+}
+
+
+/**
+ * Print number to lcd buffer
+ * (lcd_num number align precision)
+ */
+static fe_Object* cfunc_lcd_num(fe_Context *ctx, fe_Object *arg)
+{
+    float num = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    uint8_t align = (uint8_t)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    uint8_t precision = (uint8_t)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    if (precision > 5) fe_error(ctx, "invalid precision");
+    if (align > 5) fe_error(ctx, "invalid align");
+    char form[
+        1 /* % */ + 1 /* align */ + 1 /* . */ + 1 /* precision */ + 1 /* f */
+        + 1 /* '\0' */
+    ];
+    snprintf(form, sizeof form, "%%%u.%uf",
+             align+precision + ((precision > 0) ? 1U : 0U),
+             precision);
+    char buf[10];
+    snprintf(buf, sizeof buf, form, num);
+    display_print(buf);
+    return fe_bool(ctx, 0);
+}
+
+
+static fe_Object* cfunc_stats(fe_Context *ctx, fe_Object *arg)
+{
+    char name[32];
+    fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
+    if (strcmp(name, "energy") == 0) return fe_number(ctx, stats.energy * 0.01);
+    else
+    {
+        fe_error(ctx, "invalid stat name");
+        // this should never happen, fe_error either exits or longjmps
+        return fe_bool(ctx, 0);
+    }
+}
+
+
 static fe_Object* cfunc_power_get(fe_Context *ctx, fe_Object *arg)
 {
     char name[32];
@@ -147,7 +228,8 @@ static fe_Object* cfunc_power_get(fe_Context *ctx, fe_Object *arg)
     else
     {
         fe_error(ctx, "invalid power state name");
-        return nullptr; // this should never happen, fe_error either exits or longjmps
+        // this should never happen, fe_error either exits or longjmps
+        return fe_bool(ctx, 0);
     }
 }
 
@@ -188,8 +270,7 @@ static fe_Object* cfunc_power_set(fe_Context *ctx, fe_Object *arg)
         return nullptr; // this should never happen, fe_error either exits or longjmps
     }
 
-    // TODO cannot find nil - seems to be private / static
-    return fe_number(ctx, 1);
+    return fe_bool(ctx, 0);  // nil
 }
 
 
@@ -208,6 +289,11 @@ void lisp_init()
     fe_set(ctx, fe_symbol(ctx, "rem"), fe_cfunc(ctx, cfunc_rem));
     fe_set(ctx, fe_symbol(ctx, "round"), fe_cfunc(ctx, cfunc_round));
     fe_set(ctx, fe_symbol(ctx, "map"), fe_cfunc(ctx, cfunc_map));
+    fe_set(ctx, fe_symbol(ctx, "lcdc"), fe_cfunc(ctx, cfunc_lcd_setc));
+    fe_set(ctx, fe_symbol(ctx, "lcdw"), fe_cfunc(ctx, cfunc_lcd_write));
+    fe_set(ctx, fe_symbol(ctx, "lcds"), fe_cfunc(ctx, cfunc_lcd_str));
+    fe_set(ctx, fe_symbol(ctx, "lcdn"), fe_cfunc(ctx, cfunc_lcd_num));
+    fe_set(ctx, fe_symbol(ctx, "stats"), fe_cfunc(ctx, cfunc_stats));
 
     // Add variables for power modes
     for (size_t i = 0; power_board_modes[i] != nullptr; i++)
