@@ -249,6 +249,7 @@ void uart_loop()
             now - datapoints[i].last_updated >= datapoints[i].refresh_interval)
         {
             errm_add(errm_create(&etemplate_comms_timeout, uint8_t(datapoints[i].name)));
+            // will get emergency stopped by errm callback
         }
     }
 

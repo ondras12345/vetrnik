@@ -17,7 +17,7 @@
 #define NTC_heatsink_beta 3977
 #define NTC_heatsink_R_nom 10000
 
-#define DEBUG true
+#define DEBUG false
 
 
 #define FAN_TEMPERATURE_FULL 300  // need to keep heatsink cooler than 35'C at 30W / mosfet. Should be better for H-bridge, about 50'C
