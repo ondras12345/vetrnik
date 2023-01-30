@@ -267,7 +267,7 @@ LCD display.
 (= d_l0b (fn ()
   ; 0
   (lcdn (pwrg "duty") 3 0)
-  (lcds "% ")
+  (lcds "d ")
   ; 5
   (lcdn (pwrg "RPM") 3 0)
   (lcds "RPM ")
