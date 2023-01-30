@@ -20,8 +20,8 @@
 #define DEBUG false
 
 
-#define FAN_TEMPERATURE_FULL 300  // need to keep heatsink cooler than 35'C at 30W / mosfet. Should be better for H-bridge, about 50'C
-#define FAN_TEMPERATURE_OFF 250  // TODO higher than normal room temperature!
+#define FAN_TEMPERATURE_FULL 320  // need to keep heatsink cooler than 35'C at 30W / mosfet. Should be better for H-bridge, about 50'C
+#define FAN_TEMPERATURE_OFF 300  // probably should be higher than normal room temperature
 #define FAN_POWER_MIN 0
 #define HEATSINK_TEMPERATURE_MAX 400
 
