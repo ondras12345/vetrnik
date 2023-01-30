@@ -29,9 +29,7 @@ static void onerror(fe_Context *ctx, const char *msg, fe_Object *cl)
         error_print->printf("lisp error: %s\r\n", msg);
 
         // Stack trace
-        // There doesn't seem to be an isnil() function,
-        // but fe_cdr returns its argument when it's nil.
-        for (; cl != fe_cdr(ctx, cl); cl = fe_cdr(ctx, cl))
+        for (; !fe_isnil(ctx, cl); cl = fe_cdr(ctx, cl))
         {
             char buf[64];
             fe_tostring(ctx, fe_car(ctx, cl), buf, sizeof(buf));
