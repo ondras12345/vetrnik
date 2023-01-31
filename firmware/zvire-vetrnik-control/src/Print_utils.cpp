@@ -1,7 +1,7 @@
-#include "Stream_utils.h"
+#include "Print_utils.h"
 #include <IPAddress.h>
 
-void stream_print_MAC(Stream *response, uint8_t MAC[6])
+void stream_print_MAC(Print *response, uint8_t MAC[6])
 {
     response->printf(
         "%02x:%02x:%02x:%02x:%02x:%02x",
@@ -10,7 +10,7 @@ void stream_print_MAC(Stream *response, uint8_t MAC[6])
 }
 
 
-void stream_print_settings(Stream *response, settings_t s)
+void stream_print_settings(Print *response, settings_t s)
 {
     response->print("conf ETH_MAC ");
     stream_print_MAC(response, s.ETH_MAC);
@@ -44,7 +44,7 @@ void stream_print_settings(Stream *response, settings_t s)
  * @param offset Offset to be added to printed addresses.
  *               This offset is NOT added to actual data addresses.
  */
-void stream_hexdump(Stream *response, const uint8_t * data, size_t len, size_t offset)
+void stream_hexdump(Print *response, const uint8_t * data, size_t len, size_t offset)
 {
     if (len == 0) return;
     response->print("        ");
