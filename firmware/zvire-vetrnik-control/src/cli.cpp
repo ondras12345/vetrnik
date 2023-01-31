@@ -17,6 +17,7 @@
 #include "display.h"
 #include "debug.h"
 #include <SerialFlash.h>
+#include <malloc.h>
 
 #ifdef SHELL_TELNET
 #include <TelnetStream.h>
@@ -414,43 +415,6 @@ static void cmnd_lisp_reset(char *args, Stream *response)
 }
 
 
-static void cmnd_reset(char *args, Stream *response)
-{
-    response->println("Resetting");
-    delay(100);
-    NVIC_SystemReset();
-}
-
-
-
-
-// https://stm32f4-discovery.net/2017/04/tutorial-jump-system-memory-software-stm32/
-// https://github.com/markusgritsch/SilF4ware/blob/12d0371ac2f5fd561d653acd041caff73cf3cff4/SilF4ware/drv_reset.c
-#define SYSTEM_MEMORY_START 0x1FFF0000
-static void jump_to_bootloader()
-{
-    __enable_irq();
-    HAL_RCC_DeInit();
-    HAL_DeInit();
-    SysTick->CTRL = 0;
-    SysTick->LOAD = 0;
-    SysTick->VAL = 0;
-    __HAL_SYSCFG_REMAPMEMORY_SYSTEMFLASH();
-
-    // Set stack pointer
-    // This will break local variables in this function
-    const uint32_t p = (*((uint32_t *) SYSTEM_MEMORY_START));
-    __set_MSP(p);
-
-    void (*SysMemBootJump)(void);
-    SysMemBootJump = (void (*)(void)) (*((uint32_t *)(SYSTEM_MEMORY_START+4)));
-    SysMemBootJump();
-
-    for (;;);
-}
-#undef SYSTEM_MEMORY_START
-
-
 static void cmnd_SPIflash(char *args, Stream *response)
 {
     char * subcommand_name = strsep(&args, " ");
@@ -624,12 +588,109 @@ bad:
 }
 
 
+extern "C" char *sbrk(int i);
+static void cmnd_free(char *args, Stream *response)
+{
+    // https://github.com/stm32duino/STM32Examples/blob/b875d3a1781ee0d82690ed7a350efdf43a81c42f/examples/Benchmarking/MemoryAllocationStatistics/MemoryAllocationStatistics.ino
+    /* Use linker definition */
+    extern char _end;
+    extern char _sdata;
+    extern char _estack;
+    extern char _Min_Stack_Size;
+
+    static char *ramstart = &_sdata;
+    static char *ramend = &_estack;
+    static char *minSP = (char*)(ramend - &_Min_Stack_Size);  // cppcheck-suppress comparePointers
+
+    char *heapend = (char*)sbrk(0);
+    char * stack_ptr = (char*)__get_MSP();
+    struct mallinfo mi = mallinfo();
+
+    response->print("Total non-mmapped bytes (arena):       ");
+    response->println(mi.arena);
+    response->print("# of free chunks (ordblks):            ");
+    response->println(mi.ordblks);
+    response->print("# of free fastbin blocks (smblks):     ");
+    response->println(mi.smblks);
+    response->print("# of mapped regions (hblks):           ");
+    response->println(mi.hblks);
+    response->print("Bytes in mapped regions (hblkhd):      ");
+    response->println(mi.hblkhd);
+    response->print("Max. total allocated space (usmblks):  ");
+    response->println(mi.usmblks);
+    response->print("Free bytes held in fastbins (fsmblks): ");
+    response->println(mi.fsmblks);
+    response->print("Total allocated space (uordblks):      ");
+    response->println(mi.uordblks);
+    response->print("Total free space (fordblks):           ");
+    response->println(mi.fordblks);
+    response->print("Topmost releasable block (keepcost):   ");
+    response->println(mi.keepcost);
+
+    response->print("RAM Start at:       0x");
+    response->println((unsigned long)ramstart, HEX);
+    response->print("Data/Bss end at:    0x");
+    response->println((unsigned long)&_end, HEX);
+    response->print("Heap end at:        0x");
+    response->println((unsigned long)heapend, HEX);
+    response->print("Stack Ptr end at:   0x");
+    response->println((unsigned long)stack_ptr, HEX);
+    response->print("RAM End at:         0x");
+    response->println((unsigned long)ramend, HEX);
+
+    response->print("Heap RAM Used:      ");
+    response->println(mi.uordblks);
+    response->print("Program RAM Used:   ");
+    response->println(&_end - ramstart);
+    response->print("Stack RAM Used:     ");
+    response->println(ramend - stack_ptr);
+    response->print("Estimated Free RAM: ");
+    response->println(((stack_ptr < minSP) ? stack_ptr : minSP) - heapend + mi.fordblks);
+}
+
+
+static void cmnd_reset(char *args, Stream *response)
+{
+    response->println("Resetting");
+    delay(100);
+    NVIC_SystemReset();
+}
+
+
+// https://stm32f4-discovery.net/2017/04/tutorial-jump-system-memory-software-stm32/
+// https://github.com/markusgritsch/SilF4ware/blob/12d0371ac2f5fd561d653acd041caff73cf3cff4/SilF4ware/drv_reset.c
+#define SYSTEM_MEMORY_START 0x1FFF0000
+static void jump_to_bootloader()
+{
+    __enable_irq();
+    HAL_RCC_DeInit();
+    HAL_DeInit();
+    SysTick->CTRL = 0;
+    SysTick->LOAD = 0;
+    SysTick->VAL = 0;
+    __HAL_SYSCFG_REMAPMEMORY_SYSTEMFLASH();
+
+    // Set stack pointer
+    // This will break local variables in this function
+    const uint32_t p = (*((uint32_t *) SYSTEM_MEMORY_START));
+    __set_MSP(p);
+
+    void (*SysMemBootJump)(void);
+    SysMemBootJump = (void (*)(void)) (*((uint32_t *)(SYSTEM_MEMORY_START+4)));
+    SysMemBootJump();
+
+    for (;;);
+}
+#undef SYSTEM_MEMORY_START
+
+
 static void cmnd_dfu(char *args, Stream *response)
 {
     response->println("Jumping to DFU bootloader");
     response->flush();
     jump_to_bootloader();
 }
+
 
 static void cmnd_ver(char *args, Stream *response)
 {
@@ -673,6 +734,7 @@ Commander::API_t API_tree[] = {
     apiElement("lisp_reset",    "Reinit Lisp interpreter",                  cmnd_lisp_reset),
     apiElement("SPIflash",      "Issue commands to SPI flash",              cmnd_SPIflash),
     apiElement("log",           "Filter debug messages",                    cmnd_log),
+    apiElement("free",          "Print out amount of free memory.",         cmnd_free),
     apiElement("dfu",           "Switch to DFU firmware download mode.",    cmnd_dfu),
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),
     apiElement("ver",           "Print out version info.",                  cmnd_ver),
