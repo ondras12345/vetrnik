@@ -243,7 +243,7 @@ void uart_loop()
 
 
     unsigned long now = millis();
-    FOR_EACH_DP
+    if (mode != shorted) FOR_EACH_DP
     {
         if (datapoints[i].refresh_interval && !DEBUG &&
             now - datapoints[i].last_updated >= datapoints[i].refresh_interval)
