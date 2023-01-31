@@ -52,7 +52,7 @@ static void cmnd_ifconfig(char *args, Stream *response)
 }
 
 
-static void cmnd_mqtt_status(char *args, Stream *response)
+static void cmnd_mqtt(char *args, Stream *response)
 {
     response->print("state: ");
     response->println(MQTTClient.state());
@@ -361,6 +361,11 @@ static void cmnd_control(char *args, Stream *response)
             response->println();
         }
     }
+    else
+    {
+        response->println("Invalid subcommand");
+        goto bad;
+    }
 
     return;
 bad:
@@ -651,7 +656,7 @@ static void cmnd_watch(char *args, Stream *response)
 
 Commander::API_t API_tree[] = {
     apiElement("ifconfig",      "Print out networking information.",        cmnd_ifconfig),
-    apiElement("mqtt_status",   "Print out MQTT status.",                   cmnd_mqtt_status),
+    apiElement("mqtt",          "Print out MQTT status.",                   cmnd_mqtt),
     // ping would be nice, but seems hard to implement
     apiElement("conf",          "Get or set configuration options.",        cmnd_conf),
     apiElement("tx_raw",        "Transmit message to power board.",         cmnd_tx_raw),
