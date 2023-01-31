@@ -11,7 +11,6 @@
 
 
 static volatile uint16_t ADC_values[4] = {0};
-static volatile bool ADC_done = false;
 
 
 void ADC_init()
@@ -41,11 +40,18 @@ ISR(ADC_vect)
     }
 
     // get value
-    static uint16_t vals[4] = {0};
     // ADCL must be read first.
     uint8_t low = ADCL;
     uint8_t high = ADCH;
-    vals[channel] = (high << 8) | low;
+    ADC_values[channel] = (high << 8) | low;
+
+    // TODO fix start value of RMS filters
+    // TODO tweak filter constants (how many samples per second?)
+    static RMSFilter<> RMS_voltage;
+    static RMSFilter<> RMS_current;
+
+    if (channel == 0) ADC_values[0] = RMS_voltage.process(ADC_values[0]);
+    if (channel == 1) ADC_values[1] = RMS_current.process(ADC_values[1]);
 
     uint8_t next_channel = (channel + 1) % 4;
     if (next_channel == 2) next_channel = 3;  // unused channel
@@ -60,15 +66,6 @@ ISR(ADC_vect)
     // Advance to next channel
     ADMUX = (ADMUX & 0xF0) | next_channel;
 
-
-    if (next_channel == 0)
-    {
-        ADC_values[0] = vals[0];
-        ADC_values[1] = vals[1];
-        //ADC_values[2] = vals[2];  // unused channel
-        ADC_values[3] = vals[3];
-        ADC_done = true;
-    }
 
     // Start new conversion
     // This works out to one conversion per 104 us
@@ -86,23 +83,21 @@ uint16_t map_uint16(uint16_t x,
 
 void ADC_loop()
 {
-    if (ADC_done)
+    unsigned long now = millis();
+    static unsigned long prev_ms = 0;
+    if (now - prev_ms >= 100UL)
     {
+        prev_ms = now;
         uint16_t vals[4];
         cli();
-        ADC_done = false;
         vals[0] = ADC_values[0];
         vals[1] = ADC_values[1];
         //vals[2] = ADC_values[2];  // unused channel
         vals[3] = ADC_values[3];
         sei();
 
-        // TODO fix start value of RMS filters
-        // TODO tweak filter constants (how many samples per second?)
-        static RMSFilter<> RMS_voltage;
-        uint16_t voltage_mV = RMS_voltage.process(vals[0]) * 320000UL >> 16;  // same as *5000 / 1024
+        uint16_t voltage_mV = vals[0] * 320000UL >> 16;  // same as *5000 / 1024
         voltage = voltage_mV * (voltage_R1 + voltage_R2) / voltage_R2 / 100UL;  // voltage is *10 fixed-point
-        // TODO OVP on peak voltage
 
         static uint16_t current_offset =
             settings[kCurrentOffsetL].value |
@@ -110,8 +105,6 @@ void ADC_loop()
         static uint8_t current_conversion = settings[KCurrentConversion].value;
 
         current = (vals[1] > current_offset) ? vals[1] - current_offset : 0;
-        static RMSFilter<> RMS_current;
-        current = RMS_current.process(current);
         static uint16_t max_current = (current_conversion == 0) ? 0 : 65535U / current_conversion;
         if (current >= max_current)
             current = 65535U;
@@ -119,7 +112,6 @@ void ADC_loop()
             current = current * current_conversion;
 
         static unsigned long NTC_prev_millis = 0;
-        unsigned long now = millis();
         if (now - NTC_prev_millis >= 500UL)
         {
             NTC_prev_millis = now;
