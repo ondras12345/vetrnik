@@ -296,6 +296,12 @@ LCD display.
 ```
 
 
+### Button handler functions
+The functions `btn1_short`, `btn1_long`, `btn2_short`, and `btn2_long` are
+called when the respective button is short / long pressed. (To be more
+precise, they are only called once the button is released.)
+
+
 ### MISC Lisp code
 Test OOM:
 ```lisp

@@ -16,12 +16,25 @@
 #include "stats.h"
 #include "display.h"
 #include <SerialFlash.h>
+#include <Bounce2.h>
+
+
+static Bounce2::Button button1 = Bounce2::Button();
+static Bounce2::Button button2 = Bounce2::Button();
 
 
 void setup()
 {
     Serial.begin();
     log_add_INFO_backend(&Serial);
+
+    button1.attach(PIN_BUTTON1, INPUT_PULLUP);
+    button1.interval(BUTTON_DEBOUNCE);
+    button1.setPressedState(LOW);
+    button2.attach(PIN_BUTTON2, INPUT_PULLUP);
+    button2.interval(BUTTON_DEBOUNCE);
+    button2.setPressedState(LOW);
+
     pinMode(LED_BUILTIN, OUTPUT);
     for (uint8_t i = 0; i < 10; i++)
     {
@@ -55,6 +68,31 @@ void setup()
 
 void loop()
 {
+    button1.update();
+    if (button1.released())
+    {
+        if (button1.previousDuration() < BUTTON_LONG)
+        {
+            lisp_run_blind("(btn1_short)");
+        }
+        else if (button1.previousDuration() >= BUTTON_LONG)
+        {
+            lisp_run_blind("(btn1_long)");
+        }
+    }
+    button2.update();
+    if (button2.released())
+    {
+        if (button2.previousDuration() < BUTTON_LONG)
+        {
+            lisp_run_blind("(btn2_short)");
+        }
+        else if (button2.previousDuration() >= BUTTON_LONG)
+        {
+            lisp_run_blind("(btn2_long)");
+        }
+    }
+
     power_datapoints_loop();
     bool status_complete = uart_power_loop();
     if (status_complete)

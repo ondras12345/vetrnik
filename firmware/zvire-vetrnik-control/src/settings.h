@@ -2,6 +2,11 @@
 #include <stdint.h>
 
 #define PIN_FLASH_SS PB2
+#define PIN_BUTTON1 PB13
+#define PIN_BUTTON2 PB14
+
+#define BUTTON_DEBOUNCE 50  // ms
+#define BUTTON_LONG 500  // ms
 
 #define LISP_INIT_FILENAME "init.lisp"
 
