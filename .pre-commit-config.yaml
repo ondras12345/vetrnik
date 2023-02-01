@@ -40,6 +40,13 @@ repos:
         pass_filenames: false
         files: ^firmware/zvire-vetrnik-power/(lib|platformio.ini)
 
+      - id: test-control
+        name: make test in control firmware
+        entry: sh -c 'cd firmware/zvire-vetrnik-control && make test'
+        language: system
+        pass_filenames: false
+        files: ^firmware/zvire-vetrnik-control/(lib|platformio.ini)
+
       - id: codespell
         name: Check Spelling
         description: Checks for common misspellings in text files.

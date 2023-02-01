@@ -22,9 +22,9 @@ bootloader:     ## Burn fuses and bootloader.
 check:          ## Run static code analysis
 	pio check
 
-#.PHONY: test
-#test:           ## Run native tests.
-#	pio test -e native
+.PHONY: test
+test:           ## Run native tests.
+	pio test -e native
 
 compile_commands.json: platformio.ini
 	pio run --target compiledb

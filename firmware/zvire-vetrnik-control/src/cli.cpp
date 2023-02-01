@@ -16,6 +16,7 @@
 #include "stats.h"
 #include "display.h"
 #include "debug.h"
+#include <CLIeditor.h>
 #include <SerialFlash.h>
 #include <malloc.h>
 
@@ -29,6 +30,26 @@ static Shellminator shell(&Serial);
 static Commander commander;
 static char watch_command[COMMANDER_MAX_COMMAND_SIZE - sizeof("watch ") + 1 + 1] = "";
 static Stream * watch_response = nullptr;
+
+
+static bool ed_mode = false;
+static bool ed_first = false;
+static SerialFlashFile * ed_file = nullptr;
+static Stream * ed_response = nullptr;
+static CLIeditor ed;
+
+static void ed_write_file(void * buf, size_t len)
+{
+    if (ed_file == nullptr) return;
+    if (len == 0) return;  // this doesn't seem to be handled in SerialFlash
+    ed_file->write(buf, len);
+}
+
+static void ed_write_response(char c)
+{
+    if (ed_response == nullptr) return;
+    ed_response->write(c);
+}
 
 
 static void cmnd_ifconfig(char *args, Stream *response)
@@ -467,7 +488,7 @@ static void cmnd_SPIflash(char *args, Stream *response)
     }
 
     // subcommands that need no args
-    else if (strcmp(subcommand_name, "erase") == 0)
+    else if (strcmp(subcommand_name, "erase_chip") == 0)
     {
         SerialFlash.eraseAll();
         response->println("Erasing");
@@ -548,6 +569,50 @@ static void cmnd_SPIflash(char *args, Stream *response)
         stream_hexdump(response, buf, f.read(buf, sizeof buf), start);
         f.close();
     }
+    else if (strcmp(subcommand_name, "erase") == 0)
+    {
+        SerialFlashFile f = SerialFlash.open(subcommand_args);
+        if (!f)
+        {
+            response->println("Cannot open file");
+            return;
+        }
+        response->println("(only files created as erasable can be erased)");
+        f.erase();
+        f.close();
+    }
+    else if (strcmp(subcommand_name, "ed") == 0)
+    {
+        if (ed_mode)
+        {
+            // could be used by the other CLI
+            response->println("Already in ed mode");
+            return;
+        }
+        char * filename = strsep(&subcommand_args, " ");
+        char * startstr = subcommand_args;
+        if (filename == nullptr || startstr == nullptr)
+        {
+            response->println("Invalid args");
+            goto bad;
+        }
+
+        unsigned int start = strtoul(startstr, nullptr, 0);  // should accept hex 0x
+        static SerialFlashFile f;
+        f = SerialFlash.open(filename);
+        if (!f)
+        {
+            response->println("Cannot open file");
+            return;
+        }
+        f.seek(start);
+        ed_mode = true;
+        ed_first = true;
+        ed_file = &f;
+        ed_response = response;
+        ed = CLIeditor(ed_write_response, ed_write_file);
+        return;
+    }
     else if (strcmp(subcommand_name, "dumpchip") == 0)
     {
         unsigned int start = strtoul(subcommand_args, nullptr, 0);  // should accept hex 0x
@@ -569,8 +634,8 @@ static void cmnd_SPIflash(char *args, Stream *response)
     return;
 bad:
     response->println(
-"Usage: SPIflash [erase|ls | create name length erasable | rm name\r\n"
-"   | dump name start | dumpchip start]"
+"Usage: SPIflash [erase_chip|ls | create name length erasable | rm name\r\n"
+"   | dump name start | dumpchip start | erase filename | ed filename start]"
     );
 }
 
@@ -807,7 +872,29 @@ void CLI_init()
 
 void CLI_loop()
 {
-    shell.update();
+    if (ed_mode)
+    {
+        if (ed_first)
+        {
+            // don't leave the cursor at the line with Shellminator's prompt
+            ed_response->println("ed");
+            ed_response->println("type '\\n.\\n' to exit");
+            ed_first = false;
+        }
+        // Process a maximum of 100 characters at a time to prevent blocking
+        // the main loop
+        for (uint8_t i = 0; i < 100 && ed_response->available(); i++)
+        {
+            char c = ed_response->read();
+            if (ed.process(c))
+            {
+                ed_mode = false;
+                ed_file->close();
+            }
+        }
+    }
+
+    if (!ed_mode || ed_response != &Serial) shell.update();
 
     unsigned long now = millis();
 
@@ -822,7 +909,7 @@ void CLI_loop()
             TelnetStream.write('\a');
         }
 
-        shell_telnet.update();
+        if (!ed_mode || ed_response != &TelnetStream) shell_telnet.update();
     }
 #endif
 
