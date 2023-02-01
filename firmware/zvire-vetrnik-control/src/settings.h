@@ -3,6 +3,7 @@
 
 #define PIN_FLASH_SS PB2
 
+#define LISP_INIT_FILENAME "init.lisp"
 
 #define MQTTport 1883
 #define MQTTclientID "vetrnik"

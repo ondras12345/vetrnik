@@ -5,6 +5,7 @@
 #include "stats.h"
 #include "control.h"
 #include <math.h>
+#include <SerialFlash.h>
 
 extern "C" {
 #include <fe.h>
@@ -44,10 +45,10 @@ static void onerror(fe_Context *ctx, const char *msg, fe_Object *cl)
 }
 
 
-static void lisp_write_Stream(fe_Context *ctx, void *udata, char chr)
+static void lisp_write_Print(fe_Context *ctx, void *udata, char chr)
 {
     (void)ctx;
-    (static_cast<Stream *>(udata))->write(chr);
+    (static_cast<Print *>(udata))->write(chr);
 }
 
 
@@ -65,6 +66,36 @@ static char lisp_read_str(fe_Context *ctx, void *udata)
 
     if (lstr->i >= lstr->length) return '\0';
     return lstr->str[lstr->i++];
+}
+
+
+/**
+ * call with (nullptr, nullptr) before reading new file
+ */
+static char lisp_read_file(fe_Context *ctx, void *udata)
+{
+    (void)ctx;
+    static uint8_t buf[256];
+    static size_t size = sizeof buf;
+    static size_t i = size;
+
+    if (udata == nullptr)
+    {
+        size = sizeof buf;
+        i = size;
+        return '\0';
+    }
+
+    if (i >= size)
+    {
+        SerialFlashFile * f = static_cast<SerialFlashFile *>(udata);
+        size = f->read(buf, sizeof buf);
+        if (size == 0) return '\0';  // EOF
+        i = 0;
+    }
+    uint8_t c = buf[i++];
+    if (c == 0xFF) return '\0';  // empty section of the file
+    return c;
 }
 
 
@@ -356,7 +387,7 @@ void lisp_reinit()
 }
 
 
-static fe_Object * lisp_execute(lisp_str_t * lstr)
+static fe_Object * lisp_execute(fe_ReadFn readfn, void * udata)
 {
     bool jumped_in = false;
     setjmp(error_jmp);
@@ -364,7 +395,7 @@ static fe_Object * lisp_execute(lisp_str_t * lstr)
     jumped_in = true;  //cppcheck-suppress unreadVariable
 
     fe_Object *obj;
-    obj = fe_read(ctx, lisp_read_str, lstr);
+    obj = fe_read(ctx, readfn, udata);
     if (obj != nullptr)
     {
         obj = fe_eval(ctx, obj);
@@ -389,14 +420,14 @@ bool lisp_run_blind(const char * code, size_t length)
     error_print = INFO;
     lisp_str_t lstr = { code, length, 0 };
     // don't care about the result, execute all root-level expressions
-    while (lisp_execute(&lstr) != nullptr);
+    while (lisp_execute(lisp_read_str, &lstr) != nullptr);
     return !error_occured;
 }
 
 
 /**
  * Run lisp code and discard the output.
- * Errors will NOT be printed out.
+ * Errors will be printed out to INFO debug stream.
  *
  * @param code null-terminated string containing the code to run
  * @return true on success, false if error occurred.
@@ -408,21 +439,46 @@ bool lisp_run_blind(const char * code)
 
 
 /**
+ * Run lisp code from file and discard the output.
+ * Errors will be printed out to INFO debug stream.
+ *
+ * The file can be arbitrary size. The Lisp program does not need to be
+ * null-terminated -- 0xFF suffices as a terminator.
+ *
+ * @param filename file to read the code from
+ * @param offset offset to seek to
+ * @return true on success, false if error occurred.
+ */
+bool lisp_run_blind_file(const char * filename, uint32_t offset)
+{
+    error_occured = false;
+    error_print = INFO;
+    SerialFlashFile f = SerialFlash.open(filename);
+    if (!f) return false;
+    f.seek(offset);
+    lisp_read_file(nullptr, nullptr);
+    while (lisp_execute(lisp_read_file, &f) != nullptr);
+    f.close();
+    return !error_occured;
+}
+
+
+/**
  * Evaluate single lisp expression and print out the result to a Stream.
  *
  * @param code Array of characters without null terminator
  * @param length Length of code array
- * @param response Stream to print the result to
+ * @param response Print to print the result to
  */
-bool lisp_process(const char * code, size_t length, Stream * response)
+bool lisp_process(const char * code, size_t length, Print * response)
 {
     error_print = response;
 
     lisp_str_t lstr = { code, length, 0 };
-    fe_Object * obj = lisp_execute(&lstr);
+    fe_Object * obj = lisp_execute(lisp_read_str, &lstr);
     if (obj != nullptr)
     {
-        fe_write(ctx, obj, lisp_write_Stream, response, 0);
+        fe_write(ctx, obj, lisp_write_Print, response, 0);
         return true;
     }
     return false;
@@ -433,9 +489,9 @@ bool lisp_process(const char * code, size_t length, Stream * response)
  * Evaluate single lisp expression and print out the result to a Stream.
  *
  * @param code null-terminated string containing the code to run
- * @param response Stream to print the result to
+ * @param response Print to print the result to
  */
-bool lisp_process(const char * code, Stream * response)
+bool lisp_process(const char * code, Print * response)
 {
     return lisp_process(code, -1, response);
 }

@@ -412,6 +412,25 @@ static void cmnd_lisp_reset(char *args, Stream *response)
     lisp_reinit();
     control_init_lisp();
     display_init_lisp();
+    // Loading init.lisp should be done manually using cmnd_lisp_read
+    //lisp_run_blind_file(LISP_INIT_FILENAME);
+}
+
+
+static void cmnd_lisp_read(char *args, Stream *response)
+{
+    char * filename = strsep(&args, " ");
+    char * offstr = args;
+    if (filename == nullptr || offstr == nullptr)
+    {
+        response->println("Usage: lisp_read filename offset");
+        return;
+    }
+    unsigned int offset = strtoul(offstr, nullptr, 0);  // should accept hex 0x
+    response->print("Executing lisp from '");
+    response->print(filename);
+    response->println("'");
+    response->println(lisp_run_blind_file(filename, offset));
 }
 
 
@@ -732,6 +751,7 @@ Commander::API_t API_tree[] = {
 #endif
     apiElement("lisp",          "Process a line of Lisp",                   cmnd_lisp),
     apiElement("lisp_reset",    "Reinit Lisp interpreter",                  cmnd_lisp_reset),
+    apiElement("lisp_read",     "Execute Lisp from file",                   cmnd_lisp_read),
     apiElement("SPIflash",      "Issue commands to SPI flash",              cmnd_SPIflash),
     apiElement("log",           "Filter debug messages",                    cmnd_log),
     apiElement("free",          "Print out amount of free memory.",         cmnd_free),
