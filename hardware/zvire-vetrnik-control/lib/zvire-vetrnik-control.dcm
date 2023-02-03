@@ -1,0 +1,19 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP MX25L8006EM1I-12G
+D 8-Mbit, 2.7 to 3.6V, SPI Flash Memory, SOIC-8
+K flash memory spi
+F https://www.tme.eu/Document/61294fd3d0565f64b8ec9e9f7bca2e0a/MX25L8006E,%203V,%208Mb,%20v1.6.pdf
+$ENDCMP
+#
+$CMP YAAJ_WeAct_BlackPill_Part_Like
+D WeAct STM32F401/F411 Black Pill ; not KLC compliant
+K module black pill STM32
+$ENDCMP
+#
+$CMP YAAJ_WeAct_BlackPill_Part_Like_SWD_Breakout
+D WeAct STM32F401/411 Black Pill ; not KLC compliant ; SWD broken out
+K module black pill STM32 SWD
+$ENDCMP
+#
+#End Doc Library
