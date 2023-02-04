@@ -1,0 +1,372 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date "2023-02-04"
+Rev ""
+Comp "Ondřej Sluka"
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Connector_Generic:Conn_01x04 J1
+U 1 1 63E6D3C4
+P 1300 2950
+F 0 "J1" H 1218 3267 50  0000 C CNN
+F 1 "Conn_01x04" H 1218 3176 50  0000 C CNN
+F 2 "Connector_Molex:Molex_KK-254_AE-6410-04A_1x04_P2.54mm_Vertical" H 1300 2950 50  0001 C CNN
+F 3 "~" H 1300 2950 50  0001 C CNN
+	1    1300 2950
+	-1   0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR01
+U 1 1 63E6EC23
+P 1700 2750
+F 0 "#PWR01" H 1700 2600 50  0001 C CNN
+F 1 "VCC" H 1715 2923 50  0000 C CNN
+F 2 "" H 1700 2750 50  0001 C CNN
+F 3 "" H 1700 2750 50  0001 C CNN
+	1    1700 2750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1500 2850 1700 2850
+Wire Wire Line
+	1700 2850 1700 2750
+$Comp
+L power:PWR_FLAG #FLG01
+U 1 1 63E6F342
+P 2000 2750
+F 0 "#FLG01" H 2000 2825 50  0001 C CNN
+F 1 "PWR_FLAG" H 2000 2923 50  0000 C CNN
+F 2 "" H 2000 2750 50  0001 C CNN
+F 3 "~" H 2000 2750 50  0001 C CNN
+	1    2000 2750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2000 2750 2000 2850
+Wire Wire Line
+	2000 2850 1700 2850
+Connection ~ 1700 2850
+$Comp
+L Connector:Screw_Terminal_01x03 J2
+U 1 1 63E79BA0
+P 4700 3500
+F 0 "J2" H 4780 3542 50  0000 L CNN
+F 1 "Screw_Terminal_01x03" H 4780 3451 50  0000 L CNN
+F 2 "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-3_1x03_P5.00mm_Horizontal" H 4700 3500 50  0001 C CNN
+F 3 "~" H 4700 3500 50  0001 C CNN
+	1    4700 3500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3400 3800 3400 3900
+Wire Wire Line
+	3400 3900 4300 3900
+Wire Wire Line
+	4300 3900 4300 3500
+Wire Wire Line
+	4300 3500 4500 3500
+Wire Wire Line
+	3500 3200 3500 3150
+Wire Wire Line
+	3500 3150 4200 3150
+Wire Wire Line
+	3300 3200 3300 3000
+Wire Wire Line
+	3300 3000 4300 3000
+Wire Wire Line
+	4300 3000 4300 3400
+$Comp
+L Relay:FINDER-36.11 K1
+U 1 1 63E7662C
+P 3200 3500
+F 0 "K1" H 3630 3546 50  0000 L CNN
+F 1 "LEG-12F" H 3630 3455 50  0000 L CNN
+F 2 "Relay_THT:Relay_SPDT_Finder_36.11" H 4470 3470 50  0001 C CNN
+F 3 "https://www.tme.eu/Document/facc22af0219a1d2944a33df4662b473/LEG-F-SERIES.pdf" H 3200 3500 50  0001 C CNN
+	1    3200 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR02
+U 1 1 63E7D53C
+P 3000 3000
+F 0 "#PWR02" H 3000 2850 50  0001 C CNN
+F 1 "VCC" H 3015 3173 50  0000 C CNN
+F 2 "" H 3000 3000 50  0001 C CNN
+F 3 "" H 3000 3000 50  0001 C CNN
+	1    3000 3000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3000 3000 3000 3050
+$Comp
+L Connector:Screw_Terminal_01x03 J3
+U 1 1 63E800D4
+P 4700 5000
+F 0 "J3" H 4780 5042 50  0000 L CNN
+F 1 "Screw_Terminal_01x03" H 4780 4951 50  0000 L CNN
+F 2 "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-3_1x03_P5.00mm_Horizontal" H 4700 5000 50  0001 C CNN
+F 3 "~" H 4700 5000 50  0001 C CNN
+	1    4700 5000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3400 5300 3400 5400
+Wire Wire Line
+	3400 5400 4300 5400
+Wire Wire Line
+	4300 5400 4300 5000
+Wire Wire Line
+	4300 5000 4500 5000
+Wire Wire Line
+	3500 4700 3500 4650
+Wire Wire Line
+	3500 4650 4200 4650
+Wire Wire Line
+	3300 4700 3300 4500
+Wire Wire Line
+	3300 4500 4300 4500
+Wire Wire Line
+	4300 4500 4300 4900
+$Comp
+L Relay:FINDER-36.11 K2
+U 1 1 63E800E6
+P 3200 5000
+F 0 "K2" H 3630 5046 50  0000 L CNN
+F 1 "LEG-12F" H 3630 4955 50  0000 L CNN
+F 2 "Relay_THT:Relay_SPDT_Finder_36.11" H 4470 4970 50  0001 C CNN
+F 3 "https://www.tme.eu/Document/facc22af0219a1d2944a33df4662b473/LEG-F-SERIES.pdf" H 3200 5000 50  0001 C CNN
+	1    3200 5000
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR03
+U 1 1 63E800EC
+P 3000 4500
+F 0 "#PWR03" H 3000 4350 50  0001 C CNN
+F 1 "VCC" H 3015 4673 50  0000 C CNN
+F 2 "" H 3000 4500 50  0001 C CNN
+F 3 "" H 3000 4500 50  0001 C CNN
+	1    3000 4500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3000 4500 3000 4600
+$Comp
+L Connector:Screw_Terminal_01x03 J4
+U 1 1 63E821BB
+P 4700 6500
+F 0 "J4" H 4780 6542 50  0000 L CNN
+F 1 "Screw_Terminal_01x03" H 4780 6451 50  0000 L CNN
+F 2 "TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-3_1x03_P5.00mm_Horizontal" H 4700 6500 50  0001 C CNN
+F 3 "~" H 4700 6500 50  0001 C CNN
+	1    4700 6500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3400 6800 3400 6900
+Wire Wire Line
+	3400 6900 4300 6900
+Wire Wire Line
+	4300 6900 4300 6500
+Wire Wire Line
+	4300 6500 4500 6500
+Wire Wire Line
+	3500 6200 3500 6150
+Wire Wire Line
+	3500 6150 4200 6150
+Wire Wire Line
+	3300 6200 3300 6000
+Wire Wire Line
+	3300 6000 4300 6000
+Wire Wire Line
+	4300 6000 4300 6400
+$Comp
+L Relay:FINDER-36.11 K3
+U 1 1 63E821CD
+P 3200 6500
+F 0 "K3" H 3630 6546 50  0000 L CNN
+F 1 "LEG-12F" H 3630 6455 50  0000 L CNN
+F 2 "Relay_THT:Relay_SPDT_Finder_36.11" H 4470 6470 50  0001 C CNN
+F 3 "https://www.tme.eu/Document/facc22af0219a1d2944a33df4662b473/LEG-F-SERIES.pdf" H 3200 6500 50  0001 C CNN
+	1    3200 6500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR04
+U 1 1 63E821D3
+P 3000 6000
+F 0 "#PWR04" H 3000 5850 50  0001 C CNN
+F 1 "VCC" H 3015 6173 50  0000 C CNN
+F 2 "" H 3000 6000 50  0001 C CNN
+F 3 "" H 3000 6000 50  0001 C CNN
+	1    3000 6000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3000 6000 3000 6100
+Wire Wire Line
+	3000 3800 3000 3950
+Wire Wire Line
+	3000 3950 2300 3950
+Wire Wire Line
+	2000 3950 2000 2950
+Wire Wire Line
+	2000 2950 1500 2950
+Wire Wire Line
+	3000 5300 3000 5500
+Wire Wire Line
+	3000 5500 2350 5500
+Wire Wire Line
+	1900 5500 1900 3050
+Wire Wire Line
+	1900 3050 1500 3050
+Wire Wire Line
+	3000 6800 3000 7000
+Wire Wire Line
+	3000 7000 2350 7000
+Wire Wire Line
+	1800 7000 1800 3150
+Wire Wire Line
+	1800 3150 1500 3150
+$Comp
+L Diode:1N4148W D1
+U 1 1 63E8A29D
+P 2300 3450
+F 0 "D1" V 2254 3530 50  0000 L CNN
+F 1 "1N4148W" V 2345 3530 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 2300 3275 50  0001 C CNN
+F 3 "https://www.vishay.com/docs/85748/1n4148w.pdf" H 2300 3450 50  0001 C CNN
+	1    2300 3450
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	2300 3600 2300 3950
+Connection ~ 2300 3950
+Wire Wire Line
+	2300 3950 2000 3950
+Wire Wire Line
+	2300 3300 2300 3050
+Wire Wire Line
+	2300 3050 3000 3050
+Connection ~ 3000 3050
+Wire Wire Line
+	3000 3050 3000 3200
+$Comp
+L Diode:1N4148W D2
+U 1 1 63E8E214
+P 2350 5000
+F 0 "D2" V 2304 5080 50  0000 L CNN
+F 1 "1N4148W" V 2395 5080 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 2350 4825 50  0001 C CNN
+F 3 "https://www.vishay.com/docs/85748/1n4148w.pdf" H 2350 5000 50  0001 C CNN
+	1    2350 5000
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	2350 5150 2350 5500
+Connection ~ 2350 5500
+Wire Wire Line
+	2350 5500 1900 5500
+Wire Wire Line
+	2350 4850 2350 4600
+Wire Wire Line
+	2350 4600 3000 4600
+Connection ~ 3000 4600
+Wire Wire Line
+	3000 4600 3000 4700
+$Comp
+L Diode:1N4148W D3
+U 1 1 63E919E9
+P 2350 6500
+F 0 "D3" V 2304 6580 50  0000 L CNN
+F 1 "1N4148W" V 2395 6580 50  0000 L CNN
+F 2 "Diode_SMD:D_SOD-123" H 2350 6325 50  0001 C CNN
+F 3 "https://www.vishay.com/docs/85748/1n4148w.pdf" H 2350 6500 50  0001 C CNN
+	1    2350 6500
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	2350 6650 2350 7000
+Connection ~ 2350 7000
+Wire Wire Line
+	2350 7000 1800 7000
+Wire Wire Line
+	2350 6350 2350 6100
+Wire Wire Line
+	2350 6100 3000 6100
+Connection ~ 3000 6100
+Wire Wire Line
+	3000 6100 3000 6200
+Wire Wire Line
+	4300 3400 4500 3400
+Wire Wire Line
+	4200 3600 4500 3600
+Wire Wire Line
+	4200 3150 4200 3600
+Wire Wire Line
+	4300 4900 4500 4900
+Wire Wire Line
+	4200 5100 4500 5100
+Wire Wire Line
+	4200 4650 4200 5100
+Wire Wire Line
+	4300 6400 4500 6400
+Wire Wire Line
+	4200 6600 4500 6600
+Wire Wire Line
+	4200 6150 4200 6600
+$Comp
+L Mechanical:MountingHole H1
+U 1 1 63EB914A
+P 6000 1000
+F 0 "H1" H 6100 1046 50  0000 L CNN
+F 1 "MountingHole" H 6100 955 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 6000 1000 50  0001 C CNN
+F 3 "~" H 6000 1000 50  0001 C CNN
+	1    6000 1000
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H3
+U 1 1 63EB9C70
+P 7000 1000
+F 0 "H3" H 7100 1046 50  0000 L CNN
+F 1 "MountingHole" H 7100 955 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 7000 1000 50  0001 C CNN
+F 3 "~" H 7000 1000 50  0001 C CNN
+	1    7000 1000
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H2
+U 1 1 63EB9EFC
+P 6000 1500
+F 0 "H2" H 6100 1546 50  0000 L CNN
+F 1 "MountingHole" H 6100 1455 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 6000 1500 50  0001 C CNN
+F 3 "~" H 6000 1500 50  0001 C CNN
+	1    6000 1500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H4
+U 1 1 63EBA2C9
+P 7000 1500
+F 0 "H4" H 7100 1546 50  0000 L CNN
+F 1 "MountingHole" H 7100 1455 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 7000 1500 50  0001 C CNN
+F 3 "~" H 7000 1500 50  0001 C CNN
+	1    7000 1500
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC
