@@ -73,3 +73,9 @@ bool display_set_cursor(uint8_t col)
     buf_index = col;
     return true;
 }
+
+
+void display_backlight(bool state)
+{
+    lcd.setBacklight(state ? 255 : 0);
+}

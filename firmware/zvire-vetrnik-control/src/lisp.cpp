@@ -222,6 +222,14 @@ static fe_Object* cfunc_lcd_num(fe_Context *ctx, fe_Object *arg)
 }
 
 
+static fe_Object* cfunc_lcd_backlight(fe_Context *ctx, fe_Object *arg)
+{
+    bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
+    display_backlight(state);
+    return fe_bool(ctx, 0);
+}
+
+
 static fe_Object* cfunc_stats(fe_Context *ctx, fe_Object *arg)
 {
     char name[32];
@@ -364,6 +372,7 @@ void lisp_init()
     fe_set(ctx, fe_symbol(ctx, "lcdw"), fe_cfunc(ctx, cfunc_lcd_write));
     fe_set(ctx, fe_symbol(ctx, "lcds"), fe_cfunc(ctx, cfunc_lcd_str));
     fe_set(ctx, fe_symbol(ctx, "lcdn"), fe_cfunc(ctx, cfunc_lcd_num));
+    fe_set(ctx, fe_symbol(ctx, "lcdb"), fe_cfunc(ctx, cfunc_lcd_backlight));
     fe_set(ctx, fe_symbol(ctx, "stats"), fe_cfunc(ctx, cfunc_stats));
     fe_set(ctx, fe_symbol(ctx, "ctrlg"), fe_cfunc(ctx, cfunc_control_get));
     fe_set(ctx, fe_symbol(ctx, "ctrls"), fe_cfunc(ctx, cfunc_control_set));
