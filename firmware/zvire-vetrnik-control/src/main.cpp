@@ -42,6 +42,7 @@ void setup()
     pinMode(PIN_REL1, OUTPUT);
     pinMode(PIN_REL2, OUTPUT);
 
+    digitalWrite(PIN_BUZZER, HIGH);
     pinMode(LED_BUILTIN, OUTPUT);
     for (uint8_t i = 0; i < 10; i++)
     {
@@ -70,6 +71,8 @@ void setup()
     display_init();
     display_init_lisp();
     lisp_run_blind_file(LISP_INIT_FILENAME);
+
+    digitalWrite(PIN_BUZZER, LOW);
 }
 
 
