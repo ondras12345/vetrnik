@@ -475,7 +475,11 @@ static fe_Object * lisp_execute(fe_ReadFn readfn, void * udata)
 {
     bool jumped_in = false;
     setjmp(error_jmp);
-    if (jumped_in) return nullptr;
+    if (jumped_in)
+    {
+        fe_restoregc(ctx, gc);
+        return nullptr;
+    }
     jumped_in = true;  //cppcheck-suppress unreadVariable
 
     fe_Object *obj;
