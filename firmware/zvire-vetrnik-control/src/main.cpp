@@ -35,6 +35,13 @@ void setup()
     button2.interval(BUTTON_DEBOUNCE);
     button2.setPressedState(LOW);
 
+    pinMode(PIN_BUZZER, OUTPUT);
+    pinMode(PIN_SHORT, OUTPUT);
+    pinMode(PIN_LED, OUTPUT);
+    // PIN_ONEWIRE is unused
+    pinMode(PIN_REL1, OUTPUT);
+    pinMode(PIN_REL2, OUTPUT);
+
     pinMode(LED_BUILTIN, OUTPUT);
     for (uint8_t i = 0; i < 10; i++)
     {

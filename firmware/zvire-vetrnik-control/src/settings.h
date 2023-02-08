@@ -1,9 +1,17 @@
 #pragma once
 #include <stdint.h>
 
-#define PIN_FLASH_SS PB2
-#define PIN_BUTTON1 PB13
-#define PIN_BUTTON2 PB14
+#define PIN_FLASH_SS    PB2
+#define PIN_BUZZER      PB12
+#define PIN_BUTTON1     PB13
+#define PIN_BUTTON2     PB14
+#define PIN_SHORT       PB15 // active low
+#define PIN_LED         PA15
+#define PIN_ONEWIRE     PB5
+#define PIN_REL1        PB8
+#define PIN_REL2        PB9
+#define PIN_NTC1        PA0  // ADC
+#define PIN_NTC2        PA1  // ADC
 
 #define BUTTON_DEBOUNCE 50  // ms
 #define BUTTON_LONG 500  // ms
