@@ -93,6 +93,13 @@ void control_set_strategy(control_strategy_t s)
         case control_shorted:
             power_board_set_duty(0);
             power_board_set_mode(shorted);
+            digitalWrite(PIN_SHORT, LOW);
+            break;
+
+        case control_manual:
+        case control_MQTT:
+        case control_lisp:
+            digitalWrite(PIN_SHORT, HIGH);
             break;
     }
     strategy = s;
