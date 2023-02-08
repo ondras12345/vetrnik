@@ -31,7 +31,7 @@ void display_init()
 
 void display_init_lisp()
 {
-    lisp_run_blind("(= disp (fn () ))");
+    lisp_empty_func("disp");
 }
 
 

@@ -424,6 +424,12 @@ static fe_Object* cfunc_LED_set(fe_Context *ctx, fe_Object *arg)
 }
 
 
+static fe_Object* cfunc_empty(fe_Context *ctx, fe_Object *arg)
+{
+    return fe_bool(ctx, 0);
+}
+
+
 static int gc;
 static fe_Context *ctx;
 
@@ -582,4 +588,14 @@ bool lisp_process(const char * code, size_t length, Print * response)
 bool lisp_process(const char * code, Print * response)
 {
     return lisp_process(code, -1, response);
+}
+
+
+/**
+ * Register an empty function with no parameters.
+ */
+void lisp_empty_func(const char * name)
+{
+    fe_set(ctx, fe_symbol(ctx, name), fe_cfunc(ctx, cfunc_empty));
+    fe_restoregc(ctx, gc);
 }

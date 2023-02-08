@@ -34,8 +34,7 @@ void control_init()
  */
 void control_init_lisp()
 {
-    // Add an empty control function
-    lisp_run_blind("(= ctrl (fn () ))");
+    lisp_empty_func("ctrl");
 }
 
 
