@@ -1,3 +1,5 @@
+lisp/out.lisp
+
 .pio
 .clang_complete
 .gcc-flags.json
