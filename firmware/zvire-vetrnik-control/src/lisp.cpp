@@ -399,6 +399,8 @@ static fe_Object* cfunc_LED_get(fe_Context *ctx, fe_Object *arg)
     switch (LED_number)
     {
         case 1:
+            return fe_bool(ctx, !digitalRead(LED_BUILTIN));
+        case 2:
             return fe_bool(ctx, digitalRead(PIN_LED));
         default:
             fe_error(ctx, "invalid LED number");
@@ -414,6 +416,9 @@ static fe_Object* cfunc_LED_set(fe_Context *ctx, fe_Object *arg)
     switch (LED_number)
     {
         case 1:
+            digitalWrite(LED_BUILTIN, !state);
+            break;
+        case 2:
             digitalWrite(PIN_LED, state);
             break;
         default:
