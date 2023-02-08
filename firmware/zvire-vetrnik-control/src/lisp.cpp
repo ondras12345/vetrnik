@@ -4,6 +4,8 @@
 #include "display.h"
 #include "stats.h"
 #include "control.h"
+#include "settings.h"
+#include <Arduino.h>
 #include <math.h>
 #include <SerialFlash.h>
 
@@ -353,6 +355,75 @@ static fe_Object* cfunc_control_set(fe_Context *ctx, fe_Object *arg)
 }
 
 
+static fe_Object* cfunc_relay_get(fe_Context *ctx, fe_Object *arg)
+{
+    int relay_number = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    switch (relay_number)
+    {
+        case 1:
+            return fe_bool(ctx, digitalRead(PIN_REL1));
+        case 2:
+            return fe_bool(ctx, digitalRead(PIN_REL2));
+        default:
+            fe_error(ctx, "invalid relay number");
+            return fe_bool(ctx, 0);
+    }
+}
+
+
+static fe_Object* cfunc_relay_set(fe_Context *ctx, fe_Object *arg)
+{
+    int relay_number = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
+
+    switch (relay_number)
+    {
+        case 1:
+            digitalWrite(PIN_REL1, state);
+            break;
+        case 2:
+            digitalWrite(PIN_REL2, state);
+            break;
+        default:
+            fe_error(ctx, "invalid relay number");
+            break;
+    }
+
+    return fe_bool(ctx, 0);
+}
+
+
+static fe_Object* cfunc_LED_get(fe_Context *ctx, fe_Object *arg)
+{
+    int LED_number = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    switch (LED_number)
+    {
+        case 1:
+            return fe_bool(ctx, digitalRead(PIN_LED));
+        default:
+            fe_error(ctx, "invalid LED number");
+            return fe_bool(ctx, 0);
+    }
+}
+
+
+static fe_Object* cfunc_LED_set(fe_Context *ctx, fe_Object *arg)
+{
+    int LED_number = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
+    switch (LED_number)
+    {
+        case 1:
+            digitalWrite(PIN_LED, state);
+            break;
+        default:
+            fe_error(ctx, "invalid LED number");
+            break;
+    }
+    return fe_bool(ctx, 0);
+}
+
+
 static int gc;
 static fe_Context *ctx;
 
@@ -376,6 +447,10 @@ void lisp_init()
     fe_set(ctx, fe_symbol(ctx, "stats"), fe_cfunc(ctx, cfunc_stats));
     fe_set(ctx, fe_symbol(ctx, "ctrlg"), fe_cfunc(ctx, cfunc_control_get));
     fe_set(ctx, fe_symbol(ctx, "ctrls"), fe_cfunc(ctx, cfunc_control_set));
+    fe_set(ctx, fe_symbol(ctx, "relg"), fe_cfunc(ctx, cfunc_relay_get));
+    fe_set(ctx, fe_symbol(ctx, "rels"), fe_cfunc(ctx, cfunc_relay_set));
+    fe_set(ctx, fe_symbol(ctx, "ledg"), fe_cfunc(ctx, cfunc_LED_get));
+    fe_set(ctx, fe_symbol(ctx, "leds"), fe_cfunc(ctx, cfunc_LED_set));
 
     // Add variables for power modes
     for (size_t i = 0; power_board_modes[i] != nullptr; i++)
