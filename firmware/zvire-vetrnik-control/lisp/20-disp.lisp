@@ -23,6 +23,10 @@
   (lcdn (pwrg "RPM") 3 0)
   (lcds "RPM ")
   ; 12
+  (lcdn (pwrg "temperature_heatsink") 2 0)
+  ; 14
+  (lcds "'C")
+  ; 16
   (lcdw 0)
 ))
 
