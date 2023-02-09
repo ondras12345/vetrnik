@@ -41,6 +41,10 @@ static CLIeditor ed;
 static void ed_write_file(void * buf, size_t len)
 {
     if (ed_file == nullptr) return;
+    DEBUG_GENERAL->print("ed writing ");
+    DEBUG_GENERAL->print(len);
+    DEBUG_GENERAL->print(" at ");
+    DEBUG_GENERAL->println(ed_file->position());
     if (len == 0) return;  // this doesn't seem to be handled in SerialFlash
     ed_file->write(buf, len);
 }
@@ -667,13 +671,17 @@ static void cmnd_log(char *args, Stream *response)
     {
         log_set_DEBUG_MQTT(setting_value[0] == '1');
     }
+    else if (strcmp(setting_name, "general") == 0)
+    {
+        log_set_DEBUG_GENERAL(setting_value[0] == '1');
+    }
     else
     {
         goto bad;
     }
     return;
 bad:
-    response->println("Usage: log [[power|MQTT] (1|0)]");
+    response->println("Usage: log [[power|MQTT|general] (1|0)]");
 }
 
 

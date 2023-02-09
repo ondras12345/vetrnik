@@ -124,6 +124,7 @@ void log_add_INFO_backend(Print * printer)
 Print * INFO = &INFO_final_mp;
 Print * DEBUG_PB = &DEBUG_buffer;
 Print * DEBUG_MQTT = &DEBUG_buffer;
+Print * DEBUG_GENERAL = &DEBUG_buffer;
 
 
 
@@ -138,4 +139,11 @@ void log_set_DEBUG_MQTT(bool v)
 {
     if (v) DEBUG_MQTT = &INFO_multiprint;
     else DEBUG_MQTT = &DEBUG_buffer;
+}
+
+
+void log_set_DEBUG_GENERAL(bool v)
+{
+    if (v) DEBUG_GENERAL = &INFO_multiprint;
+    else DEBUG_GENERAL = &DEBUG_buffer;
 }

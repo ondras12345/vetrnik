@@ -24,6 +24,7 @@ void log_add_INFO_backend(Print * printer);
 
 void log_set_DEBUG_PB(bool v);
 void log_set_DEBUG_MQTT(bool v);
+void log_set_DEBUG_GENERAL(bool v);
 
 // All Print pointers in this file are guaranteed not to be nullptr.
 
@@ -34,3 +35,4 @@ extern Print * INFO;
 extern Print * DEBUG_PB;
 /// MQTT debug log
 extern Print * DEBUG_MQTT;
+extern Print * DEBUG_GENERAL;
