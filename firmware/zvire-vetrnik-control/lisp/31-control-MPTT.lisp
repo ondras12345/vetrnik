@@ -22,7 +22,7 @@
   )
 ))
 
-(= ctrla (fn ()
+(= ctrl (fn ()
   (let v (pwrg "voltage"))
   (let i (pwrg "current"))
   (let r (pwrg "RPM"))
@@ -65,15 +65,4 @@
   ; duty limits
   (= d (lim d 0 255))
   (pwrs "duty" d)
-))
-
-; the RMS filter for current is way too slow, need to slow down the control loop
-; TODO the above comment is no longer true, test
-(= pt 0)
-(= ctrl (fn ()
-  (let ti (pwrg "time"))
-  (if
-    (and (is (rem ti 2) 0) (not (is pt ti))) (ctrla)
-  )
-  (= pt ti)
 ))
