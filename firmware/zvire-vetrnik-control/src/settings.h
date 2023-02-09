@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 
-#define PIN_FLASH_SS    PB2
+#define PIN_FLASH_SS    PB1
 #define PIN_BUZZER      PB12
 #define PIN_BUTTON1     PB13
 #define PIN_BUTTON2     PB14

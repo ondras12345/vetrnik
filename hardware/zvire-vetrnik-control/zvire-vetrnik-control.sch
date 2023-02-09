@@ -1021,8 +1021,8 @@ Wire Wire Line
 	3500 2200 4200 2200
 Wire Wire Line
 	3500 2300 4200 2300
-Text Notes 4450 3300 0    50   ~ 0
-PC13 is used as LED_BUILTIN\nPA2,3 reserved for extra UART\nPA15, PB3, PB4 JTAG\nPA8-PA12 seems to be USB stuff\n5V pins are directly connected to the USB port
+Text Notes 4450 3400 0    50   ~ 0
+PC13 is used as LED_BUILTIN\nPA2,3 reserved for extra UART\nPA15, PB3, PB4 JTAG\nPA8-PA12 seems to be USB stuff\n5V pins are directly connected to the USB port\nPB2 is BOOT1 and has 10k pull-down
 Text Label 3500 2100 0    50   ~ 0
 onewire
 Wire Wire Line
@@ -3258,4 +3258,8 @@ Wire Wire Line
 Connection ~ 6500 4000
 Wire Wire Line
 	6500 4000 6500 4100
+Text Notes 8300 900  0    50   ~ 0
+TODO SPIflash needs\nCE/SS pull-up\n(when MCU is in reset)\n- bodged in 10k
+Text Notes 6550 1650 0    50   ~ 0
+TODO SS_FLASH bodge:\nPB1 instead of PB2
 $EndSCHEMATC
