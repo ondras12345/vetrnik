@@ -42,6 +42,11 @@ void setup()
     pinMode(PIN_REL1, OUTPUT);
     pinMode(PIN_REL2, OUTPUT);
 
+    pinMode(PIN_ETH_RST, OUTPUT);
+    digitalWrite(PIN_ETH_RST, LOW);
+    delayMicroseconds(1000);
+    digitalWrite(PIN_ETH_RST, HIGH);
+
     digitalWrite(PIN_BUZZER, HIGH);
     pinMode(LED_BUILTIN, OUTPUT);
     for (uint8_t i = 0; i < 10; i++)

@@ -12,7 +12,7 @@
 #define PIN_REL2        PB9
 #define PIN_NTC1        PA0  // ADC
 #define PIN_NTC2        PA1  // ADC
-#define PIN_ETH_RST     PB10 // active low, leave floating for now
+#define PIN_ETH_RST     PB10 // active low
 
 #define BUTTON_DEBOUNCE 50  // ms
 #define BUTTON_LONG 500  // ms
