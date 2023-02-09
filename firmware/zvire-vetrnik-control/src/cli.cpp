@@ -630,6 +630,11 @@ static void cmnd_SPIflash(char *args, Stream *response)
         SerialFlash.read(start, buf, len);
         stream_hexdump(response, buf, len, start);
     }
+    else
+    {
+        response->println("Invalid subcommand");
+        goto bad;
+    }
 
     return;
 bad:
