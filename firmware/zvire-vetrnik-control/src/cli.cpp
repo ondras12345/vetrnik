@@ -469,7 +469,7 @@ static void cmnd_SPIflash(char *args, Stream *response)
         response->print("ready: ");
         response->println(SerialFlash.ready());
         response->print("ID:");
-        uint8_t id[5];
+        uint8_t id[5] = {0};
         SerialFlash.readID(id);
         for (uint8_t i = 0; i < sizeof id; i++)
         {
