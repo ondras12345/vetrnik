@@ -9,11 +9,13 @@ setting_t settings[kSettingsEnd] = {
     {10},  // kRPMConversion
 
     // ACS712-20A: 5000 mV / 1024 / 100 mV/A * 1000 mA/A = 48
-    // ACS770LCB-50U: 50000 mV / 1024 / 80 mV/A * 1000 mA/A = 61
-    {61},  // KCurrentConversion
+    // ACS770LCB-50U: 5000 mV / 1024 / 80 mV/A * 1000 mA/A = 61
+    // ACS770LCB-50U with opamp: 5000 mV / 1024 / (80 mV/A * 1.5) * 1000 mA/A = 41
+    {41},  // KCurrentConversion
 
     // 500 mV .. 102; seems to want 104
-    {104},  // kCurrentOffsetL
+    // for opamp board with Vref set to 440mV: 21
+    {21},  // kCurrentOffsetL
     {0},  // kCurrentOffsetH
 
     // TODO infinite loop after adding new setting?

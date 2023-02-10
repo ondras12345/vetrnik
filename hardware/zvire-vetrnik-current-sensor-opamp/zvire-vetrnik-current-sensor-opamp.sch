@@ -697,4 +697,8 @@ F 3 "" H 2150 3650 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2150 3650 2000 3650
+Text Notes 4900 4450 0    50   ~ 0
+WARNING: +5V is +5P; GND is GNDPWR and so is the BNC shield
+Text Notes 4500 4300 0    50   ~ 0
+TODO there were parasitic oscillations, 22pF added in parallel with R7
 $EndSCHEMATC
