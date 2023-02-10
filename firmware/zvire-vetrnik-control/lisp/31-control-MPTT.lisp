@@ -5,8 +5,8 @@
 
 ; TODO OCP / limit duty -- better do that in power board firmware
 
+
 ; previous values
-(= pv 0)
 (= pp 0)
 
 (= s 0) ; step
@@ -29,7 +29,8 @@
   (let p (* v i)) ; power
   (= s
     (if
-      (< s 0) ; decreasing load
+      ; decreasing load
+      (< s 0)
         (if
           (< p pp) 1 ; power is decreasing
           -1 ; power is increasing, continue decreasing
@@ -42,7 +43,9 @@
     )
   )
 
-  ;(= pv v)
+  ; don't get stuck at 0
+  (if (is d 0) (= s 1))
+
   (= pp p)
 
   ; RPM limits
