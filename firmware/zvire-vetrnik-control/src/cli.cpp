@@ -848,9 +848,8 @@ void CLI_init()
     if (settings.shell_telnet)
     {
         TelnetStream.begin();
+        log_add_INFO_backend(&TelnetStream);
     }
-
-    log_add_INFO_backend(&TelnetStream);
 #endif
 
     // Clear the terminal
