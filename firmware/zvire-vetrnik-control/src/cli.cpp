@@ -3,6 +3,7 @@
 #include <Shellminator.hpp>
 #include <Shellminator-IO.hpp>
 #include <Commander-API.hpp>
+#include <Commander-API-Commands.hpp>
 #include <Commander-IO.hpp>
 #include <Ethernet.h>
 #include "settings.h"
@@ -409,16 +410,13 @@ static void cmnd_stats(char *args, Stream *response)
 
 
 #ifdef SHELL_TELNET
-static void cmnd_telnet_quit(char *args, Stream *response)
+
+static void telnet_logout()
 {
-    if (!settings.shell_telnet)
-    {
-        response->println("shell_telnet is disabled in conf");
-        return;
-    }
     TelnetStream.flush();
     TelnetStream.stop();
 }
+
 #endif
 
 
@@ -824,9 +822,6 @@ Commander::API_t API_tree[] = {
     apiElement("power",         "Print status of power PCB or set params.", cmnd_power),
     apiElement("control",       "Get or set params of control algorithm.",  cmnd_control),
     apiElement("stats",         "Get stats (energy, ...)",                  cmnd_stats),
-#ifdef SHELL_TELNET
-    apiElement("telnet_quit",   "Stop the telnet session.",                 cmnd_telnet_quit),
-#endif
     apiElement("lisp",          "Process a line of Lisp",                   cmnd_lisp),
     apiElement("lisp_reset",    "Reinit Lisp interpreter",                  cmnd_lisp_reset),
     apiElement("lisp_read",     "Execute Lisp from file",                   cmnd_lisp_read),
@@ -837,7 +832,11 @@ Commander::API_t API_tree[] = {
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),
     apiElement("ver",           "Print out version info.",                  cmnd_ver),
     apiElement("watch",         "Run command every second.",                cmnd_watch),
-    // help -d to print out descriptions
+    // commander pre-made commands
+    API_ELEMENT_MILLIS,
+    API_ELEMENT_UPTIME,
+    // digitalRead, analogRead look too primitive to be useful. They also don't
+    // validate args, that could potentially be dangerous.
 };
 
 
@@ -878,6 +877,7 @@ void CLI_init()
     {
         shell_telnet.attachCommander(&commander);
         shell_telnet.begin("vetrnik-control");
+        shell_telnet.overrideLogoutKey(telnet_logout);
     }
 #endif
 }
