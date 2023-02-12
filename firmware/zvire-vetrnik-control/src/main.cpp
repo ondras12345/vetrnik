@@ -49,7 +49,7 @@ void setup()
 
     digitalWrite(PIN_BUZZER, HIGH);
     pinMode(LED_BUILTIN, OUTPUT);
-    for (uint8_t i = 0; i < 10; i++)
+    for (uint8_t i = 0; i < 4; i++)
     {
         digitalWrite(LED_BUILTIN, LOW);
         delay(100);
