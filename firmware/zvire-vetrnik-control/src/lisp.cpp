@@ -263,6 +263,7 @@ static fe_Object* cfunc_power_get(fe_Context *ctx, fe_Object *arg)
     pbstateC(current, 0.001)
     pbstate(enabled)
     pbstateC(temperature_heatsink, 0.1)
+    pbstateC(temperature_rectifier, 0.1)
     pbstate(fan)
     pbstate(error_count)
 #undef pbstate

@@ -274,6 +274,7 @@ static void print_power_board_status(Stream *response)
     printStatC(current, 0.001, 3, "A");
     printStat(enabled);
     printStatC(temperature_heatsink, 0.1, 1, "'C");
+    printStatC(temperature_rectifier, 0.1, 1, "'C");
     printStat(fan);
     printStat(error_count);
 #undef printStat

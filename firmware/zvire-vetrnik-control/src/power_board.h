@@ -14,6 +14,7 @@ typedef struct {
     uint16_t current;   ///< mA
     bool enabled;       ///< status of external enable pin
     uint16_t temperature_heatsink;  ///< 'C, *10
+    uint16_t temperature_rectifier;  ///< 'C, *10
     uint8_t fan;        ///< fan output duty cycle, 0-255
     uint8_t error_count;
     // setting index and value ignored
