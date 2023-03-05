@@ -11,6 +11,7 @@ uint16_t RPM = 0;
 uint16_t voltage = 0;
 uint16_t current = 0;
 uint16_t temperature_heatsink = 0;
+uint16_t temperature_rectifier = 0;
 uint8_t fan = 0;
 
 mode_t mode = shorted;

@@ -1345,4 +1345,6 @@ Wire Wire Line
 Connection ~ 5000 5300
 Wire Wire Line
 	5000 5300 4500 5300
+Text Notes 7000 5200 0    50   ~ 0
+2023-03-04 mod: 4k7 in parallel with C28; J16 is now an NTC channel
 $EndSCHEMATC

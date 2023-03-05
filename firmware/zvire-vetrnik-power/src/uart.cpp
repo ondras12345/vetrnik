@@ -165,6 +165,10 @@ static void report()
     Serial.print(temperature_heatsink);
     Serial.print(' ');
 
+    Serial.print('R');
+    Serial.print(temperature_rectifier);
+    Serial.print(' ');
+
     Serial.print('f');
     Serial.print(fan);
     Serial.print(' ');

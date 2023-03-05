@@ -16,6 +16,9 @@
 #define NTC_heatsink_Rdiv 4700
 #define NTC_heatsink_beta 3977
 #define NTC_heatsink_R_nom 10000
+#define NTC_rectifier_Rdiv 4700
+#define NTC_rectifier_beta 3977
+#define NTC_rectifier_R_nom 10000
 
 #define DEBUG false
 
@@ -24,6 +27,9 @@
 #define FAN_TEMPERATURE_OFF 300  // probably should be higher than normal room temperature
 #define FAN_POWER_MIN 0
 #define HEATSINK_TEMPERATURE_MAX 400
+// see rectifier datasheet (SKBPC5004) - Io-Tc derating curve
+#define FAN_TEMPERATURE_RECTIFIER_THRESHOLD 450
+#define RECTIFIER_TEMPERATURE_MAX 650
 
 #include <stdint.h>
 

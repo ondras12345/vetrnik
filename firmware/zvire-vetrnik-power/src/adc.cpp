@@ -54,11 +54,14 @@ ISR(ADC_vect)
     if (channel == 1) ADC_values[1] = RMS_current.process(ADC_values[1]);
 
     uint8_t next_channel = (channel + 1) % 4;
-    if (next_channel == 2) next_channel = 3;  // unused channel
+    // only sample NTCs once in a while
+    static uint8_t NTC_counter = 0;
+    if (next_channel == 2)
+    {
+        if (NTC_counter != 0) next_channel = 3;
+    }
     if (next_channel == 3)
     {
-        // only sample NTC once in a while
-        static uint8_t NTC_counter = 0;
         if (NTC_counter != 0) next_channel = 0;
         NTC_counter++;
     }
@@ -92,7 +95,7 @@ void ADC_loop()
         cli();
         vals[0] = ADC_values[0];
         vals[1] = ADC_values[1];
-        //vals[2] = ADC_values[2];  // unused channel
+        vals[2] = ADC_values[2];
         vals[3] = ADC_values[3];
         sei();
 
@@ -116,15 +119,26 @@ void ADC_loop()
         {
             NTC_prev_millis = now;
             NTC ntc_heatsink(NTC_heatsink_Rdiv, NTC_heatsink_beta, NTC_heatsink_R_nom);
+            NTC ntc_rectifier(NTC_rectifier_Rdiv, NTC_rectifier_beta, NTC_rectifier_R_nom);
             temperature_heatsink = ntc_heatsink.getC(vals[3]);
+            temperature_rectifier = ntc_rectifier.getC(vals[2]);
             if (temperature_heatsink == 0 || temperature_heatsink > HEATSINK_TEMPERATURE_MAX)
             {
                 errm_add(errm_create(&etemplate_temperature, ((temperature_heatsink/10) & 0xFF)));
             }
-            //if (temperature_heatsink < fan_temperature_off) fan = fan_power_min;
-            //else if (temperature_heatsink > fan_temperature_full) fan = 255;
-            //fan = map_uint16(temperature_heatsink, fan_temperature_off, fan_temperature_full, fan_power_min, 255);
-            fan = (temperature_heatsink > (FAN_TEMPERATURE_OFF + (fan ? 0 : 10))) ? 255 : 0;
+            if (temperature_rectifier == 0 || temperature_rectifier > RECTIFIER_TEMPERATURE_MAX)
+            {
+                errm_add(errm_create(&etemplate_temperature, ((temperature_rectifier/10) & 0xFF)));
+            }
+            uint8_t fan_hs;
+            //if (temperature_heatsink < fan_temperature_off) fan_hs = fan_power_min;
+            //else if (temperature_heatsink > fan_temperature_full) fan_hs = 255;
+            //fan_hs = map_uint16(temperature_heatsink, fan_temperature_off, fan_temperature_full, fan_power_min, 255);
+            fan_hs = (temperature_heatsink > (FAN_TEMPERATURE_OFF + (fan ? 0 : 10))) ? 255 : 0;
+            uint8_t fan_rect = (temperature_rectifier > (FAN_TEMPERATURE_RECTIFIER_THRESHOLD + (fan ? -5 : 5))) ? 255 : 0;
+
+            fan = (fan_hs > fan_rect) ? fan_hs : fan_rect;
+
             // TODO PD5 cannot do PWM on ATmega8...
             if (fan < 128)
                 gpio_clr(pin_FAN);

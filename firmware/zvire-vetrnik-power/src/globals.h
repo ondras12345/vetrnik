@@ -30,6 +30,7 @@ extern uint16_t RPM;
 extern uint16_t voltage;  ///< V, *10
 extern uint16_t current;  ///< mA
 extern uint16_t temperature_heatsink;  ///< 'C, *10
+extern uint16_t temperature_rectifier;  ///< 'C, *10
 extern uint8_t fan;
 
 extern mode_t mode;
