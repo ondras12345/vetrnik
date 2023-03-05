@@ -37,6 +37,7 @@ power_board_status_t power_board_status_read()
     ret.voltage = RX_datapoints_get('v').value;
     ret.current = RX_datapoints_get('i').value;
     ret.enabled = RX_datapoints_get('e').value;
+    ret.emergency = RX_datapoints_get('S').value;
     ret.temperature_heatsink = RX_datapoints_get('T').value;
     ret.temperature_rectifier = RX_datapoints_get('R').value;
     ret.fan = RX_datapoints_get('f').value;

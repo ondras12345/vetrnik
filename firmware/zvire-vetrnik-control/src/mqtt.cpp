@@ -184,6 +184,7 @@ void MQTT_loop()
     PB_decimal(voltage, "voltage", 1)
     PB_decimal(current, "current", 3)
     PB_bool(enabled, "enabled")
+    PB_bool(emergency, "emergency")
     PB_decimal(temperature_heatsink, "temperature_heatsink", 1)
     PB_decimal(temperature_rectifier, "temperature_rectifier", 1)
     PB_uint16(fan, "fan");

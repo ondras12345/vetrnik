@@ -13,6 +13,7 @@ typedef struct {
     uint16_t voltage;   ///< V, *10
     uint16_t current;   ///< mA
     bool enabled;       ///< status of external enable pin
+    bool emergency;     ///< emergency stop mode, requires physical reset
     uint16_t temperature_heatsink;  ///< 'C, *10
     uint16_t temperature_rectifier;  ///< 'C, *10
     uint8_t fan;        ///< fan output duty cycle, 0-255
