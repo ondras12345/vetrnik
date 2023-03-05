@@ -175,8 +175,12 @@ static void report()
 
     Serial.print('E');
     Serial.print(errm_count);
-
     Serial.print(' ');
+
+    Serial.print('S');
+    Serial.print(emergency);
+    Serial.print(' ');
+
     Serial.print('$');
     Serial.print(setting_index);
     Serial.print('=');
