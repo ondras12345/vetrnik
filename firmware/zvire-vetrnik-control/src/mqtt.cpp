@@ -87,7 +87,7 @@ void MQTT_loop()
 
     if (MQTTReconnectCount > 6)
     {
-        if ((unsigned long)(millis() - MQTTLastReconnect) < MQTTReconnectRate*10UL)
+        if ((unsigned long)(millis() - MQTTLastReconnect) < MQTTReconnectRate*3)
             return;
     }
 

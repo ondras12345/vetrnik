@@ -21,7 +21,7 @@
 
 #define MQTTport 1883
 #define MQTTclientID "vetrnik"
-#define MQTTReconnectRate 20*1000  // in ms
+#define MQTTReconnectRate 20*1000UL  // in ms
 #define MQTTtopic_prefix                    "vetrnik/"
 #define MQTTtopic_tele                      MQTTtopic_prefix "tele/"
 #define MQTTtopic_cmnd                      MQTTtopic_prefix "cmnd/"
