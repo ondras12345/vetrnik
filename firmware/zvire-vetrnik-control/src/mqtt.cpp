@@ -25,6 +25,21 @@ bool DHCP_mode = true;
 unsigned long MQTT_last_command_ms = 0;
 
 
+void ETH_reset()
+{
+    digitalWrite(PIN_ETH_RST, LOW);
+    delayMicroseconds(1000);
+    digitalWrite(PIN_ETH_RST, HIGH);
+}
+
+
+uint8_t MQTT_reinit()
+{
+    ETH_reset();
+    return MQTT_init();
+}
+
+
 uint8_t MQTT_init()
 {
     //Ethernet.init(pin_ETH_SS);

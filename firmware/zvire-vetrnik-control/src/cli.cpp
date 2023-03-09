@@ -59,6 +59,13 @@ static void ed_write_response(char c)
 
 static void cmnd_ifconfig(char *args, Stream *response)
 {
+    if (strcmp(args, "-r") == 0)
+    {
+        response->print("Resetting ETH module: ");
+        response->println(MQTT_reinit());
+        response->println();
+    }
+
     response->print("HW: ");
     response->println((uint8_t)Ethernet.hardwareStatus());
     response->print("status: ");
@@ -76,6 +83,7 @@ static void cmnd_ifconfig(char *args, Stream *response)
     response->print("MAC: ");
     stream_print_MAC(response, settings.ETH_MAC);
     response->println();
+    response->println("`ifconfig -r` to reset ETH module");
 }
 
 
