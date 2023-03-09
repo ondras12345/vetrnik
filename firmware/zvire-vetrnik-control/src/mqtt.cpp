@@ -76,8 +76,20 @@ void MQTT_loop()
 {
     if (eth_skip) return;
 
+    unsigned long now = millis();
+    if (Ethernet.localIP() == IPAddress(0, 0, 0, 0) &&
+        Ethernet.subnetMask() == IPAddress(0, 0, 0, 0)
+        )
+    {
+        static unsigned long prev_reinit = 0;
+        if (now - prev_reinit < 60*1000UL) return;  // rate limit
+        INFO->println("ETH stuck, rst");
+        MQTT_reinit();
+        prev_reinit = now;
+    }
+
     // ENC28J60: this seems to do more than just renew the DHCP lease
-    // W5500: it should be OK to only call this every 10 minutes TODO
+    // W5500: only DHCP
     if (DHCP_mode) Ethernet.maintain();
 
     if (MQTT_skip) return;
