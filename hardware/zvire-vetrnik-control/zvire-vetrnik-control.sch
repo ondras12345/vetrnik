@@ -3262,4 +3262,6 @@ Text Notes 8300 900  0    50   ~ 0
 TODO SPIflash needs\nCE/SS pull-up\n(when MCU is in reset)\n- bodged in 10k
 Text Notes 6550 1650 0    50   ~ 0
 TODO SS_FLASH bodge:\nPB1 instead of PB2
+Text Notes 9250 1000 0    50   ~ 0
+TODO ethernet resets when\nswitching contactor due to EMI\n- bodged in 330R in series,\n  10n to ground on ~RST~ pin
 $EndSCHEMATC
