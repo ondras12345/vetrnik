@@ -3264,4 +3264,6 @@ Text Notes 6550 1650 0    50   ~ 0
 TODO SS_FLASH bodge:\nPB1 instead of PB2
 Text Notes 9250 1000 0    50   ~ 0
 TODO ethernet resets when\nswitching contactor due to EMI\n- bodged in 330R in series,\n  10n to ground on ~RST~ pin
+Text Notes 5850 3100 0    50   ~ 0
+TODO mod - PC14 is\n~SHORT~ contactor sense\n(internal pull-up)
 $EndSCHEMATC

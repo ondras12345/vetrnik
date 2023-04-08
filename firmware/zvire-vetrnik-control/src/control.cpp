@@ -82,6 +82,32 @@ void control_new_state()
 }
 
 
+void control_loop()
+{
+    // Handle external e-stop button, hardware OVP, ...
+    static bool prev_short_emergency = false;
+    static unsigned long short_emergency_millis = 0;
+    bool short_emergency = (
+            control_get_strategy() != control_shorted &&
+            power_board_status.mode != shorted &&
+            power_board_status.mode != stopping && // stopping mode can sometimes SHORT
+            !digitalRead(PIN_SHORT_SENSE)
+        );
+
+    // the contactor is slow
+    if (prev_short_emergency && millis() - short_emergency_millis >= 100UL)
+    {
+        INFO->println("SHORT e-stop");
+        control_set_strategy(control_shorted);
+        short_emergency = false;
+    }
+
+    if (short_emergency && !prev_short_emergency)
+        short_emergency_millis = millis();
+    prev_short_emergency = short_emergency;
+}
+
+
 void control_set_strategy(control_strategy_t s)
 {
     INFO->print("Switching to ");

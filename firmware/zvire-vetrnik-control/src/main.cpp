@@ -35,6 +35,7 @@ void setup()
     button2.interval(BUTTON_DEBOUNCE);
     button2.setPressedState(LOW);
 
+    pinMode(PIN_SHORT_SENSE, INPUT_PULLUP);
     pinMode(PIN_BUZZER, OUTPUT);
     pinMode(PIN_SHORT, OUTPUT);
     pinMode(PIN_LED, OUTPUT);
@@ -123,6 +124,7 @@ void loop()
         stats_new_state();
     }
 
+    control_loop();
     CLI_loop();
     MQTT_loop();
     display_loop();
