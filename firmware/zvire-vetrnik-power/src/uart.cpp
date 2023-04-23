@@ -35,6 +35,11 @@ typedef struct {
 } datapoint_t;
 
 
+enum uart_command {
+    COMMAND_RESET = 170,
+};
+
+
 /*!
     @brief  Convert a string of digits to an 8-bit unsigned integer.
 
@@ -98,17 +103,18 @@ static void cmnd_setting_set(uint8_t value)
 }
 
 
-static void cmnd_test(uint8_t value)
+static void cmnd_command(uint8_t value)
 {
-#if defined(DEBUG) && DEBUG
-    if (value == 0xAA)
-    {
-        // Watchdog test
-        for (;;);
-        return;
+    switch (value) {
+        case COMMAND_RESET:
+            Serial.println(F(">resetting"));
+            emergency_stop();
+            // Watchdog reset
+            for (;;);
+            break;
+        default:
+            errm_add(errm_create(&etemplate_comms_arg, uint8_t('C')));
     }
-    errm_add(errm_create(&etemplate_comms_arg, uint8_t('T')));
-#endif
 }
 
 
@@ -120,7 +126,7 @@ static datapoint_t datapoints[] = {
     // status message) and written ($index=value)
     {'$', cmnd_setting_choose},
     {'=', cmnd_setting_set},
-    {'T', cmnd_test},
+    {'C', cmnd_command},
 };
 
 #define FOR_EACH_DP for (uint8_t i = 0; i < sizeof datapoints / sizeof datapoints[0]; i++)
