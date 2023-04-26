@@ -14,3 +14,4 @@ const errm_template etemplate_OVP_stop = { 5, "OVP stop" };
 const errm_template etemplate_OVP_short = { 10, "OVP short" };
 const errm_template etemplate_emergency = { 10, "emergency" };
 const errm_template etemplate_temperature = { 10, "temperature" };
+const errm_template etemplate_WDT_reset = { 10, "WDT reset" };

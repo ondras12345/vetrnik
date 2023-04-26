@@ -119,19 +119,13 @@ void setup()
     RPM_init();
     ADC_init();
     Hbridge_init();
+    gpio_conf(pin_ENABLE, INPUT, PULLUP);
 
     if (mcusr_mirror & (1<<WDRF))
     {
-        // reset by watchdog
-        for (;;)
-        {
-            Serial.print(F(">RST by WDT "));
-            Serial.println(mcusr_mirror);
-            _delay_ms(500);
-        }
+        errm_add(errm_create(&etemplate_WDT_reset, mcusr_mirror));
     }
 
-    gpio_conf(pin_ENABLE, INPUT, PULLUP);
     _delay_ms(100);
 
     wdt_enable(WDTO_1S);
