@@ -200,6 +200,10 @@ static void report()
     Serial.print(emergency);
     Serial.print(' ');
 
+    Serial.print('C');
+    Serial.print(OCP_max_duty);
+    Serial.print(' ');
+
     Serial.print('$');
     Serial.print(setting_index);
     Serial.print('=');

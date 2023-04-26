@@ -5,6 +5,7 @@
 bool enabled = false;
 bool emergency = false;
 bool OVP_stop = false;
+uint8_t OCP_max_duty = 255;
 uint8_t duty = 0;
 uint16_t RPM = 0;
 uint16_t voltage = 0;

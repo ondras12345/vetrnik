@@ -3,6 +3,7 @@
 #include "settings.h"
 #include "error_templates.h"
 #include "hardware.h"
+#include "Hbridge.h"
 #include <moving_averages.h>
 #include <NTC.h>
 #include <Arduino.h>
@@ -85,6 +86,31 @@ uint16_t map_uint16(uint16_t x,
 }
 
 
+static void OVP() {
+    static mode_t OVP_mode;
+    if (voltage <= voltage_protection_start && OVP_stop)
+    {
+        OVP_stop = false;
+        // Restore mode from before OVP kicked in
+        set_mode(OVP_mode);
+    }
+
+    if (voltage >= voltage_protection_stop && !OVP_stop && !emergency)
+    {
+        OVP_stop = true;
+        OVP_mode = mode;
+        set_mode(stopping);
+        errm_add(errm_create(&etemplate_OVP_stop));
+    }
+
+    if (voltage >= voltage_protection_short && !emergency)
+    {
+        // Error with weight 10 will call emergency_stop automatically
+        errm_add(errm_create(&etemplate_OVP_short));
+    }
+}
+
+
 void ADC_loop()
 {
     unsigned long now = millis();
@@ -115,6 +141,9 @@ void ADC_loop()
             current = 65535U;
         else
             current = current * current_conversion;
+
+        OVP();
+        Hbridge_OCP();
 
         // only do this every 800 ms
         static uint8_t NTC_count = 0;
@@ -147,28 +176,6 @@ void ADC_loop()
                 gpio_clr(pin_FAN);
             else
                 gpio_set(pin_FAN);
-        }
-
-        static mode_t OVP_mode;
-        if (voltage <= voltage_protection_start && OVP_stop)
-        {
-            OVP_stop = false;
-            // Restore mode from before OVP kicked in
-            set_mode(OVP_mode);
-        }
-
-        if (voltage >= voltage_protection_stop && !OVP_stop && !emergency)
-        {
-            OVP_stop = true;
-            OVP_mode = mode;
-            set_mode(stopping);
-            errm_add(errm_create(&etemplate_OVP_stop));
-        }
-
-        if (voltage >= voltage_protection_short && !emergency)
-        {
-            // Error with weight 10 will call emergency_stop automatically
-            errm_add(errm_create(&etemplate_OVP_short));
         }
     }
 }

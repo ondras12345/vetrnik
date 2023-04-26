@@ -8,3 +8,4 @@
 void Hbridge_init();
 void Hbridge_set_duty(uint8_t duty_cycle);
 void Hbridge_set_enabled(bool value);
+void Hbridge_OCP();

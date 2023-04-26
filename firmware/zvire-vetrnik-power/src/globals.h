@@ -21,6 +21,7 @@ typedef enum {
 extern bool enabled;
 extern bool emergency;
 extern bool OVP_stop;
+extern uint8_t OCP_max_duty;
 extern uint8_t duty;
 extern uint16_t RPM;
 extern uint16_t voltage;  ///< V, *10

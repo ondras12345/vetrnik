@@ -1,9 +1,15 @@
 #pragma once
 
+// OVP
 #define voltage_protection_start 500  // 50V
 #define voltage_protection_stop 1400  // 140V
 #define voltage_protection_short 1600  // 160V
 
+// OCP
+#define OCP_L 40000U  // 40 A
+#define OCP_H 42000U  // 42 A
+
+// resistor values in voltmeter voltage divider
 #define voltage_R1 100000UL
 #define voltage_R2 3300
 

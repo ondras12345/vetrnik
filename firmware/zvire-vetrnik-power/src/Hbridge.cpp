@@ -12,9 +12,14 @@
 static constexpr uint16_t top_value = (F_CPU / (Hbridge_frequency * 2 * 64));
 static constexpr uint32_t duty_conversion = top_value / 51; // (top_value / 255 / 2 * 10)
 
+// Value set by Hbridge_set_duty (without OCP limit)
+static uint8_t requested_duty = 0;
 
 void Hbridge_set_duty(uint8_t duty_cycle)
 {
+    requested_duty = duty_cycle;
+    duty_cycle = (duty_cycle > OCP_max_duty) ? OCP_max_duty : duty_cycle;
+
     if (duty_cycle > Hbridge_duty_max) duty_cycle = Hbridge_duty_max;
     uint16_t a = (uint32_t)(duty_conversion) * duty_cycle / 10;
     uint16_t b = top_value - a;
@@ -71,4 +76,22 @@ void Hbridge_init()
             | (1<<COM1B0) | (1<<COM1B1)
             ;
     }
+}
+
+
+//! Call this each time a new current reading is available.
+//! It is important to avoid calling this too often.
+void Hbridge_OCP()
+{
+    uint8_t prev = OCP_max_duty;
+    if (current >= OCP_H) OCP_max_duty /= 2;
+    else if (current < OCP_L) {
+        OCP_max_duty += 5;
+        // cppcheck-suppress knownConditionTrueFalse ; false positive
+        // handle uint8_t wraparound
+        if (OCP_max_duty < prev) OCP_max_duty = 255;
+    }
+
+    // Apply new OCP limit.
+    if (OCP_max_duty != prev) Hbridge_set_duty(requested_duty);
 }
