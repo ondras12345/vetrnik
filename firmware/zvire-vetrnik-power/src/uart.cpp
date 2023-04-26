@@ -222,6 +222,8 @@ void uart_loop()
     static char buff[8];  // this is NOT always null terminated!
     static uint8_t buff_index = 0;
 
+    unsigned long now = millis();
+
     while (Serial.available())
     {
         char c = Serial.read();
@@ -261,15 +263,13 @@ void uart_loop()
         {
             buff[buff_index++] = '\0';
             if (parsed_dp->process_value) parsed_dp->process_value(str_uint8(buff));
-            parsed_dp->last_updated = millis();
+            parsed_dp->last_updated = now;
             in_msg = false;
             buff_index = 0;
             continue;
         }
     }
 
-
-    unsigned long now = millis();
     if (mode != shorted) FOR_EACH_DP
     {
         if (datapoints[i].refresh_interval && !DEBUG &&
