@@ -1,6 +1,7 @@
 #include "uart.h"
 #include <errm.h>
 #include "error_templates.h"
+#include "hardware.h"
 #include "globals.h"
 #include "settings.h"
 
@@ -118,6 +119,17 @@ static void cmnd_command(uint8_t value)
 }
 
 
+// control REL outputs
+static void cmnd_REL(uint8_t value)
+{
+    if (value & 0xF0) errm_add(errm_create(&etemplate_comms_arg, uint8_t('R')));
+    gpio_wr(PORT, pin_REL1, value & 0x01);
+    gpio_wr(PORT, pin_REL2, value & 0x02);
+    gpio_wr(PORT, pin_REL3, value & 0x04);
+    gpio_wr(PORT, pin_REL4, value & 0x08);
+}
+
+
 static datapoint_t datapoints[] = {
     {'d', cmnd_duty, 2100},  // duty
     {'m', cmnd_mode},  // mode
@@ -127,6 +139,7 @@ static datapoint_t datapoints[] = {
     {'$', cmnd_setting_choose},
     {'=', cmnd_setting_set},
     {'C', cmnd_command},
+    {'R', cmnd_REL},
 };
 
 #define FOR_EACH_DP for (uint8_t i = 0; i < sizeof datapoints / sizeof datapoints[0]; i++)
