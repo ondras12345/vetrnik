@@ -147,6 +147,7 @@ void ADC_loop()
                 gpio_set(pin_FAN);
         }
 
+        static mode_t OVP_mode;
         if (voltage <= voltage_protection_start && OVP_stop)
         {
             OVP_stop = false;
