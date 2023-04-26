@@ -102,22 +102,23 @@ void ADC_loop()
         uint16_t voltage_mV = vals[0] * 320000UL >> 16;  // same as *5000 / 1024
         voltage = voltage_mV * (voltage_R1 + voltage_R2) / voltage_R2 / 100UL;  // voltage is *10 fixed-point
 
-        static uint16_t current_offset =
+        const uint16_t current_offset =
             settings[kCurrentOffsetL].value |
             settings[kCurrentOffsetH].value << 8;
-        static uint8_t current_conversion = settings[KCurrentConversion].value;
+        const uint8_t current_conversion = settings[KCurrentConversion].value;
 
         current = (vals[1] > current_offset) ? vals[1] - current_offset : 0;
-        static uint16_t max_current = (current_conversion == 0) ? 0 : 65535U / current_conversion;
+        const uint16_t max_current = (current_conversion == 0) ? 0 : 65535U / current_conversion;
         if (current >= max_current)
             current = 65535U;
         else
             current = current * current_conversion;
 
-        static unsigned long NTC_prev_millis = 0;
-        if (now - NTC_prev_millis >= 500UL)
+        // only do this every 800 ms
+        static uint8_t NTC_count = 0;
+        NTC_count = (NTC_count + 1) & 0x07;
+        if (NTC_count == 0)
         {
-            NTC_prev_millis = now;
             NTC ntc_heatsink(NTC_heatsink_Rdiv, NTC_heatsink_beta, NTC_heatsink_R_nom);
             NTC ntc_rectifier(NTC_rectifier_Rdiv, NTC_rectifier_beta, NTC_rectifier_R_nom);
             temperature_heatsink = ntc_heatsink.getC(vals[3]);
