@@ -16,9 +16,6 @@ typedef enum {
 
     /// Start from shorted state to const_duty.
     start = 3,
-
-    // Trying to maintain constant RPM.
-    //const_rpm = 4,
 } mode_t;
 
 extern bool enabled;

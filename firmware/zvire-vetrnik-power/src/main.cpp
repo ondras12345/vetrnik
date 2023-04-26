@@ -64,8 +64,6 @@ bool set_mode(mode_t new_mode)
             }
             mode = const_duty;
             break;
-
-        // TODO
     }
     return true;
 }
@@ -160,6 +158,9 @@ void loop()
                     gpio_clr(pin_SHORT);
                 }
             }
+            break;
+
+        default:
             break;
     }
 
