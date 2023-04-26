@@ -34,6 +34,14 @@ test_embedded:           ## Run embedded tests on an Arduino uno.
 disassemble:    ## Open less with disassembly of the firmware
 	~/.platformio/packages/toolchain-atmelavr/avr/bin/objdump -S .pio/build/ATmega8/firmware.elf | less
 
+.PHONY: puncover
+puncover:      ## Run puncover to analyze flash usage
+	./venv/bin/puncover --gcc_tools_base ~/.platformio/packages/toolchain-atmelavr/bin/avr- \
+	    --elf .pio/build/ATmega8/firmware.elf \
+	    --build_dir .pio/build/ATmega8/ \
+	    --src_root .
+
+
 compile_commands.json: platformio.ini
 	pio run --target compiledb
 
