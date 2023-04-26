@@ -108,7 +108,7 @@ static void cmnd_command(uint8_t value)
 {
     switch (value) {
         case COMMAND_RESET:
-            Serial.println(F(">resetting"));
+            Serial.print(F(">resetting\r\n"));
             emergency_stop();
             // Watchdog reset
             for (;;);
@@ -251,7 +251,7 @@ void uart_loop()
         if (buff_index >= sizeof buff / sizeof buff[0])
         {
             // message too long
-            Serial.println(F(">comm too long"));
+            Serial.print(F(">comm too long\r\n"));
             in_msg = false;
             buff_index = 0;
             continue;
@@ -292,7 +292,8 @@ void uart_loop()
             Serial.print(errm_errors[i].errortemplate->text);
             Serial.print(errm_errors[i].code);
             Serial.print(' ');
-            Serial.println((now - errm_errors[i].when) / 1000UL);
+            Serial.print((now - errm_errors[i].when) / 1000UL);
+            Serial.println();
         }
         Serial.println();
     }

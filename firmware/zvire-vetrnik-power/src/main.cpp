@@ -128,7 +128,7 @@ void setup()
 
     wdt_enable(WDTO_1S);
     wdt_reset();
-    Serial.println(F(">boot"));
+    Serial.print(F(">boot\r\n"));
 }
 
 
