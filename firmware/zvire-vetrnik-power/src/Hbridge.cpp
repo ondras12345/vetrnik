@@ -5,6 +5,7 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <util/atomic.h>
 
 #define Hbridge_frequency 50  // Hz ; do NOT modify (even when switching prescaler to 400 Hz mode)
 
@@ -18,11 +19,11 @@ void Hbridge_set_duty(uint8_t duty_cycle)
     uint16_t a = (uint32_t)(duty_conversion) * duty_cycle / 10;
     uint16_t b = top_value - a;
 
-    uint8_t oldSREG = SREG;
-    cli();
-    OCR1A = a;
-    OCR1B = b;
-    SREG = oldSREG;
+    ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+    {
+        OCR1A = a;
+        OCR1B = b;
+    }
 }
 
 
