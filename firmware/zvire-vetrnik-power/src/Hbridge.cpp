@@ -47,28 +47,28 @@ void Hbridge_init()
     Hbridge_set_enabled(false);
 
     // start timer
-    cli();
-    // 0b011 ... clkio / 64
-    // 0b010 ... clkio / 8
-    uint8_t CS_prescaler = settings[kHBridgeFrequency].value ? 0b010 : 0b011;
-    TCCR1B =
-        (1<<WGM13)  // mode 8: PWM, phase correct and frequency correct
-        | ((CS_prescaler & 0x07) << CS10);
-        ;
+    ATOMIC_BLOCK(ATOMIC_FORCEON)
+    {
+        // 0b011 ... clkio / 64
+        // 0b010 ... clkio / 8
+        uint8_t CS_prescaler = settings[kHBridgeFrequency].value ? 0b010 : 0b011;
+        TCCR1B =
+            (1<<WGM13)  // mode 8: PWM, phase correct and frequency correct
+            | ((CS_prescaler & 0x07) << CS10);
+            ;
 
-    // ICR1 is TOP value in mode 8
-    ICR1 = top_value;
+        // ICR1 is TOP value in mode 8
+        ICR1 = top_value;
 
-    set_duty(0);
+        set_duty(0);
 
-    TCCR1A =
-        // Clear OC1A on Compare Match when upcounting.
-        // Set OC1A on Compare Match when downcounting.
-        (1<<COM1A1)
-        // Set OC1B on Compare Match when upcounting.
-        // Clear OC1B on Compare Match when downcounting.
-        | (1<<COM1B0) | (1<<COM1B1)
-        ;
-
-    sei();
+        TCCR1A =
+            // Clear OC1A on Compare Match when upcounting.
+            // Set OC1A on Compare Match when downcounting.
+            (1<<COM1A1)
+            // Set OC1B on Compare Match when upcounting.
+            // Clear OC1B on Compare Match when downcounting.
+            | (1<<COM1B0) | (1<<COM1B1)
+            ;
+    }
 }

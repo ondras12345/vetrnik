@@ -4,6 +4,7 @@
 #include "settings.h"
 #include <moving_averages.h>
 #include <Arduino.h>
+#include <util/atomic.h>
 
 static volatile uint32_t period = 0;
 static volatile unsigned long last_time = 0;
@@ -78,11 +79,12 @@ void RPM_loop()
     if (RPM_new)
     {
         uint32_t t;
-        cli();
-        t = period;
-        lt = last_time;
-        RPM_new = false;
-        sei();
+        ATOMIC_BLOCK(ATOMIC_FORCEON)
+        {
+            t = period;
+            lt = last_time;
+            RPM_new = false;
+        }
         if (t == 0)
         {
             RPM = 0;

@@ -6,6 +6,7 @@
 #include <moving_averages.h>
 #include <NTC.h>
 #include <Arduino.h>
+#include <util/atomic.h>
 
 // TODO https://majenko.co.uk/blog/our-blog-1/making-accurate-adc-readings-on-the-arduino-25
 
@@ -92,12 +93,13 @@ void ADC_loop()
     {
         prev_ms = now;
         uint16_t vals[4];
-        cli();
-        vals[0] = ADC_values[0];
-        vals[1] = ADC_values[1];
-        vals[2] = ADC_values[2];
-        vals[3] = ADC_values[3];
-        sei();
+        ATOMIC_BLOCK(ATOMIC_FORCEON)
+        {
+            vals[0] = ADC_values[0];
+            vals[1] = ADC_values[1];
+            vals[2] = ADC_values[2];
+            vals[3] = ADC_values[3];
+        }
 
         uint16_t voltage_mV = vals[0] * 320000UL >> 16;  // same as *5000 / 1024
         voltage = voltage_mV * (voltage_R1 + voltage_R2) / voltage_R2 / 100UL;  // voltage is *10 fixed-point
