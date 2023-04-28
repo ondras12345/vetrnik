@@ -1,6 +1,7 @@
 #include "settings.h"
-#include <EEPROM.h>
 #include "error_templates.h"
+#include <avr/io.h>
+#include <avr/eeprom.h>
 
 setting_t settings[kSettingsEnd] = {
     // 0 ... 50Hz ; 1 ... 400 Hz
@@ -22,13 +23,17 @@ setting_t settings[kSettingsEnd] = {
 };
 
 
+#define EEPROM_update(address, data) eeprom_update_byte((uint8_t*)(address), data)
+#define EEPROM_read(address) eeprom_read_byte((uint8_t*)(address))
+
+
 #define EEPROM_magic_length 4
 static const uint8_t EEPROM_magic[EEPROM_magic_length] = { 0x00, 0x55, 0xAA, 0xFF };
 
 static void magic_write(uint8_t start = 0)
 {
     for (uint8_t i = 0; i < EEPROM_magic_length; i++)
-        EEPROM.update(i + start, EEPROM_magic[i]);
+        EEPROM_update(i + start, EEPROM_magic[i]);
 }
 
 
@@ -36,7 +41,7 @@ static bool magic_verify(uint8_t start = 0)
 {
     for (uint8_t i = 0; i < EEPROM_magic_length; i++)
     {
-        if (EEPROM.read(i+start) != EEPROM_magic[i])
+        if (EEPROM_read(i+start) != EEPROM_magic[i])
             return false;
     }
     return true;
@@ -51,7 +56,7 @@ static void settings_reset()
     {
         uint8_t default_value = settings[i].default_value;
         settings[i].value = default_value;
-        EEPROM.update(i + EEPROM_magic_length, default_value);
+        EEPROM_update(i + EEPROM_magic_length, default_value);
     }
 
     magic_write(kSettingsEnd + EEPROM_magic_length);
@@ -70,7 +75,7 @@ void settings_init()
 
     for (uint8_t i = 0; i < kSettingsEnd; i++)
     {
-        settings[i].value = EEPROM.read(i + EEPROM_magic_length);
+        settings[i].value = EEPROM_read(i + EEPROM_magic_length);
     }
 
     if (!magic_verify(kSettingsEnd + EEPROM_magic_length))
@@ -83,7 +88,7 @@ void settings_init()
 void settings_write(uint8_t index, uint8_t value)
 {
     if (index >= kSettingsEnd) return;
-    EEPROM.update(index + EEPROM_magic_length, value);
+    EEPROM_update(index + EEPROM_magic_length, value);
     // not updating settings array, need to reset
     errm_add(errm_create(&etemplate_settings_changed, index));
 }
