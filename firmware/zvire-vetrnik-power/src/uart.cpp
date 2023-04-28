@@ -148,7 +148,9 @@ static datapoint_t datapoints[] = {
 
 static void report()
 {
-    // TODO evaluate max length and increase TX buffer size
+    // TX buffer size has been increased in platformio.ini
+    // -DSERIAL_TX_BUFFER_SIZE=128. This isn't absolutely necessary, but it
+    // should improve overall performance.
 
     Serial.print('t');
     // Don't print out too many digits. Filling the TX buffer is not a good
