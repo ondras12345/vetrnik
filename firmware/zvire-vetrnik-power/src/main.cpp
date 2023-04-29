@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <avr/wdt.h>
+#include <avr/eeprom.h>
 
 #include <serial.h>
 #include "hardware.h"
@@ -122,7 +123,14 @@ void setup()
 
     if (mcusr_mirror & (1<<WDRF))
     {
-        errm_add(errm_create(&etemplate_WDT_reset, mcusr_mirror));
+        // reset command used
+        if (eeprom_read_byte(EEPROM_RESET_ADDRESS) == EEPROM_RESET_VALUE) {
+            // eeprom_write_byte would be faster, but I don't have enough flash
+            // space for it.
+            eeprom_update_byte(EEPROM_RESET_ADDRESS, 0);
+        }
+        // unexpected watchdog reset
+        else errm_add(errm_create(&etemplate_WDT_reset, mcusr_mirror));
     }
 
     _delay_ms(100);

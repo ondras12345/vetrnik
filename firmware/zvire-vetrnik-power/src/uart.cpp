@@ -1,5 +1,7 @@
 #include "uart.h"
 #include <serial.h>
+#include <avr/wdt.h>
+#include <avr/eeprom.h>
 #include <errm.h>
 #include "error_templates.h"
 #include "hardware.h"
@@ -39,6 +41,7 @@ typedef struct {
 
 enum uart_command {
     COMMAND_RESET = 170,
+    COMMAND_WDT_TEST = 171,
 };
 
 
@@ -110,10 +113,16 @@ static void cmnd_command(uint8_t value)
     switch (value) {
         case COMMAND_RESET:
             serial_puts_p(PSTR(">resetting\r\n"));
+            serial_flush();
+            // eeprom_write_byte would be faster, but I don't have enough flash
+            // space for it.
+            eeprom_update_byte(EEPROM_RESET_ADDRESS, EEPROM_RESET_VALUE);
+        case COMMAND_WDT_TEST:
             emergency_stop();
             // Watchdog reset
             for (;;);
             break;
+
         default:
             errm_add(errm_create(&etemplate_comms_arg, uint8_t('C')));
     }

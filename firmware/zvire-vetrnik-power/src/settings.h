@@ -37,6 +37,9 @@
 #define FAN_TEMPERATURE_RECTIFIER_THRESHOLD 450
 #define RECTIFIER_TEMPERATURE_MAX 650
 
+#define EEPROM_RESET_ADDRESS ((uint8_t *)511)
+#define EEPROM_RESET_VALUE 0x5A
+
 #include <stdint.h>
 
 typedef enum {
