@@ -6,8 +6,8 @@
 #define voltage_protection_short 1600  // 160V
 
 // OCP
-#define OCP_L 40000U  // 40 A
-#define OCP_H 42000U  // 42 A
+#define OCP_L_MAX 40000U  // 40 A
+#define OCP_H_MAX 42000U  // 42 A
 
 // resistor values in voltmeter voltage divider
 #define voltage_R1 100000UL
@@ -45,6 +45,8 @@ typedef enum {
     KCurrentConversion = 2,
     kCurrentOffsetL = 3,
     kCurrentOffsetH = 4,
+    kOCPL = 5,
+    kOCPH = 6,
     kSettingsEnd,
 } setting_index_t;
 

@@ -83,6 +83,11 @@ void Hbridge_init()
 //! It is important to avoid calling this too often.
 void Hbridge_OCP()
 {
+    const uint16_t OCPL_settings = settings[kOCPL].value * 200U;
+    const uint16_t OCPH_settings = settings[kOCPH].value * 200U;
+    const uint16_t OCP_L = (OCPL_settings > OCP_L_MAX) ? OCP_L_MAX : OCPL_settings;
+    const uint16_t OCP_H = (OCPH_settings > OCP_H_MAX) ? OCP_H_MAX : OCPH_settings;
+
     uint8_t prev = OCP_max_duty;
     if (current >= OCP_H) OCP_max_duty /= 2;
     else if (current < OCP_L) {

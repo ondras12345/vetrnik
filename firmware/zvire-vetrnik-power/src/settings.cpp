@@ -16,10 +16,14 @@ setting_t settings[kSettingsEnd] = {
 
     // 500 mV .. 102; seems to want 104
     // for opamp board with Vref set to 440mV: 21
+    // L, H - low byte, high byte
     {21},  // kCurrentOffsetL
     {0},  // kCurrentOffsetH
+    // L, H - lower limit, upper limit:
+    {200},  // kOCPL, 40 A / 0.2 A = 200
+    {210},  // kOCPH, 42 A / 0.2 A = 210
 
-    // TODO infinite loop after adding new setting?
+    // TODO adding new settings causes infinite loop ??
 };
 
 
