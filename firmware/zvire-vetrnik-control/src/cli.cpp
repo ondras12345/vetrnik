@@ -805,6 +805,7 @@ static void cmnd_dfu(char *args, Stream *response)
     response->println("Jumping to DFU bootloader");
     response->flush();
     jump_to_bootloader();
+    // TODO watchdog ??
 }
 
 

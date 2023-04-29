@@ -17,6 +17,9 @@ extern "C" {
 
 // TODO extra lib for generic cfuncs (native pio test)
 // TODO expose millis ??
+// TODO integer division "div"
+// TODO timers (schedule LCD backlight off & similar)
+// TODO onewire sensors & NTCs
 
 
 static jmp_buf error_jmp;

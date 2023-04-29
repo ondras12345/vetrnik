@@ -61,6 +61,7 @@ uint8_t MQTT_init()
     INFO->println(Ethernet.localIP());
 
     if (result == 0) eth_skip = true;
+    // TODO eth_skip if ifconfig reports HW: 0, status: 0
 
     for (uint8_t i = 0; i < sizeof settings.MQTTserver; i++)
         if (settings.MQTTserver[i] != 0) MQTT_skip = false;
