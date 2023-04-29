@@ -113,9 +113,10 @@ static void OVP() {
 
 void ADC_loop()
 {
-    unsigned long now = millis();
-    static unsigned long prev_ms = 0;
-    if (now - prev_ms >= 100UL)
+    // 100 ms is a short time interval, so unsigned int is sufficient.
+    const unsigned int now = millis();
+    static unsigned int prev_ms = 0;
+    if (now - prev_ms >= 100U)
     {
         prev_ms = now;
         uint16_t vals[4];
