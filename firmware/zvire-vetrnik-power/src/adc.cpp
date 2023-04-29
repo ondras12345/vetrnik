@@ -147,7 +147,7 @@ void ADC_loop()
         Hbridge_OCP();
 
         // only do this every 800 ms
-        static uint8_t NTC_count = 0;
+        static uint8_t NTC_count = 7;  // update immediately after boot
         NTC_count = (NTC_count + 1) & 0x07;
         if (NTC_count == 0)
         {
