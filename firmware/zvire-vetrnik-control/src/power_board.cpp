@@ -33,6 +33,7 @@ power_board_status_t power_board_status_read()
     ret.time = RX_datapoints_get('t').value;
     ret.mode = RX_datapoints_get('m').value;
     ret.duty = RX_datapoints_get('d').value;
+    ret.OCP_max_duty = RX_datapoints_get('C').value;
     ret.RPM = RX_datapoints_get('r').value;
     ret.voltage = RX_datapoints_get('v').value;
     ret.current = RX_datapoints_get('i').value;

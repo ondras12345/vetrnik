@@ -277,6 +277,7 @@ static void print_power_board_status(Stream *response)
     printStatU(time, "s");
     printStat(mode);
     printStatU(duty, "(0-255)");
+    printStatU(OCP_max_duty, "(0-255)");
     printStatU(RPM, "RPM");
     printStatC(voltage, 0.1, 1, "V");
     printStatC(current, 0.001, 3, "A");
