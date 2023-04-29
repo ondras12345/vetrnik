@@ -3,7 +3,7 @@
 ; TODO increase step authority when it gets stuck ??
 ; TODO (cause of problems - low voltage resolution)
 
-; TODO OCP / limit duty -- better do that in power board firmware
+; TODO don't ignore OCP Cxxx
 
 
 ; previous values
@@ -45,6 +45,7 @@
 
   ; don't get stuck at 0
   (if (is d 0) (= s 1))
+  ; TODO don't get stuck at 255 ??
 
   (= pp p)
 
