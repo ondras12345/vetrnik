@@ -1,4 +1,5 @@
 #include "uart.h"
+#include <serial.h>
 #include <errm.h>
 #include "error_templates.h"
 #include "hardware.h"
@@ -108,7 +109,7 @@ static void cmnd_command(uint8_t value)
 {
     switch (value) {
         case COMMAND_RESET:
-            Serial.print(F(">resetting\r\n"));
+            serial_puts_p(PSTR(">resetting\r\n"));
             emergency_stop();
             // Watchdog reset
             for (;;);
@@ -152,72 +153,73 @@ static void report()
     // -DSERIAL_TX_BUFFER_SIZE=128. This isn't absolutely necessary, but it
     // should improve overall performance.
 
-    Serial.print('t');
+    serial_putc('t');
     // Don't print out too many digits. Filling the TX buffer is not a good
     // thing.
-    Serial.print((millis() / 1000UL) & 0xFFFF);
-    Serial.print(' ');
+    serial_putint((millis() / 1000UL) & 0xFFFF);
+    serial_putc(' ');
 
-    Serial.print('m');
-    Serial.print(mode);
-    Serial.print(' ');
+    serial_putc('m');
+    serial_putuint(mode);
+    serial_putc(' ');
 
-    Serial.print('d');
-    Serial.print(duty);
-    Serial.print(' ');
+    serial_putc('d');
+    serial_putuint(duty);
+    serial_putc(' ');
 
-    Serial.print('r');
-    Serial.print(RPM);
-    Serial.print(' ');
+    serial_putc('r');
+    serial_putint(RPM);
+    serial_putc(' ');
 
-    Serial.print('v');
-    Serial.print(voltage);
-    Serial.print(' ');
+    serial_putc('v');
+    serial_putint(voltage);
+    serial_putc(' ');
 
-    Serial.print('i');
-    Serial.print(current);
-    Serial.print(' ');
+    serial_putc('i');
+    serial_putint(current);
+    serial_putc(' ');
 
-    Serial.print('e');
-    Serial.print(enabled);
-    Serial.print(' ');
+    serial_putc('e');
+    serial_putuint(enabled);
+    serial_putc(' ');
 
-    Serial.print('T');
-    Serial.print(temperature_heatsink);
-    Serial.print(' ');
+    serial_putc('T');
+    serial_putint(temperature_heatsink);
+    serial_putc(' ');
 
-    Serial.print('R');
-    Serial.print(temperature_rectifier);
-    Serial.print(' ');
+    serial_putc('R');
+    serial_putint(temperature_rectifier);
+    serial_putc(' ');
 
-    Serial.print('f');
-    Serial.print(fan);
-    Serial.print(' ');
+    serial_putc('f');
+    serial_putuint(fan);
+    serial_putc(' ');
 
-    Serial.print('E');
-    Serial.print(errm_count);
-    Serial.print(' ');
+    serial_putc('E');
+    serial_putuint(errm_count);
+    serial_putc(' ');
 
-    Serial.print('S');
-    Serial.print(emergency);
-    Serial.print(' ');
+    serial_putc('S');
+    serial_putuint(emergency);
+    serial_putc(' ');
 
-    Serial.print('C');
-    Serial.print(OCP_max_duty);
-    Serial.print(' ');
+    serial_putc('C');
+    serial_putuint(OCP_max_duty);
+    serial_putc(' ');
 
-    Serial.print('$');
-    Serial.print(setting_index);
-    Serial.print('=');
-    Serial.print(settings[setting_index].value);
+    serial_putc('$');
+    serial_putuint(setting_index);
+    serial_putc('=');
+    serial_putuint(settings[setting_index].value);
 
-    Serial.println();
+    serial_putc('\r');
+    serial_putc('\n');
 }
 
 
 void uart_init()
 {
-    Serial.begin(9600);  // TODO 8E1
+    serial_init9600();  // TODO 8E1
 }
 
 
@@ -230,9 +232,9 @@ void uart_loop()
 
     unsigned long now = millis();
 
-    while (Serial.available())
+    while (serial_available())
     {
-        char c = Serial.read();
+        char c = serial_read();
         if (!in_msg)
         {
             FOR_EACH_DP
@@ -259,7 +261,7 @@ void uart_loop()
         if (buff_index >= sizeof buff / sizeof buff[0])
         {
             // message too long
-            Serial.print(F(">comm too long\r\n"));
+            serial_puts_p(PSTR(">comm too long\r\n"));
             in_msg = false;
             buff_index = 0;
             continue;
@@ -292,16 +294,18 @@ void uart_loop()
         last_error_print = now;
         for (uint8_t i = 0; i < errm_count; i++)
         {
-            Serial.print(F(">err "));
-            Serial.print(i);
-            Serial.print(' ');
-            Serial.print(errm_errors[i].errortemplate->text);
-            Serial.print(errm_errors[i].code);
-            Serial.print(' ');
-            Serial.print((now - errm_errors[i].when) / 1000UL);
-            Serial.println();
+            serial_puts_p(PSTR(">err "));
+            serial_putuint(i);
+            serial_putc(' ');
+            serial_puts(errm_errors[i].errortemplate->text);
+            serial_putuint(errm_errors[i].code);
+            serial_putc(' ');
+            serial_putint((now - errm_errors[i].when) / 1000UL);
+            serial_putc('\r');
+            serial_putc('\n');
         }
-        Serial.println();
+        serial_putc('\r');
+        serial_putc('\n');
     }
 
     static unsigned long last_report = 0;

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <avr/wdt.h>
 
+#include <serial.h>
 #include "hardware.h"
 #include "uart.h"
 #include "Hbridge.h"
@@ -128,7 +129,8 @@ void setup()
 
     wdt_enable(WDTO_1S);
     wdt_reset();
-    Serial.print(F(">boot\r\n"));
+    serial_puts_p(PSTR(">boot\r\n"));
+    serial_flush();
 }
 
 
