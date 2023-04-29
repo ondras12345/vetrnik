@@ -201,3 +201,24 @@ Test OOM:
 On PC: a = 1852, does not get completely stuck (can still create new number
 variables)
 On STM (8*1024 bytes): a = 329
+
+
+
+## Telnet
+To connect with telnet on GNU/Linux, use this command:
+```sh
+# netcat - better
+stty -icanon -echo && nc -NC -O 1 192.168.1.188 23
+
+# telnet - sends garbage at startup
+telnet 192.168.1.188 23  # specifying the port should disable negotiation
+```
+
+It is recommended to put the following configuration in your `~/.telnetrc` if
+you want to use the `telnet` command:
+```
+# vetrnik-control
+192.168.1.188
+    mode character
+    # TODO improve
+```
