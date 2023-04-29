@@ -305,10 +305,14 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
         return;
     }
 
-    if (strcmp(topic, MQTTtopic_cmnd_power_board "clear_errors") == 0)
+    if (strcmp(topic, MQTTtopic_cmnd_power_board "command") == 0)
     {
-        if (payload[0] != '1') return;
-        power_board_clear_errors();
+        if (strncmp((const char *)payload, "clear_errors", length) == 0)
+            power_board_clear_errors();
+        else if (strncmp((const char *)payload, "reset", length) == 0)
+            power_board_command(PCOMMAND_RESET);
+        else if (strncmp((const char *)payload, "WDT_test", length) == 0)
+            power_board_command(PCOMMAND_WDT_TEST);
         return;
     }
 

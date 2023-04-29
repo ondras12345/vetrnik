@@ -308,7 +308,7 @@ static fe_Object* cfunc_power_set(fe_Context *ctx, fe_Object *arg)
         }
         power_board_set_mode((power_board_mode_t)mode);
     }
-    // there should be no need to clear_errors
+    // there should be no need to clear_errors or execute other commands
     else
     {
         fe_error(ctx, "invalid pwrs command");

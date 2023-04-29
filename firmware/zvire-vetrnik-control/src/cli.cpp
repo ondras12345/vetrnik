@@ -309,10 +309,20 @@ static void cmnd_power(char *args, Stream *response)
         response->println("Power board errors cleared.");
     }
 
+    else if (strcmp(setting_name, "reset") == 0)
+    {
+        power_board_command(PCOMMAND_RESET);
+    }
+
+    else if (strcmp(setting_name, "WDT_test") == 0)
+    {
+        power_board_command(PCOMMAND_WDT_TEST);
+    }
+
     else if (setting_value == nullptr)
     {
         response->println("Missing value");
-        response->println("Usage: power [[duty|mode] value | clear_errors]");
+        response->println("Usage: power [[duty|mode] value | clear_errors | reset | WDT_test]");
         goto bad;
     }
 

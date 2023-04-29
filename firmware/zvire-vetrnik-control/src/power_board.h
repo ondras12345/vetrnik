@@ -41,6 +41,11 @@ typedef enum {
 } power_board_mode_t;
 #undef X_ENUM
 
+typedef enum {
+    PCOMMAND_RESET = 170,
+    PCOMMAND_WDT_TEST = 171,
+} power_board_command_t;
+
 extern const char * power_board_modes[];
 
 
@@ -53,3 +58,4 @@ power_board_status_t power_board_status_read();
 void power_board_set_duty(uint8_t duty);
 void power_board_set_mode(power_board_mode_t mode);
 void power_board_clear_errors();
+void power_board_command(power_board_command_t command);

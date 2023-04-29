@@ -71,3 +71,13 @@ void power_board_clear_errors()
 {
     TX_datapoints_set('E', 0);
 }
+
+
+/**
+ * Execute command on power board.
+ * @see power_board_command_t
+ */
+void power_board_command(power_board_command_t command)
+{
+    TX_datapoints_set('C', command);
+}
