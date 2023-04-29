@@ -81,3 +81,36 @@ void power_board_command(power_board_command_t command)
 {
     TX_datapoints_set('C', command);
 }
+
+
+static uint8_t REL_status = 0;
+
+/**
+ * Control power board REL outputs.
+ * @param pin REL output (1...4)
+ * @param value true (connected to GND) or false (open collector)
+ * @return true on success, else false
+ */
+bool power_board_REL_write(uint8_t pin, bool value)
+{
+    if (pin == 0 || pin > 4) return false;
+    if (value) REL_status |= (1<<(pin-1));
+    else REL_status &= ~(1<<(pin-1));
+    TX_datapoints_set('R', REL_status);
+    return true;
+}
+
+
+/**
+ * Read status of power board REL output.
+ * @param pin REL output (1...4)
+ * @return 0 if off (open collector), 1 if on, -1 on error
+ * Warning: this does not actually read the state from the power board, instead
+ * it returns an internally kept state, which is sent to the power board every
+ * 1000 ms (@see power_datapoints.cpp TX_datapoints).
+ */
+uint8_t power_board_REL_read(uint8_t pin)
+{
+    if (pin == 0 || pin > 4) return -1;
+    return (REL_status & (1<<(pin-1))) ? 1 : 0;
+}

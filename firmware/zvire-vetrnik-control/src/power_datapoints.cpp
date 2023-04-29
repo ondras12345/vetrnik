@@ -14,6 +14,7 @@ typedef struct {
 
 static TX_datapoint_t TX_datapoints[] = {
     {'d', 1000},
+    {'R', 1000},
 };
 
 

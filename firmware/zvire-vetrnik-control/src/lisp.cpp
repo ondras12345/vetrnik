@@ -269,6 +269,13 @@ static fe_Object* cfunc_power_get(fe_Context *ctx, fe_Object *arg)
     pbstate(error_count)
 #undef pbstate
 #undef pbstateC
+    else if (strcmp(name, "REL") == 0)
+    {
+        int pin = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+        uint8_t result = power_board_REL_read(pin);
+        if (result == (uint8_t)-1) fe_error(ctx, "invalid REL pin");
+        return fe_bool(ctx, result);
+    }
     else
     {
         fe_error(ctx, "invalid power state name");
@@ -307,6 +314,14 @@ static fe_Object* cfunc_power_set(fe_Context *ctx, fe_Object *arg)
             return nullptr;
         }
         power_board_set_mode((power_board_mode_t)mode);
+    }
+    else if (strcmp(name, "REL") == 0)
+    {
+        int pin = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+        bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
+
+        if (!power_board_REL_write(pin, state))
+            fe_error(ctx, "invalid REL pin");
     }
     // there should be no need to clear_errors or execute other commands
     else

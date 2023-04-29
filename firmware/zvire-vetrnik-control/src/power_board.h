@@ -59,3 +59,5 @@ void power_board_set_duty(uint8_t duty);
 void power_board_set_mode(power_board_mode_t mode);
 void power_board_clear_errors();
 void power_board_command(power_board_command_t command);
+bool power_board_REL_write(uint8_t pin, bool value);
+uint8_t power_board_REL_read(uint8_t pin);
