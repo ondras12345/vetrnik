@@ -67,11 +67,7 @@
 
 # Poznamky
 - napajeni 12V kvuli Vgs FETu
-- TODO chladic pro usmernovac
-- TODO 230V vystup pro cerpadlo
 - jistic s pomocnym kontaktem - stejne by nevypnul...
-- TODO faston 6mm^2
-- TODO ACS712 nebo bocnik a extra PCB
 - mustek musi mit samostatny chladic, protoze vydrzi vyssi teplotu chladice
 - pro vodice k tranzistorum snad staci 4mm^2, protoze skrz ne tece proud jen
   50% casu (nejhorsi pripad)
