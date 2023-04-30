@@ -165,7 +165,7 @@ static void report()
     serial_putc('t');
     // Don't print out too many digits. Filling the TX buffer is not a good
     // thing.
-    serial_putint((millis() / 1000UL) & 0xFFFF);
+    serial_putuint((millis() / 1000UL) & 0xFFFF);
     serial_putc(' ');
 
     serial_putc('m');
@@ -177,15 +177,15 @@ static void report()
     serial_putc(' ');
 
     serial_putc('r');
-    serial_putint(RPM);
+    serial_putuint(RPM);
     serial_putc(' ');
 
     serial_putc('v');
-    serial_putint(voltage);
+    serial_putuint(voltage);
     serial_putc(' ');
 
     serial_putc('i');
-    serial_putint(current);
+    serial_putuint(current);
     serial_putc(' ');
 
     serial_putc('e');
@@ -193,11 +193,11 @@ static void report()
     serial_putc(' ');
 
     serial_putc('T');
-    serial_putint(temperature_heatsink);
+    serial_putuint(temperature_heatsink);
     serial_putc(' ');
 
     serial_putc('R');
-    serial_putint(temperature_rectifier);
+    serial_putuint(temperature_rectifier);
     serial_putc(' ');
 
     serial_putc('f');
@@ -309,7 +309,7 @@ void uart_loop()
             serial_puts(errm_errors[i].errortemplate->text);
             serial_putuint(errm_errors[i].code);
             serial_putc(' ');
-            serial_putint((now - errm_errors[i].when) / 1000UL);
+            serial_putuint((now - errm_errors[i].when) / 1000UL);
             serial_putc('\r');
             serial_putc('\n');
         }
