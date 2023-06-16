@@ -183,13 +183,15 @@ void MQTT_loop()
 
     static power_board_status_t prev_pb_status = {0};
 
-#define PB(name, topic, maketmp) \
-    if (power_board_status.name != prev_pb_status.name || force_report) \
+#define PB_c(name, topic, maketmp, cond) \
+    if ((cond) || force_report) \
     { \
         prev_pb_status.name = power_board_status.name; \
         maketmp \
         MQTTClient.publish(MQTTtopic_tele_power_board topic, tmp, true); \
     }
+#define PB(name, topic, maketmp) \
+    PB_c(name, topic, maketmp, power_board_status.name != prev_pb_status.name)
 #define maketmp_uint16(v) \
     char tmp[3*sizeof(v) + 1]; \
     snprintf(tmp, sizeof tmp, "%u", v);
@@ -203,6 +205,11 @@ void MQTT_loop()
     snprintf(tmp, sizeof tmp, "%u.%0" #dp "u", uint16_t(v / uint16_t(1E ## dp)), uint16_t(v % uint16_t(1E ## dp)));
 #define PB_decimal(name, topic, dp) \
     PB(name, topic, maketmp_decimal(power_board_status.name, dp))
+#define PB_decimal_h(name, topic, dp, hysteresis) \
+    PB_c(name, topic, maketmp_decimal(power_board_status.name, dp), \
+         /* We need to perform the comparison with signed integers */ \
+         abs((int_fast32_t)power_board_status.name - (int_fast32_t)prev_pb_status.name) > hysteresis \
+        )
 
     PB_bool(valid, "valid")
     PB_uint16(time, "time")
@@ -214,17 +221,19 @@ void MQTT_loop()
     PB_decimal(current, "current", 3)
     PB_bool(enabled, "enabled")
     PB_bool(emergency, "emergency")
-    PB_decimal(temperature_heatsink, "temperature_heatsink", 1)
-    PB_decimal(temperature_rectifier, "temperature_rectifier", 1)
+    PB_decimal_h(temperature_heatsink, "temperature_heatsink", 1, 2)
+    PB_decimal_h(temperature_rectifier, "temperature_rectifier", 1, 2)
     PB_uint16(fan, "fan");
     PB_uint16(error_count, "error_count");
 
+#undef PB_c
 #undef PB
 #undef maketmp_uint16
 #undef PB_uint16
 #undef PB_bool
 #undef maketmp_decimal
 #undef PB_decimal
+#undef PB_decimal_h
 
     // TODO publish supported power_board modes ??
 
