@@ -192,31 +192,37 @@ void MQTT_loop()
     }
 #define PB(name, topic, maketmp) \
     PB_c(name, topic, maketmp, power_board_status.name != prev_pb_status.name)
+#define PB_h_uint16(name, topic, maketmp, hysteresis) \
+    PB_c(name, topic, maketmp, \
+         /* We need to perform the comparison with signed integers */ \
+         abs((int_fast32_t)power_board_status.name - (int_fast32_t)prev_pb_status.name) > hysteresis \
+        )
+
 #define maketmp_uint16(v) \
     char tmp[3*sizeof(v) + 1]; \
     snprintf(tmp, sizeof tmp, "%u", v);
-#define PB_uint16(name, topic) \
-    PB(name, topic, maketmp_uint16(power_board_status.name))
-#define PB_bool(name, topic) \
-    PB(name, topic, char tmp[2]; tmp[1] = '\0'; tmp[0] = (power_board_status.name ? '1' : '0');)
 #define maketmp_decimal(v, dp) \
     char tmp[3*sizeof(v) + 1 + 1]; /* int + decimal point + null*/ \
     /* Type cast of the whole value because of cppcheck. I don't think it is really needed. */ \
     snprintf(tmp, sizeof tmp, "%u.%0" #dp "u", uint16_t(v / uint16_t(1E ## dp)), uint16_t(v % uint16_t(1E ## dp)));
+
+#define PB_uint16(name, topic) \
+    PB(name, topic, maketmp_uint16(power_board_status.name))
+#define PB_uint16_h(name, topic, hysteresis) \
+    PB_h_uint16(name, topic, maketmp_uint16(power_board_status.name), hysteresis)
+#define PB_bool(name, topic) \
+    PB(name, topic, char tmp[2]; tmp[1] = '\0'; tmp[0] = (power_board_status.name ? '1' : '0');)
 #define PB_decimal(name, topic, dp) \
     PB(name, topic, maketmp_decimal(power_board_status.name, dp))
 #define PB_decimal_h(name, topic, dp, hysteresis) \
-    PB_c(name, topic, maketmp_decimal(power_board_status.name, dp), \
-         /* We need to perform the comparison with signed integers */ \
-         abs((int_fast32_t)power_board_status.name - (int_fast32_t)prev_pb_status.name) > hysteresis \
-        )
+    PB_h_uint16(name, topic, maketmp_decimal(power_board_status.name, dp), hysteresis)
 
     PB_bool(valid, "valid")
     PB_uint16(time, "time")
     PB_uint16(mode, "mode")
     PB_uint16(duty, "duty")
     PB_uint16(OCP_max_duty, "OCP_max_duty")
-    PB_uint16(RPM, "RPM")
+    PB_uint16_h(RPM, "RPM", 2)
     PB_decimal(voltage, "voltage", 1)
     PB_decimal(current, "current", 3)
     PB_bool(enabled, "enabled")
@@ -228,10 +234,12 @@ void MQTT_loop()
 
 #undef PB_c
 #undef PB
+#undef PB_h_uint16
 #undef maketmp_uint16
-#undef PB_uint16
-#undef PB_bool
 #undef maketmp_decimal
+#undef PB_uint16
+#undef PB_uint16_h
+#undef PB_bool
 #undef PB_decimal
 #undef PB_decimal_h
 
