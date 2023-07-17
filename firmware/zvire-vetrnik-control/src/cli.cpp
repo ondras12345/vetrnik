@@ -17,6 +17,7 @@
 #include "stats.h"
 #include "display.h"
 #include "debug.h"
+#include "onewire.h"
 #include <CLIeditor.h>
 #include <SerialFlash.h>
 #include <malloc.h>
@@ -704,6 +705,25 @@ bad:
 }
 
 
+static void cmnd_onewirescan(char *args, Stream *response)
+{
+    response->println("TODO onewirescan does not seem to work right first time it is used");
+    uint8_t address[8];
+    uint_fast8_t count = 0;
+
+    while (oneWire.search(address))
+    {
+        count++;
+        stream_print_onewire_address(response, address);
+        response->println();
+    }
+
+    response->print("found ");
+    response->print(count);
+    response->print(" devices");
+}
+
+
 extern "C" char *sbrk(int i);
 static void cmnd_free(char *args, Stream *response)
 {
@@ -849,6 +869,7 @@ Commander::API_t API_tree[] = {
     apiElement("lisp_read",     "Execute Lisp from file",                   cmnd_lisp_read),
     apiElement("SPIflash",      "Issue commands to SPI flash",              cmnd_SPIflash),
     apiElement("log",           "Filter debug messages",                    cmnd_log),
+    apiElement("onewirescan",   "Scan devices on onewire bus",              cmnd_onewirescan),
     apiElement("free",          "Print out amount of free memory.",         cmnd_free),
     apiElement("dfu",           "Switch to DFU firmware download mode.",    cmnd_dfu),
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),

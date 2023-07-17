@@ -73,3 +73,13 @@ void stream_hexdump(Print *response, const uint8_t * data, size_t len, size_t of
         }
     }
 }
+
+
+void stream_print_onewire_address(Print *response, uint8_t address[8])
+{
+    for (uint_fast8_t i = 0; i < 8; i++)
+    {
+        if (address[i] < 16) response->print('0');
+        response->print(address[i], HEX);
+    }
+}
