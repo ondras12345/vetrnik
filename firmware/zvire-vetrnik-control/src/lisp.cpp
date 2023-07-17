@@ -17,7 +17,7 @@ extern "C" {
 
 
 // TODO extra lib for generic cfuncs (native pio test)
-// TODO expose millis ??
+// TODO expose millis ?? - no, float does not have enough resolution
 // TODO integer division "div"
 // TODO timers (schedule LCD backlight off & similar)
 // TODO onewire sensors & NTCs
