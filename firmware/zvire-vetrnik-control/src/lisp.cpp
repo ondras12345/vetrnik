@@ -7,20 +7,17 @@
 #include "settings.h"
 #include "sensor_DS18B20.h"
 #include <Arduino.h>
-#include <math.h>
 #include <SerialFlash.h>
 
 extern "C" {
 #include <fe.h>
 }
+#include <fe_utils.h>
 #include <setjmp.h>
 
 
-// TODO extra lib for generic cfuncs (native pio test)
 // TODO expose millis ?? - no, float does not have enough resolution
-// TODO integer division "div"
 // TODO timers (schedule LCD backlight off & similar)
-// TODO onewire sensors & NTCs
 
 
 static jmp_buf error_jmp;
@@ -58,23 +55,6 @@ static void lisp_write_Print(fe_Context *ctx, void *udata, char chr)
 }
 
 
-typedef struct lisp_str {
-    const char * str;
-    size_t length;
-    size_t i;
-} lisp_str_t;
-
-
-static char lisp_read_str(fe_Context *ctx, void *udata)
-{
-    (void)ctx;
-    lisp_str_t * lstr = static_cast<lisp_str_t *>(udata);
-
-    if (lstr->i >= lstr->length) return '\0';
-    return lstr->str[lstr->i++];
-}
-
-
 /**
  * call with (nullptr, nullptr) before reading new file
  */
@@ -102,64 +82,6 @@ static char lisp_read_file(fe_Context *ctx, void *udata)
     uint8_t c = buf[i++];
     if (c == 0xFF) return '\0';  // empty section of the file
     return c;
-}
-
-
-/**
- * Remainder function
- *
- * rem performs the operation truncate on number and divisor and returns the
- * remainder of the truncate operation.
- *
- * https://stackoverflow.com/questions/5706398/how-to-get-the-modulus-in-lisp
- *
- * Seemed easier to implement than mod.
- */
-static fe_Object* cfunc_rem(fe_Context *ctx, fe_Object *arg)
-{
-    int x = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    int y = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    return fe_number(ctx, x % y);
-}
-
-
-/**
- * Arduino-like map function, but less broken (uses floats).
- *
- * (map value from_min from_max to_min to_max)
- *
- * This could be easily implemented in Lisp, but a cfunc takes up less memory.
- * (= map (fn (v fl fh tl th)
- *   (+ tl
- *     (/ (* (- v fl) (- th tl)) (- fh fl))
- *   )
- * ))
- * OOM test: Lisp 303, cfunc 326
- */
-static fe_Object* cfunc_map(fe_Context *ctx, fe_Object *arg)
-{
-    float x = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    float from_min = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    float from_max = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    float to_min = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    float to_max = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    return fe_number(ctx,
-        (x - from_min) * (to_max - to_min) / (from_max - from_min) + to_min
-    );
-}
-
-
-/**
- * Round returns the closest integer to x,
- * rounding to even when x is halfway between two integers.
- */
-static fe_Object* cfunc_round(fe_Context *ctx, fe_Object *arg)
-{
-    float x = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    // roundf would round half away from zero
-    // FE_TONEAREST should be the default rounding mode
-    x = nearbyintf(x);
-    return fe_number(ctx, x);
 }
 
 
@@ -465,12 +387,6 @@ static fe_Object* cfunc_DS18B20(fe_Context *ctx, fe_Object *arg)
 }
 
 
-static fe_Object* cfunc_empty(fe_Context *ctx, fe_Object *arg)
-{
-    return fe_bool(ctx, 0);
-}
-
-
 static int gc;
 static fe_Context *ctx;
 
@@ -554,9 +470,9 @@ bool lisp_run_blind(const char * code, size_t length)
 {
     error_occured = false;
     error_print = INFO;
-    lisp_str_t lstr = { code, length, 0 };
+    fe_str_t fstr = { code, length, 0 };
     // don't care about the result, execute all root-level expressions
-    while (lisp_execute(lisp_read_str, &lstr) != nullptr);
+    while (lisp_execute(fe_read_str, &fstr) != nullptr);
     return !error_occured;
 }
 
@@ -610,8 +526,8 @@ bool lisp_process(const char * code, size_t length, Print * response)
 {
     error_print = response;
 
-    lisp_str_t lstr = { code, length, 0 };
-    fe_Object * obj = lisp_execute(lisp_read_str, &lstr);
+    fe_str_t fstr = { code, length, 0 };
+    fe_Object * obj = lisp_execute(fe_read_str, &fstr);
     if (obj != nullptr)
     {
         fe_write(ctx, obj, lisp_write_Print, response, 0);
