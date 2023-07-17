@@ -20,6 +20,7 @@
 #include "onewire.h"
 #include "sensor_DS18B20.h"
 #include <CLIeditor.h>
+#include <parsers.h>
 #include <SerialFlash.h>
 #include <malloc.h>
 
@@ -171,19 +172,8 @@ static void cmnd_conf(char *args, Stream *response)
 
     else if (strcmp(setting_name, "ETH_MAC") == 0)
     {
-        unsigned int MAC[6];
-        // newlib-nano does not support %hhx
-        if (sscanf(setting_value, "%x:%x:%x:%x:%x:%x",
-                   &MAC[0], &MAC[1], &MAC[2], &MAC[3], &MAC[4], &MAC[5])
-            != sizeof MAC / sizeof MAC[0])
-        {
+        if (!parse_MAC(s.ETH_MAC, setting_value))
             response->println("Invalid format, expected xx:xx:xx:xx:xx:xx");
-        }
-        else
-        {
-            for (uint8_t i = 0; i < sizeof MAC / sizeof MAC[0]; i++)
-                s.ETH_MAC[i] = (uint8_t)MAC[i];
-        }
     }
 
     IPAddress_conf(ETH_IP)
@@ -212,18 +202,7 @@ static void cmnd_conf(char *args, Stream *response)
         strncpy(s.DS18B20s[sensor_id].name, name, sizeof s.DS18B20s[0].name);
         // strncpy does not guarantee NULL termination
         s.DS18B20s[sensor_id].name[sizeof(s.DS18B20s[0].name) - 1] = '\0';
-        const char * a = address;
-        for (uint_fast8_t i = 0; i < sizeof s.DS18B20s[0].address; i++)
-        {
-            char digit[3];
-            strncpy(digit, a, 2);
-            digit[2] = '\0';
-            int n = 0;
-            unsigned int value = 0;
-            sscanf(digit, "%x%n", &value, &n);
-            s.DS18B20s[sensor_id].address[i] = (uint8_t)value;
-            a += n;
-        }
+        parse_onewire_address(s.DS18B20s[sensor_id].address, address);
     }
 
     Bool_conf(shell_telnet)
