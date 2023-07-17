@@ -270,7 +270,7 @@ void MQTT_loop()
     {
         if (settings.DS18B20s[i].name[0] == '\0') continue;
         uint16_t reading = sensor_DS18B20_readings[i];
-        if (reading == prev_DS18B20_readings[i]) continue;
+        if (reading == prev_DS18B20_readings[i] && !force_report) continue;
         prev_DS18B20_readings[i] = reading;
 
         char topic[sizeof(MQTTtopic_tele_temperature)+sizeof(settings.DS18B20s[0].name)];
