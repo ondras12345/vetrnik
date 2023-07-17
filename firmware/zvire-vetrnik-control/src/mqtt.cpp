@@ -9,6 +9,7 @@
 #include "lisp.h"
 #include "control.h"
 #include "stats.h"
+#include "sensor_DS18B20.h"
 
 static EthernetClient ethClient;
 static void MQTTcallback(char* topic, byte* payload, unsigned int length);
@@ -263,6 +264,28 @@ void MQTT_loop()
                  stats.energy / 100U, stats.energy % 100U);
         MQTTClient.publish(MQTTtopic_tele_stats "energy", buf, true);
     }
+
+    static uint16_t prev_DS18B20_readings[SENSOR_DS18B20_COUNT] = { 0 };
+    for (uint_fast8_t i = 0; i < SENSOR_DS18B20_COUNT; i++)
+    {
+        if (settings.DS18B20s[i].name[0] == '\0') continue;
+        uint16_t reading = sensor_DS18B20_readings[i];
+        if (reading == prev_DS18B20_readings[i]) continue;
+        prev_DS18B20_readings[i] = reading;
+
+        char topic[sizeof(MQTTtopic_tele_temperature)+sizeof(settings.DS18B20s[0].name)];
+        snprintf(topic, sizeof topic,
+                 "%s%s",
+                 MQTTtopic_tele_temperature, settings.DS18B20s[i].name);
+
+        char buff[2+1+2+1];  // 2 digits, decimal point, 2 decimal places, '\0'
+        snprintf(buff, sizeof buff, "%u.%02u",
+                 reading / 100U,
+                 reading % 100U);
+        MQTTClient.publish(topic, buff, true);
+
+    }
+
 }
 
 

@@ -37,6 +37,7 @@
 #define MQTTtopic_tele_power_board          MQTTtopic_tele "power_board/"
 #define MQTTtopic_tele_control              MQTTtopic_tele "control/"
 #define MQTTtopic_tele_stats                MQTTtopic_tele "stats/"
+#define MQTTtopic_tele_temperature          MQTTtopic_tele "temperature/"
 
 #define WATCHDOG_TIME 16000UL  // WDT is only used if this is defined
 #define SHELL_TELNET
