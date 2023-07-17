@@ -28,6 +28,19 @@ void stream_print_settings(Print *response, settings_t s)
     response->print("conf MQTTpassword ");
     response->println(s.MQTTpassword);
 
+    response->print("conf DS18B20_sampling ");
+    response->println(s.DS18B20_sampling);
+
+    for (uint_fast8_t i = 0; i < SENSOR_DS18B20_COUNT; i++)
+    {
+        response->print("conf DS18B20 ");
+        response->print(i);
+        response->print(" ");
+        stream_print_onewire_address(response, s.DS18B20s[i].address);
+        response->print(" ");
+        response->println(s.DS18B20s[i].name);
+    }
+
     response->print("conf shell_telnet ");
     response->println(s.shell_telnet ? '1' : '0');
 

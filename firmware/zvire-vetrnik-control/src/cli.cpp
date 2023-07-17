@@ -18,6 +18,7 @@
 #include "display.h"
 #include "debug.h"
 #include "onewire.h"
+#include "sensor_DS18B20.h"
 #include <CLIeditor.h>
 #include <SerialFlash.h>
 #include <malloc.h>
@@ -120,6 +121,54 @@ static void cmnd_conf(char *args, Stream *response)
     {
         response->println("Missing value");
     }
+
+#define IPAddress_conf(name) \
+    else if (strcmp(setting_name, #name) == 0) \
+    { \
+        IPAddress addr; \
+        if (addr.fromString(setting_value)) \
+        { \
+            for (uint8_t i = 0; i < sizeof s.name; i++) \
+                s.name[i] = addr[i]; \
+        } \
+        else \
+        { \
+            response->println("Invalid format, expected x.x.x.x"); \
+        } \
+    }
+
+#define String_conf(name) \
+    else if (strcmp(setting_name, #name) == 0) \
+    { \
+        if (strlen(setting_value) < sizeof s.name) \
+        { \
+            /* fill the rest of the memory with zeros */ \
+            strncpy(s.name, setting_value, sizeof s.name); \
+        } \
+        else \
+            response->println("String too long"); \
+    }
+
+#define uint8_conf(name) \
+    else if (strcmp(setting_name, #name) == 0) \
+    { \
+        unsigned int tmp; \
+        sscanf(setting_value, "%u", &tmp); \
+        if (tmp > 255) \
+        { \
+            response->println("Value not in range 0-255"); \
+            goto bad; \
+        } \
+        s.name = (uint8_t)tmp; \
+    }
+
+#define Bool_conf(name) \
+    else if (strcmp(setting_name, #name) == 0) \
+    { \
+        s.name = (setting_value[0] == '1'); \
+    }
+
+
     else if (strcmp(setting_name, "ETH_MAC") == 0)
     {
         unsigned int MAC[6];
@@ -136,48 +185,57 @@ static void cmnd_conf(char *args, Stream *response)
                 s.ETH_MAC[i] = (uint8_t)MAC[i];
         }
     }
-#define IPAddress_conf(name) \
-    else if (strcmp(setting_name, #name) == 0) \
-    { \
-        IPAddress addr; \
-        if (addr.fromString(setting_value)) \
-        { \
-            for (uint8_t i = 0; i < sizeof s.name; i++) \
-                s.name[i] = addr[i]; \
-        } \
-        else \
-        { \
-            response->println("Invalid format, expected x.x.x.x"); \
-        } \
-    }
+
     IPAddress_conf(ETH_IP)
     IPAddress_conf(MQTTserver)
-#define String_conf(name) \
-    else if (strcmp(setting_name, #name) == 0) \
-    { \
-        if (strlen(setting_value) < sizeof s.name) \
-        { \
-            /* fill the rest of the memory with zeros */ \
-            strncpy(s.name, setting_value, sizeof s.name); \
-        } \
-        else \
-            response->println("String too long"); \
-    }
     String_conf(MQTTuser)
     String_conf(MQTTpassword)
-#define Bool_conf(name) \
-    else if (strcmp(setting_name, #name) == 0) \
-    { \
-        s.name = (setting_value[0] == '1'); \
+    uint8_conf(DS18B20_sampling)
+
+    else if (strcmp(setting_name, "DS18B20") == 0)
+    {
+        const char * const id = strsep(&setting_value, " ");
+        const char * const address = strsep(&setting_value, " ");
+        const char * const name = strsep(&setting_value, " ");
+        unsigned int sensor_id = 0;
+        if (setting_value[0] != '\0')
+        {
+            response->println("bad format");
+            goto bad;
+        }
+        sscanf(id, "%u", &sensor_id);
+        if (sensor_id >= SENSOR_DS18B20_COUNT)
+        {
+            response->println("bad id");
+            goto bad;
+        }
+        strncpy(s.DS18B20s[sensor_id].name, name, sizeof s.DS18B20s[0].name);
+        // strncpy does not guarantee NULL termination
+        s.DS18B20s[sensor_id].name[sizeof(s.DS18B20s[0].name) - 1] = '\0';
+        const char * a = address;
+        for (uint_fast8_t i = 0; i < sizeof s.DS18B20s[0].address; i++)
+        {
+            char digit[3];
+            strncpy(digit, a, 2);
+            digit[2] = '\0';
+            int n = 0;
+            unsigned int value = 0;
+            sscanf(digit, "%x%n", &value, &n);
+            s.DS18B20s[sensor_id].address[i] = (uint8_t)value;
+            a += n;
+        }
     }
+
     Bool_conf(shell_telnet)
     Bool_conf(report_raw)
+
     else
     {
         response->print("Invalid config option: ");
         response->println(setting_name);
     }
 
+bad:
     response->println();
     response->println("Current configuration:");
     stream_print_settings(response, settings);
@@ -724,6 +782,23 @@ static void cmnd_onewirescan(char *args, Stream *response)
 }
 
 
+static void cmnd_ds18b20(char *args, Stream *response)
+{
+    response->println("This command does NOT request a new conversion.");
+
+    for (uint_fast8_t i = 0; i < SENSOR_DS18B20_COUNT; i++)
+    {
+        uint16_t value = sensor_DS18B20_readings[i];
+        response->printf(
+            "[%u] %s: %u.%02u C",
+            i, settings.DS18B20s[i].name,
+            value / 100, value % 100
+        );
+        response->println();
+    }
+}
+
+
 extern "C" char *sbrk(int i);
 static void cmnd_free(char *args, Stream *response)
 {
@@ -870,6 +945,7 @@ Commander::API_t API_tree[] = {
     apiElement("SPIflash",      "Issue commands to SPI flash",              cmnd_SPIflash),
     apiElement("log",           "Filter debug messages",                    cmnd_log),
     apiElement("onewirescan",   "Scan devices on onewire bus",              cmnd_onewirescan),
+    apiElement("ds18b20",       "Print out DS18B20 sensor readings",        cmnd_ds18b20),
     apiElement("free",          "Print out amount of free memory.",         cmnd_free),
     apiElement("dfu",           "Switch to DFU firmware download mode.",    cmnd_dfu),
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),

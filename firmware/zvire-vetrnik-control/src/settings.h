@@ -41,6 +41,14 @@
 #define WATCHDOG_TIME 16000UL  // WDT is only used if this is defined
 #define SHELL_TELNET
 
+#define SENSOR_DS18B20_COUNT 10
+
+
+typedef struct {
+    uint8_t address[8];
+    char name[16];
+} settings_DS18B20_t;
+
 
 typedef struct {
     uint8_t ETH_MAC[6];
@@ -48,6 +56,8 @@ typedef struct {
     uint8_t MQTTserver[4];  // IPv4
     char MQTTuser[16];
     char MQTTpassword[32];
+    uint8_t DS18B20_sampling;  // seconds, no sampling if 0
+    settings_DS18B20_t DS18B20s[SENSOR_DS18B20_COUNT];
     bool shell_telnet : 1;
     bool report_raw : 1; /// MQTT report of raw datapoints
     // remember to adjust stream_print_settings in Print_utils

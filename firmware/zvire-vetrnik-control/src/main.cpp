@@ -15,6 +15,7 @@
 #include "control.h"
 #include "stats.h"
 #include "display.h"
+#include "sensor_DS18B20.h"
 #include <SerialFlash.h>
 #include <Bounce2.h>
 
@@ -68,6 +69,7 @@ void setup()
 #endif
     uart_power_init();
     control_init();
+    sensor_DS18B20_init();
     lisp_init();
     control_init_lisp();
     INFO->println("boot");
@@ -124,6 +126,7 @@ void loop()
         stats_new_state();
     }
 
+    sensor_DS18B20_loop();
     control_loop();
     CLI_loop();
     MQTT_loop();

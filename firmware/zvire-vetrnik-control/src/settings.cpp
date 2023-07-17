@@ -14,6 +14,8 @@ settings_t settings_default = {
     { 0, 0, 0, 0},
     "",
     "",
+    10,
+    { 0 },  // all zeros
     false,
     false
 };
