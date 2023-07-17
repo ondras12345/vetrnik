@@ -21,7 +21,7 @@ extern "C" {
 
 
 static jmp_buf error_jmp;
-static char lisp_buf[8*1024];
+static char lisp_buf[16*1024];
 
 static Print * error_print = nullptr;
 
