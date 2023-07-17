@@ -5,6 +5,7 @@
 #include "stats.h"
 #include "control.h"
 #include "settings.h"
+#include "sensor_DS18B20.h"
 #include <Arduino.h>
 #include <math.h>
 #include <SerialFlash.h>
@@ -450,6 +451,20 @@ static fe_Object* cfunc_LED_set(fe_Context *ctx, fe_Object *arg)
 }
 
 
+static fe_Object* cfunc_DS18B20(fe_Context *ctx, fe_Object *arg)
+{
+    int sensor_number = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    if (sensor_number >= SENSOR_DS18B20_COUNT || sensor_number < 0)
+    {
+        fe_error(ctx, "invalid DS18B20 number");
+        return fe_bool(ctx, 0);
+    }
+    uint16_t reading = sensor_DS18B20_readings[sensor_number];
+    if (reading == 0) return fe_bool(ctx, 0);
+    return fe_number(ctx, reading / 100.0);
+}
+
+
 static fe_Object* cfunc_empty(fe_Context *ctx, fe_Object *arg)
 {
     return fe_bool(ctx, 0);
@@ -483,6 +498,7 @@ void lisp_init()
     fe_set(ctx, fe_symbol(ctx, "rels"), fe_cfunc(ctx, cfunc_relay_set));
     fe_set(ctx, fe_symbol(ctx, "ledg"), fe_cfunc(ctx, cfunc_LED_get));
     fe_set(ctx, fe_symbol(ctx, "leds"), fe_cfunc(ctx, cfunc_LED_set));
+    fe_set(ctx, fe_symbol(ctx, "ds18"), fe_cfunc(ctx, cfunc_DS18B20));
 
     // Add variables for power modes
     for (size_t i = 0; power_board_modes[i] != nullptr; i++)
