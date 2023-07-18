@@ -50,6 +50,6 @@ repos:
       - id: codespell
         name: Check Spelling
         description: Checks for common misspellings in text files.
-        entry: sh -c 'codespell || true'
-        language: system
+        entry: codespell
+        language: python
         types: [text]
