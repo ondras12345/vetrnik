@@ -14,6 +14,8 @@
  * - Not sure if there is a simple way to fit SerialFlash lib in RAM.
  * - Maybe we could find the start of the file using the lib while still
  *   running from flash and then use manual HAL SPI in our ramfunc.
+ *   - Actually, HAL won't be available in ramfunc. We would have to set up the
+ *     registers manually.
  */
 
 void ota_init();
