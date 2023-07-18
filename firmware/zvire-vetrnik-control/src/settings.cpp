@@ -16,6 +16,8 @@ settings_t settings_default = {
     "",
     10,
     { 0 },  // all zeros
+    "vetrnik",
+    "pass",
     false,
     false
 };

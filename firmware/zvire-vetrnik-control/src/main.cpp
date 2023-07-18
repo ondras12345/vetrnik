@@ -8,6 +8,7 @@
 #include "uart_power.h"
 #include "power_datapoints.h"
 #include "mqtt.h"
+#include "ota.h"
 #include "cli.h"
 #include "debug.h"
 #include "power_board.h"
@@ -130,6 +131,7 @@ void loop()
     control_loop();
     CLI_loop();
     MQTT_loop();
+    ota_loop();
     display_loop();
 #ifdef WATCHDOG_TIME
     IWatchdog.reload();

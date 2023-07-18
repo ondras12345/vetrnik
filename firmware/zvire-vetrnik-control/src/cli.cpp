@@ -19,6 +19,7 @@
 #include "debug.h"
 #include "onewire.h"
 #include "sensor_DS18B20.h"
+#include "ota.h"
 #include <CLIeditor.h>
 #include <parsers.h>
 #include <SerialFlash.h>
@@ -205,6 +206,8 @@ static void cmnd_conf(char *args, Stream *response)
         parse_onewire_address(s.DS18B20s[sensor_id].address, address);
     }
 
+    String_conf(OTAname)
+    String_conf(OTApassword)
     Bool_conf(shell_telnet)
     Bool_conf(report_raw)
 
@@ -882,6 +885,24 @@ static void cmnd_dfu(char *args, Stream *response)
     // TODO watchdog ??
 }
 
+static void cmnd_ota(char *args, Stream *response)
+{
+    response->println("usage: ota [enable]");
+    response->println("  enable: Enable OTA mode. Reset to disable.");
+    response->println("If OTA mode is enabled, a warning is logged every second.");
+
+    if (strcmp(args, "enable") == 0)
+    {
+        ota_init();
+        response->println();
+        response->printf(
+            "OTA enabled. name: \"%s\" user: \"arduino\", pw: \"%s\"",
+            settings.OTAname, settings.OTApassword
+        );
+        response->println();
+    }
+}
+
 
 static void cmnd_ver(char *args, Stream *response)
 {
@@ -927,6 +948,7 @@ Commander::API_t API_tree[] = {
     apiElement("ds18b20",       "Print out DS18B20 sensor readings",        cmnd_ds18b20),
     apiElement("free",          "Print out amount of free memory.",         cmnd_free),
     apiElement("dfu",           "Switch to DFU firmware download mode.",    cmnd_dfu),
+    apiElement("ota",           "Switch to over-the-air firmware dl mode.", cmnd_ota),
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),
     apiElement("ver",           "Print out version info.",                  cmnd_ver),
     apiElement("watch",         "Run command every second.",                cmnd_watch),

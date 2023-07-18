@@ -10,6 +10,10 @@ void stream_print_MAC(Print *response, uint8_t MAC[6])
 }
 
 
+/**
+ * Print settings_t in a format that allows it to be imported by pasting the
+ * output to the cli (conf command).
+ */
 void stream_print_settings(Print *response, settings_t s)
 {
     response->print("conf ETH_MAC ");
@@ -40,6 +44,12 @@ void stream_print_settings(Print *response, settings_t s)
         response->print(" ");
         response->println(s.DS18B20s[i].name);
     }
+
+    response->print("conf OTAname ");
+    response->println(s.OTAname);
+
+    response->print("conf OTApassword ");
+    response->println(s.OTApassword);
 
     response->print("conf shell_telnet ");
     response->println(s.shell_telnet ? '1' : '0');

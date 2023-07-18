@@ -59,6 +59,8 @@ typedef struct {
     char MQTTpassword[32];
     uint8_t DS18B20_sampling;  // seconds, no sampling if 0
     settings_DS18B20_t DS18B20s[SENSOR_DS18B20_COUNT];
+    char OTAname[16];  // probably for mDNS, untested
+    char OTApassword[32];
     bool shell_telnet : 1;
     bool report_raw : 1; /// MQTT report of raw datapoints
     // remember to adjust stream_print_settings in Print_utils

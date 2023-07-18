@@ -5,3 +5,4 @@ noConstructor:*/.pio/libdeps/*/Ethernet/src/Ethernet.h
 noConstructor:*/.pio/libdeps/*/Commander-API/*
 uninitMemberVar:*/.pio/libdeps/*/Ethernet/src/Ethernet.h
 missingOverride:*/.pio/libdeps/*/Bounce2/src/Bounce2.h
+missingOverride:*/.pio/libdeps/*/ArduinoOTA/*
