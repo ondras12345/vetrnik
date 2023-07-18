@@ -5,7 +5,12 @@
 #include <fe_utils.h>
 
 
-static uint8_t fe_buf[8*1024];
+// test_stress will segfault if fe_buf is not 32-bit aligned:
+//static uint8_t padding[2] __attribute__((aligned(1)));
+//static uint8_t fe_buf[8*1024] __attribute__((aligned(1)));
+// https://github.com/rxi/fe/issues/27
+
+static uint8_t fe_buf[8*1024] __attribute__((aligned(4)));
 static int gc;
 static fe_Context* ctx;
 static bool error_expected = false;
@@ -50,6 +55,12 @@ fe_Object * run_str_code(const char* code)
     TEST_ASSERT_NOT_NULL(obj);
     fe_restoregc(ctx, gc);
     return obj;
+}
+
+
+void test_alignment()
+{
+    TEST_ASSERT_FALSE((size_t)(&fe_buf[0]) & 0x03);
 }
 
 
@@ -157,6 +168,7 @@ void test_stress()
 int runUnityTests()
 {
     UNITY_BEGIN();
+    RUN_TEST(test_alignment);
     RUN_TEST(test_read_str);
     RUN_TEST(test_error);
     RUN_TEST(test_rem);

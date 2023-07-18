@@ -21,7 +21,10 @@ extern "C" {
 
 
 static jmp_buf error_jmp;
-static char lisp_buf[16*1024];
+// fe requires the buffer to be 32-bit aligned.
+// I'm not sure if this is done by default on this platform, added
+// __attribute__ aligned just to be sure.
+static uint8_t lisp_buf[16*1024] __attribute__((aligned(4)));
 
 static Print * error_print = nullptr;
 
