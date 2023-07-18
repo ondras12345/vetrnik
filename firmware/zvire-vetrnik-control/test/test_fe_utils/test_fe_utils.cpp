@@ -83,6 +83,9 @@ void test_rem()
 
     obj = run_str_code("(rem 13 4)");
     TEST_ASSERT_EQUAL_FLOAT(1.0, fe_tonumber(ctx, obj));
+
+    obj = run_str_code("(rem 13 -4)");
+    TEST_ASSERT_EQUAL_FLOAT(1.0, fe_tonumber(ctx, obj));
 }
 
 
