@@ -2,7 +2,7 @@
 #include "error_templates.h"
 #include "Hbridge.h"
 
-bool enabled = false;
+enabled_t enabled = { 0 };
 bool emergency = false;
 bool OVP_stop = false;
 uint8_t OCP_max_duty = 255;

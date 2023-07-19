@@ -58,7 +58,7 @@ bool set_mode(mode_t new_mode)
             {
                 if (mode != shorted) return false;
                 if (emergency) return false;
-                if (!enabled) return false;
+                if (!is_enabled()) return false;
                 Hbridge_set_duty(0);
                 duty = 0;
                 Hbridge_set_enabled(true);
@@ -148,12 +148,12 @@ void loop()
     ADC_loop();
     uart_loop();
 
-    enabled = !gpio_rd8(PIN, pin_ENABLE);
-    if (!enabled && mode != stopping && mode != shorted)
+    enabled.hardware = !gpio_rd8(PIN, pin_ENABLE);
+    if (!is_enabled() && mode != stopping && mode != shorted)
     {
         set_mode(stopping);
     }
-    if (enabled && mode == stopping)
+    if (is_enabled() && mode == stopping)
     {
         set_mode(const_duty);
     }

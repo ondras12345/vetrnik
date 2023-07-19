@@ -140,6 +140,12 @@ static void cmnd_REL(uint8_t value)
 }
 
 
+static void cmnd_enable(uint8_t value)
+{
+    enabled.software = !!value;
+}
+
+
 static datapoint_t datapoints[] = {
     {'d', cmnd_duty, 2100},  // duty
     {'m', cmnd_mode},  // mode
@@ -150,6 +156,7 @@ static datapoint_t datapoints[] = {
     {'=', cmnd_setting_set},
     {'C', cmnd_command},
     {'R', cmnd_REL},
+    {'e', cmnd_enable},
 };
 
 #define FOR_EACH_DP for (uint8_t i = 0; i < sizeof datapoints / sizeof datapoints[0]; i++)
@@ -189,7 +196,7 @@ static void report()
     serial_putc(' ');
 
     serial_putc('e');
-    serial_putuint(enabled);
+    serial_putuint((enabled.hardware ? 1 : 0) | (enabled.software ? 2 : 0));
     serial_putc(' ');
 
     serial_putc('T');

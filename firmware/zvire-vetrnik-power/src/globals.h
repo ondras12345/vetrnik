@@ -18,7 +18,13 @@ typedef enum {
     start = 3,
 } mode_t;
 
-extern bool enabled;
+
+typedef struct {
+    bool hardware: 1;
+    bool software: 1;
+} enabled_t;
+
+extern enabled_t enabled;
 extern bool emergency;
 extern bool OVP_stop;
 extern uint8_t OCP_max_duty;
@@ -37,3 +43,8 @@ bool set_mode(mode_t new_mode);
 void set_duty(uint8_t value);
 
 void emergency_stop();
+
+inline bool is_enabled()
+{
+    return enabled.hardware && enabled.software;
+}
