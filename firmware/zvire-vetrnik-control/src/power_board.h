@@ -2,6 +2,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+typedef struct {
+    bool hardware: 1;  ///< status of external enable pin
+    bool software: 1;
+    bool overall: 1;  ///< (hardware && software)
+} enabled_t;
 
 typedef struct {
     unsigned long retrieved_millis;
@@ -13,7 +18,7 @@ typedef struct {
     uint16_t RPM;       ///< turbine RPM
     uint16_t voltage;   ///< V, *10
     uint16_t current;   ///< mA
-    bool enabled;       ///< status of external enable pin
+    enabled_t enabled;  ///< @see enabled_t
     bool emergency;     ///< emergency stop mode, requires physical reset
     uint16_t temperature_heatsink;  ///< 'C, *10
     uint16_t temperature_rectifier;  ///< 'C, *10
@@ -58,6 +63,7 @@ power_board_status_t power_board_status_read();
 
 void power_board_set_duty(uint8_t duty);
 void power_board_set_mode(power_board_mode_t mode);
+void power_board_set_software_enable(bool value);
 void power_board_clear_errors();
 void power_board_command(power_board_command_t command);
 bool power_board_REL_write(uint8_t pin, bool value);

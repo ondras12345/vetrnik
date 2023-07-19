@@ -226,7 +226,9 @@ void MQTT_loop()
     PB_uint16_h(RPM, "RPM", 2)
     PB_decimal(voltage, "voltage", 1)
     PB_decimal(current, "current", 3)
-    PB_bool(enabled, "enabled")
+    PB_bool(enabled.overall, "enabled")
+    PB_bool(enabled.hardware, "enabled/hardware")
+    PB_bool(enabled.software, "enabled/software")
     PB_bool(emergency, "emergency")
     PB_decimal_h(temperature_heatsink, "temperature/heatsink", 1, 2)
     PB_decimal_h(temperature_rectifier, "temperature/rectifier", 1, 2)
@@ -344,6 +346,12 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
         sscanf(buff, "%u", &duty);
         if (duty > 255) return;
         power_board_set_duty(duty);
+        return;
+    }
+
+    if (strcmp(topic, MQTTtopic_cmnd_power_board "sw_enable") == 0)
+    {
+        power_board_set_software_enable(payload[0] == '1');
         return;
     }
 

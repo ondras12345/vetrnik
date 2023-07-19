@@ -298,7 +298,7 @@ static void cmnd_rx(char *args, Stream *response)
 }
 
 
-static void print_power_board_status(Stream *response)
+static void print_power_board_status(Print *response)
 {
     response->println("power board status:");
 #define printStat(name) \
@@ -322,7 +322,9 @@ static void print_power_board_status(Stream *response)
     printStatU(RPM, "RPM");
     printStatC(voltage, 0.1, 1, "V");
     printStatC(current, 0.001, 3, "A");
-    printStat(enabled);
+    printStat(enabled.hardware);
+    printStat(enabled.software);
+    printStat(enabled.overall);
     printStat(emergency);
     printStatC(temperature_heatsink, 0.1, 1, "'C");
     printStatC(temperature_rectifier, 0.1, 1, "'C");
@@ -364,7 +366,7 @@ static void cmnd_power(char *args, Stream *response)
     else if (setting_value == nullptr)
     {
         response->println("Missing value");
-        response->println("Usage: power [[duty|mode] value | clear_errors | reset | WDT_test]");
+        response->println("Usage: power [[duty|mode|sw_enable] value | clear_errors | reset | WDT_test]");
         goto bad;
     }
 
@@ -408,6 +410,11 @@ static void cmnd_power(char *args, Stream *response)
             response->println();
         }
 
+    }
+    else if (strcmp(setting_name, "sw_enable") == 0)
+    {
+        bool value = setting_value[0] == '1';
+        power_board_set_software_enable(value);
     }
 
 bad:

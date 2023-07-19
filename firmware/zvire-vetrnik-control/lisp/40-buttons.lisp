@@ -8,6 +8,7 @@
 (= btn1_long (fn ()
   (= d 0)
   (ctrls "strategy" "control_lisp")
+  (pwrs "sw_enable" 1)
   (pwrs "mode" pwr_start)
 ))
 

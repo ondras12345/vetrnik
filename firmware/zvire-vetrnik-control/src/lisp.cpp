@@ -181,8 +181,9 @@ static fe_Object* cfunc_power_get(fe_Context *ctx, fe_Object *arg)
     fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
 
     if (strcmp(name, "valid") == 0) return fe_number(ctx, power_board_status.valid);
-#define pbstateC(n, conv) \
-    else if (strcmp(name, #n) == 0) return fe_number(ctx, power_board_status.n * conv);
+#define pbstateCN(n, var, conv) \
+    else if (strcmp(name, n) == 0) return fe_number(ctx, power_board_status.var * conv);
+#define pbstateC(n, conv) pbstateCN(#n, n, conv)
 #define pbstate(n) pbstateC(n, 1)
     pbstate(time)
     pbstate(mode)
@@ -191,7 +192,9 @@ static fe_Object* cfunc_power_get(fe_Context *ctx, fe_Object *arg)
     pbstate(RPM)
     pbstateC(voltage, 0.1)
     pbstateC(current, 0.001)
-    pbstate(enabled)
+    pbstateCN("hw_enable", enabled.hardware, 1)
+    pbstateCN("sw_enable", enabled.software, 1)
+    pbstateCN("enabled", enabled.overall, 1)
     pbstate(emergency)
     pbstateC(temperature_heatsink, 0.1)
     pbstateC(temperature_rectifier, 0.1)
@@ -252,6 +255,11 @@ static fe_Object* cfunc_power_set(fe_Context *ctx, fe_Object *arg)
 
         if (!power_board_REL_write(pin, state))
             fe_error(ctx, "invalid REL pin");
+    }
+    else if (strcmp(name, "sw_enable") == 0)
+    {
+        bool value = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
+        power_board_set_software_enable(value);
     }
     // there should be no need to clear_errors or execute other commands
     else

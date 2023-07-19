@@ -37,7 +37,10 @@ power_board_status_t power_board_status_read()
     ret.RPM = RX_datapoints_get('r').value;
     ret.voltage = RX_datapoints_get('v').value;
     ret.current = RX_datapoints_get('i').value;
-    ret.enabled = RX_datapoints_get('e').value;
+    uint8_t enabled = RX_datapoints_get('e').value;
+    ret.enabled.hardware = enabled & 0x01;
+    ret.enabled.software = enabled & 0x02;
+    ret.enabled.overall = ret.enabled.hardware && ret.enabled.software;
     ret.emergency = RX_datapoints_get('S').value;
     ret.temperature_heatsink = RX_datapoints_get('T').value;
     ret.temperature_rectifier = RX_datapoints_get('R').value;
@@ -45,6 +48,7 @@ power_board_status_t power_board_status_read()
     ret.error_count = RX_datapoints_get('E').value;
     return ret;
 }
+
 
 
 /**
@@ -62,6 +66,15 @@ void power_board_set_duty(uint8_t duty)
 void power_board_set_mode(power_board_mode_t mode)
 {
     TX_datapoints_set('m', mode);
+}
+
+
+/**
+ * Set enabled.software on power board.
+ */
+void power_board_set_software_enable(bool value)
+{
+    TX_datapoints_set('e', value ? 0x02 : 0);
 }
 
 

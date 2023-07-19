@@ -118,6 +118,7 @@ void control_set_strategy(control_strategy_t s)
         case control_shorted:
             power_board_set_duty(0);
             power_board_set_mode(shorted);
+            power_board_set_software_enable(false);
             digitalWrite(PIN_SHORT, LOW);
             break;
 
