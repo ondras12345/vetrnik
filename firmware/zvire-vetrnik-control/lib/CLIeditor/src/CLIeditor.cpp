@@ -57,7 +57,16 @@ bool CLIeditor::process(char c)
     {
         end_sequence_i++;
     }
-    else end_sequence_i = 0;
+    else
+    {
+        // '.' should work after any number of '\r' | '\n'
+        // This will only work properly for our simple end_sequence.
+        end_sequence_i = 0;
+        if (c == end_sequence[0])
+        {
+            end_sequence_i = 1;
+        }
+    }
 
     if (end_sequence_i >= sizeof(end_sequence)/sizeof(end_sequence[0]))
     {
