@@ -9,7 +9,7 @@ flash.
 ```
 # connect via telnet (do not use that nc trick, it does not work)
 SPIflash erase init.lisp
-SPIflahs dump init.lisp 0
+SPIflash dump init.lisp 0
 SPIflash ed init.lisp 0
 # paste out.lisp
 .
