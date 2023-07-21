@@ -330,6 +330,7 @@ static void print_power_board_status(Print *response)
     printStatC(temperature_rectifier, 0.1, 1, "'C");
     printStat(fan);
     printStat(error_count);
+    printStat(last5m);
 #undef printStat
 #undef printStatU
 #undef printStatC

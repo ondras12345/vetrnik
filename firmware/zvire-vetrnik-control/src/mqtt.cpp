@@ -234,6 +234,7 @@ void MQTT_loop()
     PB_decimal_h(temperature_rectifier, "temperature/rectifier", 1, 2)
     PB_uint16(fan, "fan");
     PB_uint16(error_count, "error_count");
+    PB_bool(last5m, "last5m");
 
 #undef PB_c
 #undef PB

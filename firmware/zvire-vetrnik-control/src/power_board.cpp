@@ -46,6 +46,21 @@ power_board_status_t power_board_status_read()
     ret.temperature_rectifier = RX_datapoints_get('R').value;
     ret.fan = RX_datapoints_get('f').value;
     ret.error_count = RX_datapoints_get('E').value;
+
+    static uint16_t last_time = 0;
+    ret.last5m = true;
+    if (ret.current > 200 || !power_board_status.valid)
+    {
+        last_time = ret.time;
+    }
+    else
+    {
+        if (!power_board_status.last5m || ret.time - last_time >= 5*60U)
+        {
+            ret.last5m = false;
+        }
+    }
+
     return ret;
 }
 

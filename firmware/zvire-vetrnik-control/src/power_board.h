@@ -24,6 +24,7 @@ typedef struct {
     uint16_t temperature_rectifier;  ///< 'C, *10
     uint8_t fan;        ///< fan output duty cycle, 0-255
     uint8_t error_count;
+    bool last5m;        ///< true if power was being generated in the last 5 minutes
     // setting index and value ignored
 } power_board_status_t;
 

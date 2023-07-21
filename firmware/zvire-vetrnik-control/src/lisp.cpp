@@ -180,7 +180,10 @@ static fe_Object* cfunc_power_get(fe_Context *ctx, fe_Object *arg)
     char name[32];
     fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
 
-    if (strcmp(name, "valid") == 0) return fe_number(ctx, power_board_status.valid);
+    if (strcmp(name, "valid") == 0) return fe_bool(ctx, power_board_status.valid);
+#define pbstateBN(n, var) \
+    else if (strcmp(name, n) == 0) return fe_bool(ctx, power_board_status.var);
+#define pbstateB(n) pbstateBN(#n, n)
 #define pbstateCN(n, var, conv) \
     else if (strcmp(name, n) == 0) return fe_number(ctx, power_board_status.var * conv);
 #define pbstateC(n, conv) pbstateCN(#n, n, conv)
@@ -192,16 +195,20 @@ static fe_Object* cfunc_power_get(fe_Context *ctx, fe_Object *arg)
     pbstate(RPM)
     pbstateC(voltage, 0.1)
     pbstateC(current, 0.001)
-    pbstateCN("hw_enable", enabled.hardware, 1)
-    pbstateCN("sw_enable", enabled.software, 1)
-    pbstateCN("enabled", enabled.overall, 1)
-    pbstate(emergency)
+    pbstateBN("hw_enable", enabled.hardware)
+    pbstateBN("sw_enable", enabled.software)
+    pbstateBN("enabled", enabled.overall)
+    pbstateB(emergency)
     pbstateC(temperature_heatsink, 0.1)
     pbstateC(temperature_rectifier, 0.1)
     pbstate(fan)
     pbstate(error_count)
+    pbstateB(last5m)
 #undef pbstate
 #undef pbstateC
+#undef pbstateCN
+#undef pbstateB
+#undef pbstateBN
     else if (strcmp(name, "REL") == 0)
     {
         int pin = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
