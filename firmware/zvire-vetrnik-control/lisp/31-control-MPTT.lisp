@@ -22,7 +22,36 @@
   )
 ))
 
+
+(= pump (fn ()
+  (rels 1
+    (if (pwrg "last5m")
+      (if
+        (not t0) t  ; t0 is nil - broken sensor
+        (and
+          (not (relg 1))  ; do not switch relay off if temperature falls
+          (< t0 PS)
+        ) nil
+        t
+      )
+      nil  ; turbine in not generating power
+    )
+  )
+))
+
+(= swen (fn ()
+  (pwrs "sw_enable"
+    (if
+      (pwrg "sw_enable") (< t0 T0M)  ; enabled - check MAX
+      (< t0 T0S)  ; disabled - check start
+    )
+  )
+))
+
 (= ctrl (fn ()
+  (= t0 (ds18 0))
+  (swen)
+  (pump)
   (let v (pwrg "voltage"))
   (let i (pwrg "current"))
   (let r (pwrg "RPM"))

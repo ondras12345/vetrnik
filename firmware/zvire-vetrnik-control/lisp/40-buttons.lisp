@@ -2,13 +2,15 @@
 
 (= btn1_short (fn ()
   (ctrls "strategy" "control_shorted")
+  (rels 1 nil)  ; turn off pump
 ))
 
 
 (= btn1_long (fn ()
   (= d 0)
+  (= t0 (ds18 0))
+  (swen)
   (ctrls "strategy" "control_lisp")
-  (pwrs "sw_enable" 1)
   (pwrs "mode" pwr_start)
 ))
 
