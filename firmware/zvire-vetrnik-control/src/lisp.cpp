@@ -6,6 +6,7 @@
 #include "control.h"
 #include "settings.h"
 #include "sensor_DS18B20.h"
+#include "pump.h"
 #include <Arduino.h>
 #include <SerialFlash.h>
 
@@ -322,8 +323,9 @@ static fe_Object* cfunc_relay_get(fe_Context *ctx, fe_Object *arg)
     int relay_number = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
     switch (relay_number)
     {
-        case 1:
-            return fe_bool(ctx, digitalRead(PIN_REL1));
+        // REL1 is currently used for pump, disable direct control
+        //case 1:
+        //    return fe_bool(ctx, digitalRead(PIN_REL1));
         case 2:
             return fe_bool(ctx, digitalRead(PIN_REL2));
         default:
@@ -340,9 +342,10 @@ static fe_Object* cfunc_relay_set(fe_Context *ctx, fe_Object *arg)
 
     switch (relay_number)
     {
-        case 1:
-            digitalWrite(PIN_REL1, state);
-            break;
+        // REL1 is currently used for pump, disable direct control
+        //case 1:
+        //    digitalWrite(PIN_REL1, state);
+        //    break;
         case 2:
             digitalWrite(PIN_REL2, state);
             break;
@@ -405,6 +408,20 @@ static fe_Object* cfunc_DS18B20(fe_Context *ctx, fe_Object *arg)
 }
 
 
+static fe_Object* cfunc_pump_get(fe_Context *ctx, fe_Object *arg)
+{
+    return fe_bool(ctx, pump_get());
+}
+
+
+static fe_Object* cfunc_pump_set(fe_Context *ctx, fe_Object *arg)
+{
+    bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
+    pump_set(state);
+    return fe_bool(ctx, 0);
+}
+
+
 static int gc;
 static fe_Context *ctx;
 
@@ -433,6 +450,8 @@ void lisp_init()
     fe_set(ctx, fe_symbol(ctx, "ledg"), fe_cfunc(ctx, cfunc_LED_get));
     fe_set(ctx, fe_symbol(ctx, "leds"), fe_cfunc(ctx, cfunc_LED_set));
     fe_set(ctx, fe_symbol(ctx, "ds18"), fe_cfunc(ctx, cfunc_DS18B20));
+    fe_set(ctx, fe_symbol(ctx, "pumpg"), fe_cfunc(ctx, cfunc_pump_get));
+    fe_set(ctx, fe_symbol(ctx, "pumps"), fe_cfunc(ctx, cfunc_pump_set));
 
     // Add variables for power modes
     for (size_t i = 0; power_board_modes[i] != nullptr; i++)

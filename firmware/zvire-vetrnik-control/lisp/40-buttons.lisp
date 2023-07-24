@@ -2,7 +2,6 @@
 
 (= btn1_short (fn ()
   (ctrls "strategy" "control_shorted")
-  (rels 1 nil)  ; turn off pump
 ))
 
 

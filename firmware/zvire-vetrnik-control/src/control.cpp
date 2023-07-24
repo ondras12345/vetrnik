@@ -4,6 +4,7 @@
 #include "lisp.h"
 #include "debug.h"
 #include "mqtt.h"
+#include "pump.h"
 #include <Arduino.h>
 
 static control_strategy_t strategy = control_shorted;
@@ -119,6 +120,7 @@ void control_set_strategy(control_strategy_t s)
             power_board_set_duty(0);
             power_board_set_mode(shorted);
             power_board_set_software_enable(false);
+            pump_set(false);
             digitalWrite(PIN_SHORT, LOW);
             break;
 

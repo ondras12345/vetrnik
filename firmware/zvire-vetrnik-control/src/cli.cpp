@@ -20,6 +20,7 @@
 #include "onewire.h"
 #include "sensor_DS18B20.h"
 #include "ota.h"
+#include "pump.h"
 #include <CLIeditor.h>
 #include <parsers.h>
 #include <SerialFlash.h>
@@ -893,6 +894,7 @@ static void cmnd_dfu(char *args, Stream *response)
     // TODO watchdog ??
 }
 
+
 static void cmnd_ota(char *args, Stream *response)
 {
     response->println("usage: ota [enable]");
@@ -909,6 +911,19 @@ static void cmnd_ota(char *args, Stream *response)
         );
         response->println();
     }
+}
+
+
+static void cmnd_pump(char *args, Stream *response)  // cppcheck-suppress constParameter
+{
+    if (args[0] != '\0')
+    {
+        response->println("setting");
+        pump_set(args[0] == '1');
+    }
+
+    response->print("pump: ");
+    response->println(pump_get() ? '1' : '0');
 }
 
 
@@ -957,6 +972,7 @@ Commander::API_t API_tree[] = {
     apiElement("free",          "Print out amount of free memory.",         cmnd_free),
     apiElement("dfu",           "Switch to DFU firmware download mode.",    cmnd_dfu),
     apiElement("ota",           "Switch to over-the-air firmware dl mode.", cmnd_ota),
+    apiElement("pump",          "Control circulation pump.",                cmnd_pump),
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),
     apiElement("ver",           "Print out version info.",                  cmnd_ver),
     apiElement("watch",         "Run command every second.",                cmnd_watch),

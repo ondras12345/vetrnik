@@ -9,6 +9,7 @@
 #include "lisp.h"
 #include "control.h"
 #include "stats.h"
+#include "pump.h"
 #include "sensor_DS18B20.h"
 
 static EthernetClient ethClient;
@@ -121,6 +122,7 @@ void MQTT_loop()
                 MQTTClient.subscribe(MQTTtopic_cmnd_power_board "+");
                 MQTTClient.subscribe(MQTTtopic_cmnd_lisp);
                 MQTTClient.subscribe(MQTTtopic_cmnd_control "+");
+                MQTTClient.subscribe(MQTTtopic_cmnd_pump);
 
                 MQTTClient.publish(MQTTtopic_availability, "online", true);
 
@@ -289,6 +291,14 @@ void MQTT_loop()
 
     }
 
+    static bool prev_pump = false;
+    bool pump = pump_get();
+    if (pump != prev_pump || force_report)
+    {
+        prev_pump = pump;
+        MQTTClient.publish(MQTTtopic_tele_pump, (pump ? "1" : "0"), true);
+    }
+
 }
 
 
@@ -400,6 +410,12 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
                 return;
             }
         }
+        return;
+    }
+
+    if (strcmp(topic, MQTTtopic_cmnd_pump) == 0)
+    {
+        pump_set(payload[0] == '1');
         return;
     }
 }
