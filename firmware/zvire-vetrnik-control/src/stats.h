@@ -2,8 +2,8 @@
 #include <stdint.h>
 
 typedef struct {
-    /// Energy since last reset in kWh * 100
-    uint16_t energy;
+    /// Energy since last reset in Wh
+    uint32_t energy;
 } stats_t;
 
 

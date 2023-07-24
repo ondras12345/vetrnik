@@ -190,10 +190,14 @@ void MQTT_loop()
     char tmp[3*sizeof(v) + 1];                                              \
     snprintf(tmp, sizeof tmp, "%u", v);
 #define maketmp_decimal(v, dp)                                              \
-    char tmp[3*sizeof(v) + 1 + 1]; /* int + decimal point + null*/          \
+    char tmp[3*sizeof(v) + 1 + 1]; /* int + decimal point + '\0; */         \
     /* Type cast of the whole value because of cppcheck. */                 \
     /* I don't think it is really needed. */                                \
-    snprintf(tmp, sizeof tmp, "%u.%0" #dp "u", uint16_t(v / uint16_t(1E ## dp)), uint16_t(v % uint16_t(1E ## dp)));
+    snprintf(tmp, sizeof tmp,                                               \
+             "%u.%0" #dp "u",                                               \
+             (unsigned int)(v / uint16_t(1E ## dp)),                        \
+             uint16_t(v % uint16_t(1E ## dp))                               \
+            );
 
     if ((power_board_status.voltage != prev_pb_status.voltage ||
          power_board_status.current != prev_pb_status.current)
@@ -255,8 +259,6 @@ void MQTT_loop()
 #undef PB_c
 #undef PB
 #undef PB_h_uint16
-#undef maketmp_uint16
-#undef maketmp_decimal
 #undef PB_uint16
 #undef PB_uint16_h
 #undef PB_bool
@@ -278,10 +280,8 @@ void MQTT_loop()
     if (stats.energy != prev_stats.energy || force_report)
     {
         prev_stats.energy = stats.energy;
-        char buf[3+1+2 + 1];
-        snprintf(buf, sizeof buf, "%u.%02u",
-                 stats.energy / 100U, stats.energy % 100U);
-        MQTTClient.publish(MQTTtopic_tele_stats "energy", buf, true);
+        maketmp_decimal(stats.energy, 3);
+        MQTTClient.publish(MQTTtopic_tele_stats "energy", tmp, true);
     }
 
     static uint16_t prev_DS18B20_readings[SENSOR_DS18B20_COUNT] = { 0 };
@@ -297,11 +297,8 @@ void MQTT_loop()
                  "%s%s",
                  MQTTtopic_tele_temperature, settings.DS18B20s[i].name);
 
-        char buff[2+1+2+1];  // 2 digits, decimal point, 2 decimal places, '\0'
-        snprintf(buff, sizeof buff, "%u.%02u",
-                 reading / 100U,
-                 reading % 100U);
-        MQTTClient.publish(topic, buff, true);
+        maketmp_decimal(reading, 2);
+        MQTTClient.publish(topic, tmp, true);
 
     }
 

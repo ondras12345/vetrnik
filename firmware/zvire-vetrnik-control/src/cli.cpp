@@ -475,8 +475,8 @@ bad:
 static void cmnd_stats(char *args, Stream *response)
 {
     response->println("stats:");
-    response->printf("energy: %u.%02u kWh\r\n",
-                     stats.energy / 100U, stats.energy % 100U);
+    response->printf("energy: %u.%03u kWh\r\n",
+                     stats.energy / 1000U, stats.energy % 1000U);
 }
 
 

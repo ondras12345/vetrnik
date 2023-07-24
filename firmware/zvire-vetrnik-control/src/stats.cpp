@@ -29,10 +29,9 @@ void stats_new_state()
     prev_valid = power_board_status.valid;
     last_ms = millis();
 
-    // 10 Wh = 0.01 kWh
-    if (energy_small >= 36000)
+    while (energy_small >= 3600)
     {
-        energy_small -= 36000;
+        energy_small -= 3600;
         stats.energy++;
     }
 }

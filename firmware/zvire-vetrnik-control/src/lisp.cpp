@@ -166,7 +166,7 @@ static fe_Object* cfunc_stats(fe_Context *ctx, fe_Object *arg)
 {
     char name[32];
     fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
-    if (strcmp(name, "energy") == 0) return fe_number(ctx, stats.energy * 0.01);
+    if (strcmp(name, "energy") == 0) return fe_number(ctx, stats.energy * 0.001);
     else
     {
         fe_error(ctx, "invalid stat name");

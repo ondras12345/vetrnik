@@ -33,9 +33,9 @@
 ; line 1 A
 (= d_l1a (fn ()
   ; 0
-  (lcdn (stats "energy") 3 2)
+  (lcdn (stats "energy") 4 3)
   (lcds "kWh")
-  ; 9
+  ; 11
   (lcdw 1)
 ))
 
