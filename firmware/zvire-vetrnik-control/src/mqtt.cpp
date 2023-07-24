@@ -186,12 +186,34 @@ void MQTT_loop()
 
     static power_board_status_t prev_pb_status = {0};
 
-#define PB_c(name, topic, maketmp, cond) \
-    if ((cond) || force_report) \
-    { \
-        prev_pb_status.name = power_board_status.name; \
-        maketmp \
-        MQTTClient.publish(MQTTtopic_tele_power_board topic, tmp, true); \
+#define maketmp_uint16(v)                                                   \
+    char tmp[3*sizeof(v) + 1];                                              \
+    snprintf(tmp, sizeof tmp, "%u", v);
+#define maketmp_decimal(v, dp)                                              \
+    char tmp[3*sizeof(v) + 1 + 1]; /* int + decimal point + null*/          \
+    /* Type cast of the whole value because of cppcheck. */                 \
+    /* I don't think it is really needed. */                                \
+    snprintf(tmp, sizeof tmp, "%u.%0" #dp "u", uint16_t(v / uint16_t(1E ## dp)), uint16_t(v % uint16_t(1E ## dp)));
+
+    if ((power_board_status.voltage != prev_pb_status.voltage ||
+         power_board_status.current != prev_pb_status.current)
+        || force_report)
+    {
+        // W * 10
+        uint16_t power =
+            ((uint32_t)(power_board_status.voltage) *
+             power_board_status.current
+            ) / 1000;
+        maketmp_decimal(power, 1)
+        MQTTClient.publish(MQTTtopic_tele_power_board "power", tmp, true);
+    }
+
+#define PB_c(name, topic, maketmp, cond)                                    \
+    if ((cond) || force_report)                                             \
+    {                                                                       \
+        prev_pb_status.name = power_board_status.name;                      \
+        maketmp                                                             \
+        MQTTClient.publish(MQTTtopic_tele_power_board topic, tmp, true);    \
     }
 #define PB(name, topic, maketmp) \
     PB_c(name, topic, maketmp, power_board_status.name != prev_pb_status.name)
@@ -200,14 +222,6 @@ void MQTT_loop()
          /* We need to perform the comparison with signed integers */ \
          abs((int_fast32_t)power_board_status.name - (int_fast32_t)prev_pb_status.name) > hysteresis \
         )
-
-#define maketmp_uint16(v) \
-    char tmp[3*sizeof(v) + 1]; \
-    snprintf(tmp, sizeof tmp, "%u", v);
-#define maketmp_decimal(v, dp) \
-    char tmp[3*sizeof(v) + 1 + 1]; /* int + decimal point + null*/ \
-    /* Type cast of the whole value because of cppcheck. I don't think it is really needed. */ \
-    snprintf(tmp, sizeof tmp, "%u.%0" #dp "u", uint16_t(v / uint16_t(1E ## dp)), uint16_t(v % uint16_t(1E ## dp)));
 
 #define PB_uint16(name, topic) \
     PB(name, topic, maketmp_uint16(power_board_status.name))
