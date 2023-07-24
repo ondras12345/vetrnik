@@ -43,6 +43,8 @@
 #define SHELL_TELNET
 
 #define SENSOR_DS18B20_COUNT 10
+/// How many retries --> the temperature is read SENSOR_DS18B20_RETRIES+1 times.
+#define SENSOR_DS18B20_RETRIES 2
 
 
 typedef struct {

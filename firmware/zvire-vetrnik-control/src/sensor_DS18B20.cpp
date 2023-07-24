@@ -20,8 +20,16 @@ void sensor_DS18B20_init()
 }
 
 
-//! Return fixed point number with two decimal places (temperature*100).
-uint16_t sensor_DS18B20_read(const uint8_t* device_address)
+/// Returns true if the sensor is enabled in settings, false if disabled or invalid.
+bool sensor_DS18B20_enabled(uint_fast8_t id)
+{
+    if (id >= SENSOR_DS18B20_COUNT) return false;
+    return settings.DS18B20s[id].name[0] != '\0';
+}
+
+
+/// Return fixed point number with two decimal places (temperature*100).
+static uint16_t sensor_DS18B20_read(const uint8_t* device_address)
 {
     unsigned int result = 0;
     int32_t temperature_raw = sensors.getTemp(device_address);
@@ -37,37 +45,90 @@ uint16_t sensor_DS18B20_read(const uint8_t* device_address)
 }
 
 
+typedef enum {
+    idle = 0,
+    request,
+    waiting_for_read,
+    read,
+    done,
+} state_t;
+
+
 void sensor_DS18B20_loop()
 {
     if (settings.DS18B20_sampling == 0) return;
 
-    static bool samples_requested = false;
+    const unsigned long now = millis();
     const unsigned long sampling_interval = settings.DS18B20_sampling * 1000UL;
-    static unsigned long prev_millis = millis() - sampling_interval;
+    static state_t state = idle;
+    static uint_fast8_t sensor_id;
+    static unsigned long idle_prev_millis = now - sampling_interval;
+    static unsigned long read_prev_millis = 0;
+    static uint16_t readings_buff[SENSOR_DS18B20_COUNT];
+    static bool error;
+    static uint_fast8_t retry;
 
-    if (!samples_requested &&
-        millis() - prev_millis >= sampling_interval)
-    {
-        samples_requested = true;
-        prev_millis = millis();
-        sensors.requestTemperatures();
-    }
-
-    // 750UL should suffice for 12-bit, 800UL just to be on the safe side
-    if (samples_requested && millis() - prev_millis >= 800UL)
-    {
-        // not updating prev_millis to prevent throwing off sampling_interval
-        samples_requested = false;
-
-        for (uint_fast8_t i = 0; i < SENSOR_DS18B20_COUNT; i++)
-        {
-            uint16_t value = 0;
-            if (settings.DS18B20s[i].name[0] != '\0')
+    switch (state) {
+        case idle:
+            if (now - idle_prev_millis >= sampling_interval)
             {
-                value = sensor_DS18B20_read(settings.DS18B20s[i].address);
+                idle_prev_millis = now;
+                memset(readings_buff, 0, sizeof readings_buff);
+                state = request;
+                retry = 0;
+            }
+            break;
+
+        case request:
+            read_prev_millis = now;
+            sensors.requestTemperatures();
+            state = waiting_for_read;
+            error = false;
+            break;
+
+        case waiting_for_read:
+            // 750UL should suffice for 12-bit, 800UL just to be on the safe side
+            if (now - read_prev_millis >= 800UL)
+            {
+                state = read;
+                sensor_id = 0;
+            }
+            break;
+
+        case read:
+            if (sensor_id >= SENSOR_DS18B20_COUNT)
+            {
+                if (error && retry < SENSOR_DS18B20_RETRIES)
+                {
+                    retry++;
+                    state = request;
+                }
+                else state = done;
+                break;
             }
 
-            sensor_DS18B20_readings[i] = value;
-        }
+            if (sensor_DS18B20_enabled(sensor_id) && readings_buff[sensor_id] == 0)
+            {
+                uint16_t reading = sensor_DS18B20_read(
+                    settings.DS18B20s[sensor_id].address
+                );
+                readings_buff[sensor_id] = reading;
+                error |= (reading == 0);
+            }
+
+            sensor_id++;
+            break;
+
+        case done:
+            memcpy(sensor_DS18B20_readings, readings_buff,
+                   sizeof sensor_DS18B20_readings
+                   );
+            state = idle;
+            break;
+
+        default:
+            // This should never happen
+            state = idle;
+            break;
     }
 }

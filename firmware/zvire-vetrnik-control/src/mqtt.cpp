@@ -271,7 +271,7 @@ void MQTT_loop()
     static uint16_t prev_DS18B20_readings[SENSOR_DS18B20_COUNT] = { 0 };
     for (uint_fast8_t i = 0; i < SENSOR_DS18B20_COUNT; i++)
     {
-        if (settings.DS18B20s[i].name[0] == '\0') continue;
+        if (!sensor_DS18B20_enabled(i)) continue;
         uint16_t reading = sensor_DS18B20_readings[i];
         if (reading == prev_DS18B20_readings[i] && !force_report) continue;
         prev_DS18B20_readings[i] = reading;
