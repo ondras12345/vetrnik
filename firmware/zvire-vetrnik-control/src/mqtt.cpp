@@ -281,7 +281,11 @@ void MQTT_loop()
     {
         if (!sensor_DS18B20_enabled(i)) continue;
         uint16_t reading = sensor_DS18B20_readings[i];
-        if (reading == prev_DS18B20_readings[i] && !force_report) continue;
+
+        const uint16_t prev_reading = prev_DS18B20_readings[i];
+        // readings have to differ by 0.1 degrees or more
+        if (!COND_HYST(reading, 9) && !force_report) continue;
+
         prev_DS18B20_readings[i] = reading;
 
         char topic[sizeof(MQTTtopic_tele_temperature)+sizeof(settings.DS18B20s[0].name)];
@@ -289,7 +293,9 @@ void MQTT_loop()
                  "%s%s",
                  MQTTtopic_tele_temperature, settings.DS18B20s[i].name);
 
-        MAKETMP_DECIMAL(reading, 2);
+        // reduce resolution (+5 for mathematical round instead of truncate)
+        reading = (reading + 5) / 10;
+        MAKETMP_DECIMAL(reading, 1);
         MQTTClient.publish(topic, tmp, true);
     }
 
