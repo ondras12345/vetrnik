@@ -11,6 +11,7 @@
 #include "stats.h"
 #include "pump.h"
 #include "sensor_DS18B20.h"
+#include <MQTT_helpers.h>
 
 static EthernetClient ethClient;
 static void MQTTcallback(char* topic, byte* payload, unsigned int length);
@@ -184,23 +185,42 @@ void MQTT_loop()
     }
 
 
-    static power_board_status_t prev_pb_status = {0};
+    static power_board_status_t prev_power_board_status = {0};
 
-#define maketmp_uint16(v)                                                   \
-    char tmp[3*sizeof(v) + 1];                                              \
-    snprintf(tmp, sizeof tmp, "%u", v);
-#define maketmp_decimal(v, dp)                                              \
-    char tmp[3*sizeof(v) + 1 + 1]; /* int + decimal point + '\0; */         \
-    /* Type cast of the whole value because of cppcheck. */                 \
-    /* I don't think it is really needed. */                                \
-    snprintf(tmp, sizeof tmp,                                               \
-             "%u.%0" #dp "u",                                               \
-             (unsigned int)(v / uint16_t(1E ## dp)),                        \
-             uint16_t(v % uint16_t(1E ## dp))                               \
-            );
+#define PB_c(name, topic, maketmp, cond)                                    \
+    if ((cond) || force_report)                                             \
+    {                                                                       \
+        prev_power_board_status.name = power_board_status.name;             \
+        maketmp                                                             \
+        MQTTClient.publish(MQTTtopic_tele_power_board topic, tmp, true);    \
+    }
 
-    if ((power_board_status.voltage != prev_pb_status.voltage ||
-         power_board_status.current != prev_pb_status.current)
+/// Report a uint16_t power board datapoint, COND_NEQ
+#define PB_uint16(name, topic)                                              \
+    PB_c(name, topic, MAKETMP_UINT(power_board_status.name),                \
+         COND_NEQ(power_board_status.name)                                  \
+         )
+
+/// Report a uint16_t power board datapoint, COND_HYST
+#define PB_uint16_h(name, topic, hysteresis)                                \
+    PB_c(name, topic, MAKETMP_UINT(power_board_status.name),                \
+         COND_HYST(power_board_status.name, hysteresis))
+
+/// Report a bool power board datapoint
+#define PB_bool(name, topic)                                                \
+    PB_c(name, topic, MAKETMP_BOOL(power_board_status.name),                \
+         COND_NEQ(power_board_status.name)                                  \
+         )
+#define PB_decimal(name, topic, dp) \
+    PB_c(name, topic, MAKETMP_DECIMAL(power_board_status.name, dp),         \
+         COND_NEQ(power_board_status.name)                                  \
+         )
+#define PB_decimal_h(name, topic, dp, hysteresis)                           \
+    PB_c(name, topic, MAKETMP_DECIMAL(power_board_status.name, dp),         \
+         COND_HYST(power_board_status.name, hysteresis))
+
+    if (COND_NEQ(power_board_status.voltage)
+        || COND_NEQ(power_board_status.current)
         || force_report)
     {
         // W * 10
@@ -208,35 +228,9 @@ void MQTT_loop()
             ((uint32_t)(power_board_status.voltage) *
              power_board_status.current
             ) / 1000;
-        maketmp_decimal(power, 1)
+        MAKETMP_DECIMAL(power, 1)
         MQTTClient.publish(MQTTtopic_tele_power_board "power", tmp, true);
     }
-
-#define PB_c(name, topic, maketmp, cond)                                    \
-    if ((cond) || force_report)                                             \
-    {                                                                       \
-        prev_pb_status.name = power_board_status.name;                      \
-        maketmp                                                             \
-        MQTTClient.publish(MQTTtopic_tele_power_board topic, tmp, true);    \
-    }
-#define PB(name, topic, maketmp) \
-    PB_c(name, topic, maketmp, power_board_status.name != prev_pb_status.name)
-#define PB_h_uint16(name, topic, maketmp, hysteresis) \
-    PB_c(name, topic, maketmp, \
-         /* We need to perform the comparison with signed integers */ \
-         abs((int_fast32_t)power_board_status.name - (int_fast32_t)prev_pb_status.name) > hysteresis \
-        )
-
-#define PB_uint16(name, topic) \
-    PB(name, topic, maketmp_uint16(power_board_status.name))
-#define PB_uint16_h(name, topic, hysteresis) \
-    PB_h_uint16(name, topic, maketmp_uint16(power_board_status.name), hysteresis)
-#define PB_bool(name, topic) \
-    PB(name, topic, char tmp[2]; tmp[1] = '\0'; tmp[0] = (power_board_status.name ? '1' : '0');)
-#define PB_decimal(name, topic, dp) \
-    PB(name, topic, maketmp_decimal(power_board_status.name, dp))
-#define PB_decimal_h(name, topic, dp, hysteresis) \
-    PB_h_uint16(name, topic, maketmp_decimal(power_board_status.name, dp), hysteresis)
 
     PB_bool(valid, "valid")
     PB_uint16(time, "time")
@@ -257,8 +251,6 @@ void MQTT_loop()
     PB_bool(last5m, "last5m");
 
 #undef PB_c
-#undef PB
-#undef PB_h_uint16
 #undef PB_uint16
 #undef PB_uint16_h
 #undef PB_bool
@@ -280,7 +272,7 @@ void MQTT_loop()
     if (stats.energy != prev_stats.energy || force_report)
     {
         prev_stats.energy = stats.energy;
-        maketmp_decimal(stats.energy, 3);
+        MAKETMP_DECIMAL(stats.energy, 3);
         MQTTClient.publish(MQTTtopic_tele_stats "energy", tmp, true);
     }
 
@@ -297,9 +289,8 @@ void MQTT_loop()
                  "%s%s",
                  MQTTtopic_tele_temperature, settings.DS18B20s[i].name);
 
-        maketmp_decimal(reading, 2);
+        MAKETMP_DECIMAL(reading, 2);
         MQTTClient.publish(topic, tmp, true);
-
     }
 
     static bool prev_pump = false;
