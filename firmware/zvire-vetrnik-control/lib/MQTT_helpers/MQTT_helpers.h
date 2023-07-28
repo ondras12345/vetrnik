@@ -3,14 +3,12 @@
 
 
 /**
- * Define char tmp[2] containing either "1" or "0",
+ * Define const char * tmp containing either "1" or "0",
  * depending on the value of v.
  * @param v a boolean variable or expression.
  */
 #define MAKETMP_BOOL(v)                                                     \
-    char tmp[2];                                                            \
-    tmp[0] = ((v) ? '1' : '0');                                             \
-    tmp[1] = '\0';
+    const char * tmp = (v) ? "1" : "0";
 
 
 /**
