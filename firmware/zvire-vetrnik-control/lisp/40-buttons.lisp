@@ -14,8 +14,6 @@
 ))
 
 
-(= lb t)  ; lcd backlight, bool
 (= btn2_short (fn ()
-  (= lb (not lb))
-  (lcdb lb)
+  (lcdb (not (lcdb)))
 ))

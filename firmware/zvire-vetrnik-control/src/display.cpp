@@ -7,6 +7,7 @@ LiquidCrystal_PCF8574 lcd(0x27);
 
 static char display_buf[DISPLAY_COLS+1] = {0};
 static uint8_t buf_index = 0;
+static bool backlight;
 
 static void clear_buf()
 {
@@ -21,7 +22,7 @@ void display_init()
     Wire.begin();
     // TODO ping and abort if missing??
     lcd.begin(DISPLAY_COLS, DISPLAY_ROWS);
-    lcd.setBacklight(255);
+    display_backlight_set(true);
     clear_buf();
     lcd.clear();
     lcd.home();
@@ -75,7 +76,14 @@ bool display_set_cursor(uint8_t col)
 }
 
 
-void display_backlight(bool state)
+void display_backlight_set(bool state)
 {
-    lcd.setBacklight(state ? 255 : 0);
+    backlight = state;
+    lcd.setBacklight(backlight ? 255 : 0);
+}
+
+
+bool display_backlight_get()
+{
+    return backlight;
 }

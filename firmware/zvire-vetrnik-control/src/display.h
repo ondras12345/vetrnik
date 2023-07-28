@@ -12,4 +12,5 @@ void display_loop();
 bool display_commit(uint8_t row);
 void display_print(const char * str);
 bool display_set_cursor(uint8_t col);
-void display_backlight(bool state);
+void display_backlight_set(bool state);
+bool display_backlight_get();

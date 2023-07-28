@@ -156,9 +156,16 @@ static fe_Object* cfunc_lcd_num(fe_Context *ctx, fe_Object *arg)
 
 static fe_Object* cfunc_lcd_backlight(fe_Context *ctx, fe_Object *arg)
 {
+    if (fe_isnil(ctx, arg))
+    {
+        // called with no argument --> getter
+        return fe_bool(ctx, display_backlight_get());
+    }
+
+    // called with an argument --> setter
     bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
-    display_backlight(state);
-    return fe_bool(ctx, 0);
+    display_backlight_set(state);
+    return fe_bool(ctx, state);
 }
 
 
@@ -432,6 +439,8 @@ void lisp_init()
 
     gc = fe_savegc(ctx);
 
+    // TODO combine getters and setters to save LISP RAM
+    // (lcdb already does it)
     fe_set(ctx, fe_symbol(ctx, "pwrg"), fe_cfunc(ctx, cfunc_power_get));
     fe_set(ctx, fe_symbol(ctx, "pwrs"), fe_cfunc(ctx, cfunc_power_set));
     fe_set(ctx, fe_symbol(ctx, "rem"), fe_cfunc(ctx, cfunc_rem));

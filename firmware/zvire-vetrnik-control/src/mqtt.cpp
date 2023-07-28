@@ -11,6 +11,7 @@
 #include "stats.h"
 #include "pump.h"
 #include "sensor_DS18B20.h"
+#include "display.h"
 #include <MQTT_helpers.h>
 
 static EthernetClient ethClient;
@@ -124,6 +125,7 @@ void MQTT_loop()
                 MQTTClient.subscribe(MQTTtopic_cmnd_lisp);
                 MQTTClient.subscribe(MQTTtopic_cmnd_control "+");
                 MQTTClient.subscribe(MQTTtopic_cmnd_pump);
+                MQTTClient.subscribe(MQTTtopic_cmnd_display_backlight);
 
                 MQTTClient.publish(MQTTtopic_availability, "online", true);
 
@@ -261,7 +263,7 @@ void MQTT_loop()
 
     static control_strategy_t prev_control_strategy = control_shorted;
     control_strategy_t control_strategy = control_get_strategy();
-    if (control_strategy != prev_control_strategy || force_report)
+    if (COND_NEQ(control_strategy) || force_report)
     {
         prev_control_strategy = control_strategy;
         MQTTClient.publish(MQTTtopic_tele_control "strategy",
@@ -269,7 +271,7 @@ void MQTT_loop()
     }
 
     static stats_t prev_stats = {0};
-    if (stats.energy != prev_stats.energy || force_report)
+    if (COND_NEQ(stats.energy) || force_report)
     {
         prev_stats.energy = stats.energy;
         MAKETMP_DECIMAL(stats.energy, 3);
@@ -301,12 +303,22 @@ void MQTT_loop()
 
     static bool prev_pump = false;
     bool pump = pump_get();
-    if (pump != prev_pump || force_report)
+    if (COND_NEQ(pump) || force_report)
     {
         prev_pump = pump;
-        MQTTClient.publish(MQTTtopic_tele_pump, (pump ? "1" : "0"), true);
+        MAKETMP_BOOL(pump);
+        MQTTClient.publish(MQTTtopic_tele_pump, tmp, true);
     }
 
+
+    static bool prev_backlight = false;
+    bool backlight = display_backlight_get();
+    if (COND_NEQ(backlight) || force_report)
+    {
+        prev_backlight = backlight;
+        MAKETMP_BOOL(backlight);
+        MQTTClient.publish(MQTTtopic_tele_display_backlight, tmp, true);
+    }
 }
 
 
@@ -424,6 +436,12 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
     if (strcmp(topic, MQTTtopic_cmnd_pump) == 0)
     {
         pump_set(payload[0] == '1');
+        return;
+    }
+
+    if (strcmp(topic, MQTTtopic_cmnd_display_backlight) == 0)
+    {
+        display_backlight_set(payload[0] == '1');
         return;
     }
 }
