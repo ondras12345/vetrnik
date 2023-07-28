@@ -17,6 +17,7 @@ all: compile_commands.json compile  # upload
 
 .PHONY: compile
 compile:                ## Compile firmware.
+compile: include/version.h
 	pio run
 
 .PHONY: clean
@@ -62,6 +63,14 @@ test:                   ## Run native tests.
 compile_commands.json:  ## For youcompleteme
 compile_commands.json: platformio.ini
 	pio run --target compiledb
+
+# This needs to be regenerated on every run to be able to
+# detect -dirty state.
+.PHONY: include/version.h
+include/version.h:
+	echo "#define VETRNIK_VERSION \"$(shell git describe --dirty --always --tags)\"" > include/version.h
+	echo "#define VETRNIK_BUILD_TIME \"$(shell date --utc +"%Y%m%dT%H%M%SZ")\"" >> include/version.h
+
 
 .PHONY: help
 help:                   ## Show this help message.

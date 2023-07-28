@@ -21,6 +21,7 @@
 #include "sensor_DS18B20.h"
 #include "ota.h"
 #include "pump.h"
+#include "version.h"
 #include <CLIeditor.h>
 #include <parsers.h>
 #include <SerialFlash.h>
@@ -929,7 +930,10 @@ static void cmnd_pump(char *args, Stream *response)  // cppcheck-suppress constP
 
 static void cmnd_ver(char *args, Stream *response)
 {
-    response->println(__DATE__ " " __TIME__);
+    response->print("version: ");
+    response->println(VETRNIK_VERSION);
+    response->print("build time: ");
+    response->println(VETRNIK_BUILD_TIME);
 }
 
 
