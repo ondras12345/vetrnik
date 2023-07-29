@@ -954,7 +954,7 @@ static void cmnd_watch(char *args, Stream *response)
 }
 
 
-Commander::API_t API_tree[] = {
+static Commander::API_t API_tree[] = {
     apiElement("ifconfig",      "Print out networking information.",        cmnd_ifconfig),
     apiElement("mqtt",          "Print out MQTT status.",                   cmnd_mqtt),
     // ping would be nice, but seems hard to implement
@@ -1079,4 +1079,11 @@ void CLI_loop()
         watch_prev_millis = now;
         if (watch_response) commander.execute(watch_command, watch_response);
     }
+}
+
+
+/// Execute a Commander command, throwing out the response.
+void CLI_execute(const char * cmd)
+{
+    commander.execute(cmd);
 }

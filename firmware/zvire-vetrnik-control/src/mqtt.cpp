@@ -12,6 +12,7 @@
 #include "pump.h"
 #include "sensor_DS18B20.h"
 #include "display.h"
+#include "cli.h"
 #include <MQTT_helpers.h>
 
 static EthernetClient ethClient;
@@ -126,6 +127,7 @@ void MQTT_loop()
                 MQTTClient.subscribe(MQTTtopic_cmnd_control "+");
                 MQTTClient.subscribe(MQTTtopic_cmnd_pump);
                 MQTTClient.subscribe(MQTTtopic_cmnd_display_backlight);
+                MQTTClient.subscribe(MQTTtopic_cmnd_cli);
 
                 MQTTClient.publish(MQTTtopic_availability, "online", true);
 
@@ -442,6 +444,23 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
     if (strcmp(topic, MQTTtopic_cmnd_display_backlight) == 0)
     {
         display_backlight_set(payload[0] == '1');
+        return;
+    }
+
+    if (strcmp(topic, MQTTtopic_cmnd_cli) == 0)
+    {
+        // payload is not null terminated
+        // TODO commander currently has a bug that causes commands
+        // with length >= COMMANDER_MAX_COMMAND_SIZE to overflow an internal
+        // buffer: https://github.com/dani007200964/Commander-API/issues/19
+        // As a workaround, I will make our buff smaller
+        //char buff[COMMANDER_MAX_COMMAND_SIZE + 1];
+        char buff[COMMANDER_MAX_COMMAND_SIZE];
+        size_t command_length = sizeof(buff) - 1;
+        if (length < command_length) command_length = length;
+        memcpy(buff, payload, command_length);
+        buff[command_length] = '\0';
+        CLI_execute(buff);
         return;
     }
 }

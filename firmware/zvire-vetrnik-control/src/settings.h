@@ -34,6 +34,7 @@
 #define MQTTtopic_cmnd_control              MQTTtopic_cmnd "control/"
 #define MQTTtopic_cmnd_pump                 MQTTtopic_cmnd "pump"
 #define MQTTtopic_cmnd_display_backlight    MQTTtopic_cmnd "display/backlight"
+#define MQTTtopic_cmnd_cli                  MQTTtopic_cmnd "cli"
 #define MQTTtopic_tele_raw_RX               MQTTtopic_tele "raw/RX/"
 #define MQTTtopic_tele_raw_errors           MQTTtopic_tele "raw/errors"
 #define MQTTtopic_tele_power_board          MQTTtopic_tele "power_board/"
