@@ -21,7 +21,7 @@
 #define LISP_INIT_FILENAME "init.lisp"
 
 #define MQTTport 1883
-#define MQTTclientID "vetrnik"
+#define MQTTclientID "vetrnik"  // TODO make this a conf option
 #define MQTTReconnectRate 20*1000UL  // in ms
 #define MQTTtopic_prefix                    "vetrnik/"
 #define MQTTtopic_tele                      MQTTtopic_prefix "tele/"
