@@ -206,3 +206,61 @@ script:
         data:
           topic: vetrnik/cmnd/power_board/command/reset
           payload: "1"
+
+
+automation:
+  - alias: Vetrnik notifikace
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.vetrnik_pocet_chyb
+        above: 0
+        id: Chyba vykonove elektroniky
+      - platform: state
+        entity_id: sensor.vetrnik_pocet_chyb
+        to: unavailable
+        for:
+          minutes: 2
+        id: MQTT nekomunikuje
+      - platform: state
+        entity_id: binary_sensor.vetrnik_vykonova_elektronika_komunikuje
+        to: "off"
+        id: Vykonova elektronika nekomunikuje
+      - platform: state
+        entity_id: select.vetrnik_strategie_rizeni
+        # TODO not supported in 2021.8 (I think)
+        #not_to:
+        #  - unavailable
+        #  - unknown
+        id: Zmena strategie rizeni
+    condition:
+      - condition: or
+        conditions:
+          - condition: not
+            conditions:
+              - condition: trigger
+                id: Zmena strategie rizeni
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id: select.vetrnik_strategie_rizeni
+                state:
+                  - unavailable
+                  - unknown
+    action:
+      - service: notify.email_vetrnik
+        data:
+          title: "[vetrnik] {{ trigger.id }}"
+          message: |
+            {% for e in [
+                'sensor.vetrnik_pocet_chyb',
+                'sensor.vetrnik_zpravy_vykonove_elektroniky',
+                'binary_sensor.vetrnik_vykonova_elektronika_komunikuje',
+                'select.vetrnik_strategie_rizeni',
+                ] -%}
+
+                {% set unit = state_attr(e, 'unit_of_measurement') -%}
+
+                {{ state_attr(e, 'friendly_name') }}:
+                {{ states(e) }}{{ ' '+unit if unit is not none }}
+                (last changed {{ states[e.split('.')[0]][e.split('.')[1]].last_changed | as_local }})
+            {% endfor %}
