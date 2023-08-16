@@ -2,7 +2,10 @@
 
 // OVP
 #define voltage_protection_start 500  // 50V
-#define voltage_protection_stop 1400  // 140V
+#define voltage_protection_stop 1000  // 100V
+// voltage_protection_short should be significantly higher than
+// voltage_protection_stop. We do not want to short the turbine while it is
+// spinning.
 #define voltage_protection_short 1600  // 160V
 
 // OCP
