@@ -13,7 +13,7 @@
 #define voltage_R1 100000UL
 #define voltage_R2 3300
 
-#define stopping_RPM 10  // TODO
+#define stopping_RPM 10
 // Time after which turbine RPM must reduce to stopping_RPM in stopping mode
 #define stopping_time 10000UL  // ms
 

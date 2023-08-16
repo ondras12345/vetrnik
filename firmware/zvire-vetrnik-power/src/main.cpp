@@ -166,6 +166,9 @@ void loop()
                 if (RPM >= stopping_RPM)
                 {
                     gpio_clr(pin_SHORT);
+                    // Failsafe - do not boil water in case the contactor is
+                    // disconnected
+                    Hbridge_set_duty(0);
                 }
             }
             break;
