@@ -5,7 +5,7 @@
 
 setting_t settings[kSettingsEnd] = {
     // 0 ... 50Hz ; 1 ... 400 Hz
-    {0},  // kHBridgeFrequency
+    {1},  // kHBridgeFrequency
 
     {10},  // kRPMConversion
 
