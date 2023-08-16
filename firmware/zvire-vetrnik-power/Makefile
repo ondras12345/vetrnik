@@ -1,3 +1,14 @@
+HEX_FILE = .pio/build/ATmega8/firmware.hex
+## 		VARIABLES
+## Set environment variables or specify on the command line to override.
+## Either of these should work:
+## $ SSH_HOST=test make upload_remote
+## $ make upload_remote SSH_HOST=test
+##
+SSH_HOST ?= ntb1## SSH host for upload_remote
+
+##
+## 		TARGETS
 .PHONY: all
 all:            ## Compile and upload, default target for Vim
 all: compile_commands.json compile  # upload
@@ -11,8 +22,24 @@ clean:          ## Clean project.
 	pio run --target clean
 
 .PHONY: upload
-upload:         ## Upload firmware.
+upload:         ## Upload firmware via local programmer.
 	pio run --target upload
+
+.PHONY: upload_remote
+upload_remote:  ## Upload firmware via remote SSH_HOST.
+	tar cf - $(HEX_FILE) -C ~/.platformio/packages/tool-avrdude/ avrdude.conf | \
+	ssh $(strip $(SSH_HOST)) '\
+	    set -e; \
+	    tmpdir=$$(mktemp -d -t tmp.XXXXXXXXXX); \
+	    cleanup () { \
+	        rm -rf "$$tmpdir"; \
+	    }; \
+	    trap cleanup EXIT; \
+	    cd "$$tmpdir"; \
+	    tar xf -; \
+	    set -o xtrace; \
+	    avrdude -p atmega8 -C avrdude.conf -c usbasp -U flash:w:$(HEX_FILE):i \
+	    '
 
 .PHONY: bootloader
 bootloader:     ## Burn fuses and bootloader.
