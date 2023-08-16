@@ -22,7 +22,7 @@ setting_t settings[kSettingsEnd] = {
     // L, H - lower limit, upper limit:
     {200},  // kOCPL, 40 A / 0.2 A = 200
     {210},  // kOCPH, 42 A / 0.2 A = 210
-
+    {30},  // kRPMfilter - see RPM.cpp ; was 4 - too low, try 30
     // TODO adding new settings causes infinite loop ??
 };
 

@@ -9,19 +9,20 @@
 static volatile uint32_t period = 0;
 static volatile unsigned long last_time = 0;
 static volatile bool RPM_new = false;
-
-
-#define SAMPLING_FREQUENCY 7812UL  // Hz
-//#define DEBOUNCE_TIME 0.5  // ms
+// This is too short
+//#define SAMPLING_FREQUENCY 7812UL  // Hz
+//#define DEBOUNCE_TIME 0.5  // ms  TODO try 4 ms
 //#define INTEGRATOR_MAX (DEBOUNCE_TIME * SAMPLING_FREQUENCY / 1000)  // 3 is too low...
-#define INTEGRATOR_MAX 4
+static volatile uint8_t integrator_max; // probably doesn't need to be volatile
+
+
 ISR(TIMER2_OVF_vect)
 {
-    static unsigned int integrator = 0;
+    static uint8_t integrator = 0;
 
     if (gpio_rd8(PIN, pin_RPM_1))
     {
-        if (integrator < INTEGRATOR_MAX) integrator++;
+        if (integrator < integrator_max) integrator++;
     }
     else
     {
@@ -35,11 +36,11 @@ ISR(TIMER2_OVF_vect)
         output = false;
     }
 
-    if (integrator >= INTEGRATOR_MAX)
+    if (integrator >= integrator_max)
     {
         output = true;
         // this should never be needed
-        integrator = INTEGRATOR_MAX;
+        integrator = integrator_max;
     }
 
     if (output != prev_output)
@@ -65,6 +66,8 @@ void RPM_init()
 {
     gpio_conf(pin_RPM_1, INPUT, NOPULLUP);
     gpio_conf(pin_RPM_2, INPUT, NOPULLUP);
+
+    integrator_max = settings[kRPMfilter].value;
 
     TCCR2 = (1<<CS21);  // prescaler 8, every 0.128 ms
     // Enable interrupt on timer2 overflow

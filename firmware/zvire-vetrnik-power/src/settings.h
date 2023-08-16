@@ -50,6 +50,7 @@ typedef enum {
     kCurrentOffsetH = 4,
     kOCPL = 5,
     kOCPH = 6,
+    kRPMfilter = 7,
     kSettingsEnd,
 } setting_index_t;
 
