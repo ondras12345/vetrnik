@@ -195,8 +195,8 @@ script:
     sequence:
       - service: mqtt.publish
         data:
-          topic: vetrnik/cmnd/power_board/command/clear_errors
-          payload: "1"
+          topic: vetrnik/cmnd/power_board/command
+          payload: "clear_errors"
 
   vetrnik_pb_reset:
     alias: Vetrnik reset vykonove elektroniky
@@ -204,8 +204,8 @@ script:
     sequence:
       - service: mqtt.publish
         data:
-          topic: vetrnik/cmnd/power_board/command/reset
-          payload: "1"
+          topic: vetrnik/cmnd/power_board/command
+          payload: "reset"
 
 
 automation:
