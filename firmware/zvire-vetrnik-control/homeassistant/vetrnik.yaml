@@ -232,6 +232,8 @@ automation:
         #not_to:
         #  - unavailable
         #  - unknown
+        for:
+          minutes: 2
         id: Zmena strategie rizeni
       - platform: state
         entity_id: binary_sensor.vetrnik_nouzovy_rezim
