@@ -12,13 +12,6 @@
 #include <PubSubClient.h>
 #pragma GCC diagnostic pop
 
-
-#if true
-#define MQTTpublish(x, y) MQTTClient.publish(x, y)
-#else
-#define MQTTpublish(x, y)
-#endif
-
 extern PubSubClient MQTTClient;
 
 extern bool eth_skip;
