@@ -23,6 +23,7 @@ compile: include/version.h
 .PHONY: clean
 clean:                  ## Clean project.
 	pio run --target clean
+	-rm include/version.h
 
 .PHONY: upload
 upload:                 ## Upload firmware via local DFU.
