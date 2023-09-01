@@ -45,7 +45,7 @@ static SerialFlashFile * ed_file = nullptr;
 static Stream * ed_response = nullptr;
 static CLIeditor ed;
 
-static void ed_write_file(void * buf, size_t len)
+static void ed_write_file(void * buf, size_t len)  // cppcheck-suppress constParameterCallback
 {
     if (ed_file == nullptr) return;
     DEBUG_GENERAL->print("ed writing ");
@@ -276,7 +276,7 @@ static void print_RX(char c)
 }
 
 
-static void cmnd_rx_raw(char *args, Stream *response)  // cppcheck-suppress constParameter
+static void cmnd_rx_raw(char *args, Stream *response)  // cppcheck-suppress constParameterPointer
 {
     print_RX_response = (args[0] == '1') ? response : nullptr;
     response->print("print raw RX: ");
@@ -602,9 +602,9 @@ static void cmnd_SPIflash(char *args, Stream *response)
     }
     else if (strcmp(subcommand_name, "create") == 0)
     {
-        char * filename = strsep(&subcommand_args, " ");
-        char * lengthstr = strsep(&subcommand_args, " ");
-        char * erasablestr = subcommand_args;
+        const char * filename = strsep(&subcommand_args, " ");
+        const char * lengthstr = strsep(&subcommand_args, " ");
+        const char * erasablestr = subcommand_args;
         if (filename == nullptr || lengthstr == nullptr || erasablestr == nullptr)
         {
             response->println("Invalid args");
@@ -623,8 +623,8 @@ static void cmnd_SPIflash(char *args, Stream *response)
     }
     else if (strcmp(subcommand_name, "dump") == 0)
     {
-        char * filename = strsep(&subcommand_args, " ");
-        char * startstr = subcommand_args;
+        const char * filename = strsep(&subcommand_args, " ");
+        const char * startstr = subcommand_args;
         if (filename == nullptr || startstr == nullptr)
         {
             response->println("Invalid args");
@@ -663,8 +663,8 @@ static void cmnd_SPIflash(char *args, Stream *response)
             response->println("Already in ed mode");
             return;
         }
-        char * filename = strsep(&subcommand_args, " ");
-        char * startstr = subcommand_args;
+        const char * filename = strsep(&subcommand_args, " ");
+        const char * startstr = subcommand_args;
         if (filename == nullptr || startstr == nullptr)
         {
             response->println("Invalid args");
@@ -721,8 +721,8 @@ bad:
 
 static void cmnd_log(char *args, Stream *response)
 {
-    char * setting_name = strsep(&args, " ");
-    char * setting_value = args;
+    const char * setting_name = strsep(&args, " ");
+    const char * setting_value = args;
     if (setting_name == nullptr)
     {
         // print out the circular buffer
@@ -915,7 +915,7 @@ static void cmnd_ota(char *args, Stream *response)
 }
 
 
-static void cmnd_pump(char *args, Stream *response)  // cppcheck-suppress constParameter
+static void cmnd_pump(char *args, Stream *response)  // cppcheck-suppress constParameterPointer
 {
     if (args[0] != '\0')
     {
