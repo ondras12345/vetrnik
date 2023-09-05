@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <inttypes.h>
 #include "control.h"
+#include "mqtt.h"
 
 typedef struct
 {
@@ -25,6 +26,8 @@ typedef struct
         {
             uint32_t length;
         } MQTT_receive_info;
+
+        int MQTT_state;
 
         struct
         {
@@ -65,9 +68,6 @@ const char * get_event_string(log_event_t event)
 
         case kMqttConnected:
             return "MQTT connected";
-
-        case kMqttDisconnected:
-            return "MQTT disconnected";
 
         case kControlNotShorted:
             return "control_shorted, but mode != shorted";
@@ -217,6 +217,16 @@ void log_add_record_mqtt_receive(uint32_t length)
 }
 
 
+void log_add_record_mqtt_state(int state)
+{
+    log_record_t record;
+    record.time = millis();
+    record.type = kMqttState;
+    record.MQTT_state = state;
+    log_add_record(record);
+}
+
+
 static void print_record(log_record_t record, Print * response)
 {
     char timestamp[7+2+1];
@@ -270,11 +280,24 @@ static void print_record(log_record_t record, Print * response)
             );
             break;
 
+        case kMqttState:
+            snprintf(
+                print_buffer, sizeof print_buffer,
+                "%s MQTT state: %d %s",
+                timestamp,
+                record.MQTT_state,
+                MQTT_state_to_str(record.MQTT_state)
+            );
+            break;
+
         case kControlStrategy:
             snprintf(
                 print_buffer, sizeof print_buffer,
                 "%s control strategy: old=%s new=%s\r\n",
                 timestamp,
+                // This is a bit unsafe - if we are parsing a malformed
+                // record, we might read strings from random memory locations.
+                // snprintf should protect us.
                 control_strategies[record.control_strategy_info.old_strategy],
                 control_strategies[record.control_strategy_info.new_strategy]
             );

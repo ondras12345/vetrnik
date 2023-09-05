@@ -103,7 +103,17 @@ void MQTT_loop()
 
     if (MQTT_skip) return;
 
-    static byte MQTTReconnectCount = 0;
+    static int prev_MQTT_state = -1000;
+    int MQTT_state = MQTTClient.state();
+    if (MQTT_state != prev_MQTT_state)
+    {
+        prev_MQTT_state = MQTT_state;
+        log_add_record_mqtt_state(MQTT_state);
+        INFO->print("MQTT state: ");
+        INFO->println(MQTT_state_to_str(MQTT_state));
+    }
+
+    static uint_fast8_t MQTTReconnectCount = 0;
     static unsigned long MQTTLastReconnect = 0;
 
     if (MQTTReconnectCount > 6)
@@ -119,7 +129,6 @@ void MQTT_loop()
     {
         if((unsigned long)(millis() - MQTTLastReconnect) >= MQTTReconnectRate)
         {
-            if (MQTTReconnectCount == 0) log_add_event(kMqttDisconnected);
             INFO->println("Connecting MQTT...");
             if (MQTTClient.connect(MQTTclientID, settings.MQTTuser, settings.MQTTpassword,
                         MQTTtopic_availability, 2, true, "offline")
@@ -511,5 +520,45 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
         buff[command_length] = '\0';
         CLI_execute(buff);
         return;
+    }
+}
+
+
+const char * MQTT_state_to_str(int state)
+{
+    switch (state)
+    {
+        case MQTT_CONNECTION_TIMEOUT:
+            return "CONNECTION_TIMEOUT";
+
+        case MQTT_CONNECTION_LOST:
+            return "CONNECTION_LOST";
+
+        case MQTT_CONNECT_FAILED:
+            return "CONNECT_FAILED";
+
+        case MQTT_DISCONNECTED:
+            return "DISCONNECTED";
+
+        case MQTT_CONNECTED:
+            return "CONNECTED";
+
+        case MQTT_CONNECT_BAD_PROTOCOL:
+            return "CONNECT_BAD_PROTOCOL";
+
+        case MQTT_CONNECT_BAD_CLIENT_ID:
+            return "CONNECT_BAD_CLIENT_ID";
+
+        case MQTT_CONNECT_UNAVAILABLE:
+            return "CONNECT_UNAVAILABLE";
+
+        case MQTT_CONNECT_BAD_CREDENTIALS:
+            return "CONNECT_BAD_CREDENTIALS";
+
+        case MQTT_CONNECT_UNAUTHORIZED:
+            return "CONNECT_UNAUTHORIZED";
+
+        default:
+            return "?";
     }
 }

@@ -23,3 +23,4 @@ void ETH_reset();
 uint8_t MQTT_reinit();
 uint8_t MQTT_init();
 void MQTT_loop();
+const char * MQTT_state_to_str(int state);

@@ -19,6 +19,7 @@ typedef enum
     kEventWithoutContext,
     kMqttPublish,
     kMqttReceive,
+    kMqttState,
     kControlStrategy,
     // no power board message - they are repeated too quickly
 } log_record_type_t;
@@ -33,7 +34,6 @@ typedef enum
     kEthernetIP,  // this may happen later than begin due to DHCP
     kEthernetStuck,
     kMqttConnected,
-    kMqttDisconnected,
     kControlNotShorted,
     kControlMqttTimeout,
     kControlLispError,
@@ -52,6 +52,7 @@ void log_add_record_reboot(reset_cause_t reset_cause);
 void log_add_record_control_strategy(control_strategy_t old_strategy, control_strategy_t new_strategy);
 void log_add_record_mqtt_publish(uint32_t skipped, uint32_t succeeded);
 void log_add_record_mqtt_receive(uint32_t length);
+void log_add_record_mqtt_state(int state);
 void log_add_event(log_event_t event);
 void log_add_event_and_println(log_event_t event, Print * response);
 
