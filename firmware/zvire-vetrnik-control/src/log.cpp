@@ -1,5 +1,6 @@
 #include "log.h"
 #include <Arduino.h>
+#include <inttypes.h>
 #include "control.h"
 
 typedef struct
@@ -280,10 +281,9 @@ static void print_record(log_record_t record, Print * response)
             break;
 
         default:
-            // cppcheck-suppress invalidPrintfArgType_uint
             snprintf(
                 print_buffer, sizeof print_buffer,
-                "%s unknown: time=0x%08X type=0x%02X magic=0x%016llX\r\n",
+                "%s unknown: time=0x%08" PRIX32 " type=0x%02X magic=0x%016" PRIX64 "\r\n",
                 timestamp,  // might not mean anything...
                 record.time,
                 record.type,
