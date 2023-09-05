@@ -13,6 +13,7 @@
 #include "sensor_DS18B20.h"
 #include "display.h"
 #include "cli.h"
+#include "log.h"
 #include <MQTT_helpers.h>
 
 static EthernetClient ethClient;
@@ -49,6 +50,7 @@ uint8_t MQTT_init()
 {
     //Ethernet.init(pin_ETH_SS);
 
+    log_add_event(kEthernetBegin);
     INFO->print(F("Eth begin: "));
     // 0.0.0.0 means "use DHCP"
     for (uint8_t i = 0; i < sizeof settings.ETH_IP; i++)
@@ -62,6 +64,7 @@ uint8_t MQTT_init()
     MQTTClient.setSocketTimeout(5);
 
     INFO->println(result);
+    log_add_event(kEthernetIP);
     INFO->print(F("Eth IP: "));
     INFO->println(Ethernet.localIP());
 
@@ -89,7 +92,7 @@ void MQTT_loop()
     {
         static unsigned long prev_reinit = 0;
         if (now - prev_reinit < 60*1000UL) return;  // rate limit
-        INFO->println("ETH stuck, rst");
+        log_add_event_and_println(kEthernetStuck, INFO);
         MQTT_reinit();
         prev_reinit = now;
     }
@@ -116,6 +119,7 @@ void MQTT_loop()
     {
         if((unsigned long)(millis() - MQTTLastReconnect) >= MQTTReconnectRate)
         {
+            if (MQTTReconnectCount == 0) log_add_event(kMqttDisconnected);
             INFO->println("Connecting MQTT...");
             if (MQTTClient.connect(MQTTclientID, settings.MQTTuser, settings.MQTTpassword,
                         MQTTtopic_availability, 2, true, "offline")
@@ -133,11 +137,13 @@ void MQTT_loop()
 
                 force_report = true;
 
-                INFO->println("MQTT connected");
+                log_add_event_and_println(kMqttConnected, INFO);
             }
 
             MQTTLastReconnect = millis();
             MQTTReconnectCount++;
+            // don't overflow
+            if (MQTTReconnectCount == 0) MQTTReconnectCount--;
         }
     }
     if (!MQTTClient.connected()) return;
@@ -326,6 +332,7 @@ void MQTT_loop()
 
 void MQTTcallback(char* topic, byte* payload, unsigned int length)
 {
+    log_add_record_mqtt_receive(length);
     DEBUG_MQTT->printf("MQTT R l:%u t:%s\r\n", length, topic);
     if (DEBUG_MQTT != &DEBUG_buffer)
     {

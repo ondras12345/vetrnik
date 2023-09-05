@@ -5,6 +5,7 @@
 #include "debug.h"
 #include "mqtt.h"
 #include "pump.h"
+#include "log.h"
 #include <Arduino.h>
 
 static control_strategy_t strategy = control_shorted;
@@ -58,7 +59,7 @@ void control_new_state()
         case control_shorted:
             if (power_board_status.mode != shorted)
             {
-                INFO->println("control_shorted, but mode != shorted");
+                log_add_event_and_println(kControlNotShorted, INFO);
                 power_board_set_mode(shorted);
             }
             break;
@@ -66,7 +67,7 @@ void control_new_state()
         case control_MQTT:
             if (millis() - MQTT_last_command_ms >= 30000UL)
             {
-                INFO->println("MQTT control timeout");
+                log_add_event_and_println(kControlMqttTimeout, INFO);
                 control_set_strategy(control_shorted);
             }
             break;
@@ -75,7 +76,7 @@ void control_new_state()
             bool success = lisp_run_blind("(ctrl)");
             if (!success)
             {
-                INFO->println("error in control_lisp");
+                log_add_event_and_println(kControlLispError, INFO);
                 control_set_strategy(control_shorted);
             }
             break;
@@ -98,7 +99,7 @@ void control_loop()
     // the contactor is slow
     if (prev_short_emergency && millis() - short_emergency_millis >= 100UL)
     {
-        INFO->println("SHORT e-stop");
+        log_add_event_and_println(kControlShortEstop, INFO);
         control_set_strategy(control_shorted);
         short_emergency = false;
     }
@@ -111,6 +112,7 @@ void control_loop()
 
 void control_set_strategy(control_strategy_t s)
 {
+    log_add_record_control_strategy(strategy, s);
     INFO->print("Switching to ");
     INFO->println(control_strategies[s]);
 

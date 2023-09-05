@@ -1,5 +1,6 @@
 #include "settings.h"
 #include "debug.h"
+#include "log.h"
 #include <SerialFlash.h>
 
 /*
@@ -30,7 +31,7 @@ static const uint8_t magic[MAGIC_LENGTH] = { 0x00, 0x55, 0xAA, 0xFF };
 
 static void settings_reset()
 {
-    INFO->println("Settings reset");
+    log_add_event_and_println(kSettingsReset, INFO);
     settings = settings_default;
     // Size doesn't matter, will be 64k since I need an erasable file
     if (!SerialFlash.exists("settings"))
@@ -95,7 +96,7 @@ void settings_init()
 
 void settings_write(const settings_t & s)
 {
-    INFO->println("Settings write");
+    log_add_event_and_println(kSettingsWrite, INFO);
     SerialFlashFile f = SerialFlash.open(SETTINGS_FILENAME);
     if (!f)
     {

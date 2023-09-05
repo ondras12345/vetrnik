@@ -17,6 +17,8 @@
 #include "stats.h"
 #include "display.h"
 #include "sensor_DS18B20.h"
+#include "log.h"
+#include "reset_cause.h"
 #include <SerialFlash.h>
 #include <Bounce2.h>
 
@@ -27,6 +29,13 @@ static Bounce2::Button button2 = Bounce2::Button();
 
 void setup()
 {
+    reset_cause_t reset_cause = reset_cause_get();
+    log_init(
+        reset_cause == RESET_CAUSE_BROWNOUT_RESET ||
+        reset_cause == RESET_CAUSE_POWER_ON_POWER_DOWN_RESET
+    );
+    log_add_record_reboot(reset_cause);
+
     Serial.begin();
     log_add_INFO_backend(&Serial);
 
@@ -114,14 +123,20 @@ void loop()
     bool status_complete = uart_power_loop();
     if (status_complete)
     {
-         power_board_status = power_board_status_read();
-         control_new_state();
-         stats_new_state();
+        power_board_status = power_board_status_read();
+        control_new_state();
+        stats_new_state();
+        static bool prev_emergency = false;
+        if (power_board_status.emergency != prev_emergency)
+        {
+            prev_emergency = power_board_status.emergency;
+            log_add_event(kPowerBoardEmergency);
+        }
     }
     else if (power_board_status.valid &&
              millis() - power_board_status.retrieved_millis >= 2000UL)
     {
-        INFO->println("power_board_status timeout");
+        log_add_event_and_println(kPowerBoardStatusTimeout, INFO);
         power_board_status.valid = false;
         control_new_state();
         stats_new_state();

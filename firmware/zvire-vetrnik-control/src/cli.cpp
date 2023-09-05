@@ -22,6 +22,7 @@
 #include "ota.h"
 #include "pump.h"
 #include "version.h"
+#include "log.h"
 #include <CLIeditor.h>
 #include <parsers.h>
 #include <SerialFlash.h>
@@ -719,7 +720,7 @@ bad:
 }
 
 
-static void cmnd_log(char *args, Stream *response)
+static void cmnd_debug(char *args, Stream *response)
 {
     const char * setting_name = strsep(&args, " ");
     const char * setting_value = args;
@@ -751,7 +752,28 @@ static void cmnd_log(char *args, Stream *response)
     }
     return;
 bad:
-    response->println("Usage: log [[power|MQTT|general] (1|0)]");
+    response->println("Usage: debug [[power|MQTT|general] (1|0)]");
+}
+
+
+static void cmnd_log(char *args, Stream *response)
+{
+    if (strcmp(args, "all") == 0)
+    {
+        response->println("Printing whole log...");
+        log_print_all(response);
+        response->println("done");
+    }
+    else if (strcmp(args, "new") == 0)
+    {
+        response->println("Printing new log...");
+        log_print_new(response);
+        response->println("done");
+    }
+    else goto bad;
+    return;
+bad:
+    response->println("Usage: log (all|new)");
 }
 
 
@@ -970,7 +992,8 @@ static Commander::API_t API_tree[] = {
     apiElement("lisp_reset",    "Reinit Lisp interpreter",                  cmnd_lisp_reset),
     apiElement("lisp_read",     "Execute Lisp from file",                   cmnd_lisp_read),
     apiElement("SPIflash",      "Issue commands to SPI flash",              cmnd_SPIflash),
-    apiElement("log",           "Filter debug messages",                    cmnd_log),
+    apiElement("debug",         "Filter debug messages",                    cmnd_debug),
+    apiElement("log",           "Print log / postmort",                     cmnd_log),
     apiElement("onewirescan",   "Scan devices on onewire bus",              cmnd_onewirescan),
     apiElement("ds18b20",       "Print out DS18B20 sensor readings",        cmnd_ds18b20),
     apiElement("free",          "Print out amount of free memory.",         cmnd_free),

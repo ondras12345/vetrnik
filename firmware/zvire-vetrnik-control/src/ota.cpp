@@ -4,6 +4,7 @@
 #include <ArduinoOTA.h>
 #include "settings.h"
 #include "debug.h"
+#include "log.h"
 
 
 static bool OTA_enabled = false;
@@ -21,6 +22,7 @@ void ota_init()
         InternalStorage
     );
     OTA_enabled = true;
+    log_add_event(kOtaEnabled);
 }
 
 
