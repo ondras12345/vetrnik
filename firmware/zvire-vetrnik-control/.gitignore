@@ -1,5 +1,6 @@
 lisp/out.lisp
 include/version.h
+config/
 
 .pio
 .clang_complete
