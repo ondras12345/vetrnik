@@ -7,12 +7,12 @@ class CLIeditor {
     public:
         /** Create a useless object that always returns true from process() */
         // cppcheck-suppress uninitMemberVar symbolName=CLIeditor::buf
-        CLIeditor() : write_response_(nullptr), write_file_(nullptr) { };
+        CLIeditor() : write_file_(nullptr), write_response_(nullptr) { };
 
         // cppcheck-suppress uninitMemberVar symbolName=CLIeditor::buf
         CLIeditor(void (*write_response)(char c), void(*write_file)(void *buf, size_t len))
-            : write_response_(write_response)
-            , write_file_(write_file)
+            : write_file_(write_file)
+            , write_response_(write_response)
             {};
 
         bool process(char c);

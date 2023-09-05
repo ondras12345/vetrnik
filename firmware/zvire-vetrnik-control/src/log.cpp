@@ -267,7 +267,7 @@ static void print_record(log_record_t record, Print * response)
         case kMqttPublish:
             snprintf(
                 print_buffer, sizeof print_buffer,
-                "%s MQTT publish: skipped=0x%02X new=%02X\r\n",
+                "%s MQTT publish: skipped=0x%02" PRIX32 "X new=%02" PRIX32 "\r\n",
                 timestamp,
                 record.MQTT_publish_info.skipped,
                 record.MQTT_publish_info.succeeded
@@ -277,7 +277,7 @@ static void print_record(log_record_t record, Print * response)
         case kMqttReceive:
             snprintf(
                 print_buffer, sizeof print_buffer,
-                "%s MQTT receive: length=%u\r\n",
+                "%s MQTT receive: length=%" PRIu32 "\r\n",
                 timestamp,
                 record.MQTT_receive_info.length
             );

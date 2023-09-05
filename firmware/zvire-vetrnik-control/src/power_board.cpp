@@ -55,7 +55,7 @@ power_board_status_t power_board_status_read()
     }
     else
     {
-        if (!power_board_status.last5m || ret.time - last_time >= 5*60U)
+        if (!power_board_status.last5m || (uint16_t)(ret.time - last_time) >= 5*60U)
         {
             ret.last5m = false;
         }

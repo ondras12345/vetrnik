@@ -113,7 +113,7 @@ static MultiPrint INFO_final_mp(INFO_final);  // with buffer
 void log_add_INFO_backend(Print * printer)
 {
     if (printer == nullptr) return;
-    uint8_t i = 0;
+    uint_fast8_t i = 0;
     for (; INFO_backends[i] != nullptr; i++);
     if (i + 1 >= sizeof(INFO_backends)/sizeof(INFO_backends[0])) return;
     INFO_backends[i] = printer;

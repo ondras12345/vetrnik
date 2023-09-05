@@ -73,12 +73,17 @@ void control_new_state()
             break;
 
         case control_lisp:
-            bool success = lisp_run_blind("(ctrl)");
-            if (!success)
             {
-                log_add_event_and_println(kControlLispError, INFO);
-                control_set_strategy(control_shorted);
+                bool success = lisp_run_blind("(ctrl)");
+                if (!success)
+                {
+                    log_add_event_and_println(kControlLispError, INFO);
+                    control_set_strategy(control_shorted);
+                }
             }
+            break;
+
+        case control_manual:
             break;
     }
 }

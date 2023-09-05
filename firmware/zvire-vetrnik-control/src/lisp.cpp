@@ -256,7 +256,7 @@ static fe_Object* cfunc_power_set(fe_Context *ctx, fe_Object *arg)
         for (; power_board_modes[mode_max] != nullptr; mode_max++);
         mode_max--;
 
-        if (mode < 0 || mode > mode_max)
+        if (mode < 0 || (size_t)mode > mode_max)
         {
             fe_error(ctx, "invalid mode");
             return nullptr;
