@@ -38,14 +38,12 @@ typedef struct
 } log_record_t;
 
 
+// https://github.com/stm32duino/Arduino_Core_STM32/wiki/API#Remembering-variables-across-resets
 static log_record_t log_records[LOG_RECORD_COUNT] __attribute__((__section__(".noinit")));
-
 /// Points to the cell that will should written next
 static size_t write_index __attribute__((__section__(".noinit")));
 /// Points to the cell that will should read next
 static size_t read_index __attribute__((__section__(".noinit")));
-
-// https://github.com/stm32duino/Arduino_Core_STM32/wiki/API#Remembering-variables-across-resets
 
 static const uint32_t log_magic_1 = 0xA5A5A5A5;
 static const uint64_t log_magic_2 = 0xDEADBEEF5A5A5A5A;
@@ -95,6 +93,9 @@ const char * get_event_string(log_event_t event)
 
         case kOtaEnabled:
             return "OTA enabled";
+
+        case kLogReinit:
+            return "log reinit";
     }
 
     return "?";
@@ -134,6 +135,8 @@ void log_init(bool first_reset)
     {
         log_records[i].type = kInvalid;
     }
+
+    log_add_event(kLogReinit);
 }
 
 
