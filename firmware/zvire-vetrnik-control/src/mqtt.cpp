@@ -157,6 +157,18 @@ void MQTT_loop()
 
     // report values here, use force_report to detect reconnection
 
+uint32_t log_skipped = -1;
+uint32_t log_succeeded = 0;
+uint_fast8_t log_id = 0;
+#define PUBLISH_LOG(topic, payload, retain) \
+    do { \
+        log_skipped &= ~(1<<log_id); \
+        bool success = MQTTClient.publish(topic, payload, retain); \
+        log_succeeded |= ((success ? 1 : 0)<<log_id); \
+    } while (0)
+
+
+    log_id = 0;
     // Starting with c = '!' is not OK because MQTT does not seem to like #, $
     // and + in topic names
     for (char c = ','; c <= '~'; c++)
@@ -171,7 +183,7 @@ void MQTT_loop()
             {
                 char tmp[3*sizeof(RX_datapoint_t) + 1];  // >= number of digits required + null
                 snprintf(tmp, sizeof tmp, "%lu", dp.value);
-                MQTTClient.publish(top, tmp, true);
+                PUBLISH_LOG(top, tmp, true);
                 dp.changed = false;
                 RX_datapoints_set(c, dp);
             }
@@ -181,7 +193,7 @@ void MQTT_loop()
             if (force_report)
             {
                 // clean up retained messages
-                MQTTClient.publish(top, "", true);
+                PUBLISH_LOG(top, "", true);
             }
         }
     }
@@ -190,7 +202,8 @@ void MQTT_loop()
     {
         INFO->print("Raw text message: ");
         INFO->println(power_text_message);
-        MQTTClient.publish(MQTTtopic_tele_raw_errors, power_text_message);
+        log_id = 1;
+        PUBLISH_LOG(MQTTtopic_tele_raw_errors, power_text_message, false);
         power_text_message_complete = false;
     }
 
@@ -202,7 +215,7 @@ void MQTT_loop()
     {                                                                       \
         prev_power_board_status.name = power_board_status.name;             \
         maketmp                                                             \
-        MQTTClient.publish(MQTTtopic_tele_power_board topic, tmp, true);    \
+        PUBLISH_LOG(MQTTtopic_tele_power_board topic, tmp, true);    \
     }
 
 /// Report a uint16_t power board datapoint, COND_NEQ
@@ -239,25 +252,43 @@ void MQTT_loop()
              power_board_status.current
             ) / 1000;
         MAKETMP_DECIMAL(power, 1)
-        MQTTClient.publish(MQTTtopic_tele_power_board "power", tmp, true);
+        log_id = 2;
+        PUBLISH_LOG(MQTTtopic_tele_power_board "power", tmp, true);
     }
 
+    log_id = 3;
     PB_bool(valid, "valid")
+    log_id = 4;
     PB_uint16(time, "time")
+    log_id = 5;
     PB_uint16(mode, "mode")
+    log_id = 6;
     PB_uint16(duty, "duty")
+    log_id = 7;
     PB_uint16(OCP_max_duty, "OCP_max_duty")
+    log_id = 8;
     PB_uint16_h(RPM, "RPM", 2)
+    log_id = 9;
     PB_decimal(voltage, "voltage", 1)
+    log_id = 10;
     PB_decimal(current, "current", 3)
+    log_id = 11;
     PB_bool(enabled.overall, "enabled")
+    log_id = 12;
     PB_bool(enabled.hardware, "enabled/hardware")
+    log_id = 13;
     PB_bool(enabled.software, "enabled/software")
+    log_id = 14;
     PB_bool(emergency, "emergency")
+    log_id = 15;
     PB_decimal_h(temperature_heatsink, "temperature/heatsink", 1, 2)
+    log_id = 16;
     PB_decimal_h(temperature_rectifier, "temperature/rectifier", 1, 2)
+    log_id = 17;
     PB_uint16(fan, "fan");
+    log_id = 18;
     PB_uint16(error_count, "error_count");
+    log_id = 19;
     PB_bool(last5m, "last5m");
 
 #undef PB_c
@@ -274,8 +305,9 @@ void MQTT_loop()
     if (COND_NEQ(control_strategy) || force_report)
     {
         prev_control_strategy = control_strategy;
-        MQTTClient.publish(MQTTtopic_tele_control "strategy",
-                           control_strategies[control_strategy], true);
+        log_id = 20;
+        PUBLISH_LOG(MQTTtopic_tele_control "strategy",
+                    control_strategies[control_strategy], true);
     }
 
     static stats_t prev_stats = {0};
@@ -283,7 +315,8 @@ void MQTT_loop()
     {
         prev_stats.energy = stats.energy;
         MAKETMP_DECIMAL(stats.energy, 3);
-        MQTTClient.publish(MQTTtopic_tele_stats "energy", tmp, true);
+        log_id = 21;
+        PUBLISH_LOG(MQTTtopic_tele_stats "energy", tmp, true);
     }
 
     static uint16_t prev_DS18B20_readings[SENSOR_DS18B20_COUNT] = { 0 };
@@ -306,7 +339,9 @@ void MQTT_loop()
         // reduce resolution (+5 for mathematical round instead of truncate)
         reading = (reading + 5) / 10;
         MAKETMP_DECIMAL(reading, 1);
-        MQTTClient.publish(topic, tmp, true);
+        // Not ideal, will show up as succeeded if at least one call succeeded.
+        log_id = 22;
+        PUBLISH_LOG(topic, tmp, true);
     }
 
     static bool prev_pump = false;
@@ -315,7 +350,8 @@ void MQTT_loop()
     {
         prev_pump = pump;
         MAKETMP_BOOL(pump);
-        MQTTClient.publish(MQTTtopic_tele_pump, tmp, true);
+        log_id = 23;
+        PUBLISH_LOG(MQTTtopic_tele_pump, tmp, true);
     }
 
 
@@ -325,8 +361,14 @@ void MQTT_loop()
     {
         prev_backlight = backlight;
         MAKETMP_BOOL(backlight);
-        MQTTClient.publish(MQTTtopic_tele_display_backlight, tmp, true);
+        log_id = 24;
+        PUBLISH_LOG(MQTTtopic_tele_display_backlight, tmp, true);
     }
+
+    // Only log if there was a publish that wasn't skipped and did not succeed.
+    // cppcheck-suppress knownConditionTrueFalse
+    if ((uint32_t)(~(log_skipped | log_succeeded)))
+        log_add_record_mqtt_publish(log_skipped, log_succeeded);
 }
 
 

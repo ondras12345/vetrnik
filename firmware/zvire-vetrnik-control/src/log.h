@@ -50,7 +50,6 @@ typedef enum
 void log_init(bool first_reset);
 void log_add_record_reboot(reset_cause_t reset_cause);
 void log_add_record_control_strategy(control_strategy_t old_strategy, control_strategy_t new_strategy);
-// TODO use
 void log_add_record_mqtt_publish(uint32_t skipped, uint32_t succeeded);
 void log_add_record_mqtt_receive(uint32_t length);
 void log_add_event(log_event_t event);
