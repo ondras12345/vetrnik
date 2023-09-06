@@ -282,7 +282,7 @@ static void print_record(log_record_t record, Print * response)
         case kMqttState:
             snprintf(
                 print_buffer, sizeof print_buffer,
-                "%s MQTT state: %d %s",
+                "%s MQTT state: %d %s\r\n",
                 timestamp,
                 record.MQTT_state,
                 MQTT_state_to_str(record.MQTT_state)
