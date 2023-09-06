@@ -340,11 +340,21 @@ void log_print_all(Print * response)
 }
 
 
-void log_print_new(Print * response)
+/**
+ * Print new log messages.
+ * @param max_count Stop after printing this many records. Set to -1 (default)
+ *                  to print everything.
+ * @return true if everything was printed, false if max_count was reached
+ *         before everything was printed.
+ */
+bool log_print_new(Print * response, size_t max_count)
 {
-    while (read_index != write_index)
+    while (read_index != write_index && max_count > 0)
     {
         print_record(log_records[read_index], response);
         read_index = advance_index(read_index);
+        max_count--;
     }
+
+    return read_index == write_index;
 }

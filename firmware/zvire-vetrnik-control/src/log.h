@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <Print.h>
 #include "control.h"
 #include "reset_cause.h"
@@ -57,4 +58,4 @@ void log_add_event(log_event_t event);
 void log_add_event_and_println(log_event_t event, Print * response);
 
 void log_print_all(Print * response);
-void log_print_new(Print * response);
+bool log_print_new(Print * response, size_t max_count=-1);

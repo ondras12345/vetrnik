@@ -767,8 +767,9 @@ static void cmnd_log(char *args, Stream *response)
     else if (strcmp(args, "new") == 0)
     {
         response->println("Printing new log...");
-        log_print_new(response);
-        response->println("done");
+        if (!log_print_new(response, 100))
+            response->println("only first 100 records were printed");
+        else response->println("done");
     }
     else goto bad;
     return;
