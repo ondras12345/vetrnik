@@ -5,6 +5,7 @@
 
 void pump_set(bool state)
 {
+    if (state == digitalRead(PIN_REL1)) return;
     if (state) log_add_event(kPumpOn);
     else log_add_event(kPumpOff);
     digitalWrite(PIN_REL1, state);
