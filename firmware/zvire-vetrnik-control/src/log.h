@@ -44,6 +44,8 @@ typedef enum
     kPowerBoardEmergency,
     kOtaEnabled,
     kLogReinit,
+    kPumpOn,
+    kPumpOff,
 } log_event_t;
 
 #define LOG_RECORD_COUNT 1024

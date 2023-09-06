@@ -98,6 +98,12 @@ const char * get_event_string(log_event_t event)
 
         case kLogReinit:
             return "log reinit";
+
+        case kPumpOn:
+            return "pump on";
+
+        case kPumpOff:
+            return "pump off";
     }
 
     return "?";
