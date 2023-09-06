@@ -14,7 +14,6 @@
 typedef enum
 {
     kInvalid = 0x00,
-    kLogMagic,
     kReboot,
     kEventWithoutContext,
     kMqttPublish,

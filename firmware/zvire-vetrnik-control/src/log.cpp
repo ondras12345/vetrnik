@@ -10,7 +10,9 @@ typedef struct
     log_record_type_t type;
     union
     {
-        uint64_t magic;
+        // Gcc C++ allows type punning through unions
+        // https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html#Type%2Dpunning
+        uint8_t dump[8];
 
         reset_cause_t reboot_reset_cause;
 
@@ -45,8 +47,8 @@ static size_t write_index __attribute__((__section__(".noinit")));
 /// Points to the cell that will should read next
 static size_t read_index __attribute__((__section__(".noinit")));
 
-static const uint32_t log_magic_1 = 0xA5A5A5A5;
-static const uint64_t log_magic_2 = 0xDEADBEEF5A5A5A5A;
+static uint64_t log_magic __attribute__((__section__(".noinit")));
+static const uint64_t log_magic_correct = 0x5A5ADEADBEEF5A5A;
 
 static char print_buffer[80 + sizeof("\r\n")];
 
@@ -108,14 +110,7 @@ const char * get_event_string(log_event_t event)
  */
 void log_init(bool first_reset)
 {
-    // first record is magic
-    bool magic_valid = (
-        log_records[0].type == kLogMagic &&
-        log_records[0].time == log_magic_1 &&
-        log_records[0].magic == log_magic_2
-    );
-
-    if (magic_valid && !first_reset)
+    if (log_magic == log_magic_correct && !first_reset)
     {
         // there is postmort in memory
         // let's leave read / write index uninitialized
@@ -126,12 +121,10 @@ void log_init(bool first_reset)
     }
 
     // reinitialize
-    write_index = 1;
-    read_index = 1;
-    log_records[0].type = kLogMagic;
-    log_records[0].time = log_magic_1;
-    log_records[0].magic = log_magic_2;
-    for (size_t i = 1; i < LOG_RECORD_COUNT; i++)
+    write_index = 0;
+    read_index = 0;
+    log_magic = log_magic_correct;
+    for (size_t i = 0; i < LOG_RECORD_COUNT; i++)
     {
         log_records[i].type = kInvalid;
     }
@@ -143,8 +136,7 @@ void log_init(bool first_reset)
 static size_t advance_index(size_t index)
 {
     index++;
-    // index 0 is magic, skip that
-    if (index >= LOG_RECORD_COUNT) index = 1;
+    index %= LOG_RECORD_COUNT;
     return index;
 }
 
@@ -243,8 +235,6 @@ static void print_record(log_record_t record, Print * response)
     {
         // we already handled kInvalid
 
-        // we should never see kLogMagic
-
         case kReboot:
             snprintf(
                 print_buffer, sizeof print_buffer,
@@ -309,11 +299,12 @@ static void print_record(log_record_t record, Print * response)
         default:
             snprintf(
                 print_buffer, sizeof print_buffer,
-                "%s unknown: time=0x%08" PRIX32 " type=0x%02X magic=0x%016" PRIX64 "\r\n",
+                "%s unknown: time=0x%08" PRIX32 " type=0x%02X dump=%02X %02X %02X %02X %02X %02X %02X %02X\r\n",
                 timestamp,  // might not mean anything...
                 record.time,
                 record.type,
-                record.magic
+                record.dump[0], record.dump[1], record.dump[2], record.dump[3],
+                record.dump[4], record.dump[5], record.dump[6], record.dump[7]
             );
             break;
     }
