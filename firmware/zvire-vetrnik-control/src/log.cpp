@@ -104,6 +104,9 @@ const char * get_event_string(log_event_t event)
 
         case kPumpOff:
             return "pump off";
+
+        case kDS18B20Error:
+            return "DS18B20 error";
     }
 
     return "?";

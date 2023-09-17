@@ -1,6 +1,7 @@
 #include "sensor_DS18B20.h"
 #include "onewire.h"
 #include "settings.h"
+#include "log.h"
 #include <Arduino.h>
 #include <DallasTemperature.h>
 
@@ -98,6 +99,7 @@ void sensor_DS18B20_loop()
         case read:
             if (sensor_id >= SENSOR_DS18B20_COUNT)
             {
+                if (error) log_add_event(kDS18B20Error);
                 if (error && retry < SENSOR_DS18B20_RETRIES)
                 {
                     retry++;
