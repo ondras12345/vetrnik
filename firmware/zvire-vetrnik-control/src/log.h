@@ -21,6 +21,7 @@ typedef enum
     kMqttReceive,
     kMqttState,
     kControlStrategy,
+    kSlowLoop,
     // no power board message - they are repeated too quickly
 } log_record_type_t;
 
@@ -57,6 +58,7 @@ void log_add_record_control_strategy(control_strategy_t old_strategy, control_st
 void log_add_record_mqtt_publish(uint32_t skipped, uint32_t succeeded);
 void log_add_record_mqtt_receive(uint32_t length);
 void log_add_record_mqtt_state(int state);
+void log_add_record_slow_loop(uint32_t duration, uint32_t mid_duration);
 void log_add_event(log_event_t event);
 void log_add_event_and_println(log_event_t event, Print * response);
 

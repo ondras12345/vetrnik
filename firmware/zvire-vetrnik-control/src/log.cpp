@@ -36,6 +36,12 @@ typedef struct
             control_strategy_t old_strategy;
             control_strategy_t new_strategy;
         } control_strategy_info;
+
+        struct
+        {
+            uint32_t duration;
+            uint32_t mid_duration;
+        } slow_loop_info;
     };
 } log_record_t;
 
@@ -231,6 +237,17 @@ void log_add_record_mqtt_state(int state)
 }
 
 
+void log_add_record_slow_loop(uint32_t duration, uint32_t mid_duration)
+{
+    log_record_t record;
+    record.time = millis();
+    record.type = kSlowLoop;
+    record.slow_loop_info.duration = duration;
+    record.slow_loop_info.mid_duration = mid_duration;
+    log_add_record(record);
+}
+
+
 static void print_record(log_record_t record, Print * response)
 {
     char timestamp[7+2+1];
@@ -302,6 +319,16 @@ static void print_record(log_record_t record, Print * response)
                 // snprintf should protect us.
                 control_strategies[record.control_strategy_info.old_strategy],
                 control_strategies[record.control_strategy_info.new_strategy]
+            );
+            break;
+
+        case kSlowLoop:
+            snprintf(
+                print_buffer, sizeof print_buffer,
+                "%s slow loop: duration=%" PRIu32 " mid_duration=%" PRIu32 " (ms)\r\n",
+                timestamp,
+                record.slow_loop_info.duration,
+                record.slow_loop_info.mid_duration
             );
             break;
 

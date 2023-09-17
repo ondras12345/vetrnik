@@ -94,6 +94,7 @@ void setup()
 
 void loop()
 {
+    unsigned long loop_start_millis = millis();
     button1.update();
     if (button1.released())
     {
@@ -145,9 +146,17 @@ void loop()
     sensor_DS18B20_loop();
     control_loop();
     CLI_loop();
+    unsigned long loop_duration_mid = millis() - loop_start_millis;
     MQTT_loop();
     ota_loop();
     display_loop();
+
+    unsigned long loop_duration = millis() - loop_start_millis;
+    if (loop_duration >= 1500U)
+    {
+        log_add_record_slow_loop(loop_duration, loop_duration_mid);
+    }
+
 #ifdef WATCHDOG_TIME
     IWatchdog.reload();
 #endif
