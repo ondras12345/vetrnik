@@ -61,7 +61,7 @@ uint8_t MQTT_init()
     else
         Ethernet.begin(settings.ETH_MAC, settings.ETH_IP);
     // Default timeout is 15 seconds.
-    MQTTClient.setSocketTimeout(5);
+    MQTTClient.setSocketTimeout(2);
 
     INFO->println(result);
     log_add_event(kEthernetIP);
