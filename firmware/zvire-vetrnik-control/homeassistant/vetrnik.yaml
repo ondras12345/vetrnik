@@ -1,211 +1,180 @@
 # vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 
-sensor:
-  - platform: mqtt
-    name: Vetrnik RPM
-    unit_of_measurement: RPM
-    state_topic: vetrnik/tele/power_board/RPM
-    availability_topic: vetrnik/tele/availability
-
-  - platform: mqtt
-    name: Vetrnik napeti
-    unit_of_measurement: V
-    device_class: voltage
-    state_topic: vetrnik/tele/power_board/voltage
-    availability_topic: vetrnik/tele/availability
-
-  - platform: mqtt
-    name: Vetrnik proud
-    unit_of_measurement: A
-    device_class: current
-    state_topic: vetrnik/tele/power_board/current
-    availability_topic: vetrnik/tele/availability
-
-  - platform: mqtt
-    name: Vetrnik vykon
-    unit_of_measurement: W
-    device_class: power
-    state_topic: vetrnik/tele/power_board/power
-    availability_topic: vetrnik/tele/availability
-
-  - platform: mqtt
-    name: Vetrnik teplota chladice s tranzistory
-    unit_of_measurement: "°C"
-    device_class: temperature
-    state_topic: vetrnik/tele/power_board/temperature/heatsink
-    availability_topic: vetrnik/tele/availability
-
-  - platform: mqtt
-    name: Vetrnik teplota chladice s usmernovacem
-    unit_of_measurement: "°C"
-    device_class: temperature
-    state_topic: vetrnik/tele/power_board/temperature/rectifier
-    availability_topic: vetrnik/tele/availability
-
-  - platform: mqtt
-    name: Vetrnik teplota vody
-    unit_of_measurement: "°C"
-    device_class: temperature
-    state_topic: vetrnik/tele/temperature/voda
-    availability_topic: vetrnik/tele/availability
-
-  - platform: mqtt
-    name: Vetrnik pocet chyb
-    unit_of_measurement: errors
-    state_topic: vetrnik/tele/power_board/error_count
-    availability_topic: vetrnik/tele/availability
-
-  - platform: mqtt
-    name: Vetrnik strida
-    unit_of_measurement: "%"
-    value_template: '{{ ((value|int(0))*100/255)|round(1)  }}'
-    state_topic: vetrnik/tele/power_board/duty
-    availability_topic: vetrnik/tele/availability
-
-  - platform: mqtt
-    name: Vetrnik maximalni strida
-    unit_of_measurement: "%"
-    value_template: '{{ ((value|int(0))*100/255)|round(1) }}'
-    state_topic: vetrnik/tele/power_board/OCP_max_duty
-    availability_topic: vetrnik/tele/availability
-
-  - platform: mqtt
-    name: Vetrnik energie
-    unit_of_measurement: kWh
-    state_topic: vetrnik/tele/stats/energy
-    #state_class: total_increasing  # TODO not available in 2021.8.6
-    device_class: energy
-    availability_topic: vetrnik/tele/availability
-
-  - platform: mqtt
-    name: Vetrnik rezim vykonove elektroniky
-    state_topic: vetrnik/tele/power_board/mode
-    value_template: >-
-      {%
-        set modes = {
-          0: "shorted",
-          1: "stopping",
-          2: "const_duty",
-        }
-      %}
-      {{ modes[value | int(0)] }}
-    availability_topic: vetrnik/tele/availability
-
-  - platform: mqtt
-    name: Vetrnik zpravy vykonove elektroniky
-    state_topic: vetrnik/tele/raw/errors
-    availability_topic: vetrnik/tele/availability
+recorder:
+  exclude:
+    entities:
+      - sensor.vetrnik_zpravy_vykonove_elektroniky
 
 
-binary_sensor:
-  - platform: mqtt
-    name: Vetrnik muze topit
-    state_topic: vetrnik/tele/power_board/enabled
-    #device_class: running  # TODO not available in 2021.8.6
-    payload_on: "1"
-    payload_off: "0"
-    availability_topic: vetrnik/tele/availability
+mqtt:
+  sensor:
+    - name: Vetrnik RPM
+      unit_of_measurement: RPM
+      state_topic: vetrnik/tele/power_board/RPM
+      availability_topic: vetrnik/tele/availability
 
-  - platform: mqtt
-    name: Vetrnik chladi
-    #device_class: heat  # it's not "too hot", it's just that the fan is running
-    #device_class: running  # TODO not available in 2021.8.6
-    state_topic: vetrnik/tele/power_board/fan
-    payload_on: "1"
-    payload_off: "0"
-    availability_topic: vetrnik/tele/availability
+    - name: Vetrnik napeti
+      unit_of_measurement: V
+      device_class: voltage
+      state_topic: vetrnik/tele/power_board/voltage
+      availability_topic: vetrnik/tele/availability
 
-  - platform: mqtt
-    name: Vetrnik nouzovy rezim
-    state_topic: vetrnik/tele/power_board/emergency
-    device_class: problem
-    payload_on: "1"
-    payload_off: "0"
-    availability_topic: vetrnik/tele/availability
+    - name: Vetrnik proud
+      unit_of_measurement: A
+      device_class: current
+      state_topic: vetrnik/tele/power_board/current
+      availability_topic: vetrnik/tele/availability
 
-  - platform: mqtt
-    name: Vetrnik poslednich 5 minut
-    device_class: power
-    state_topic: vetrnik/tele/power_board/last5m
-    payload_on: "1"
-    payload_off: "0"
-    availability_topic: vetrnik/tele/availability
+    - name: Vetrnik vykon
+      unit_of_measurement: W
+      device_class: power
+      state_topic: vetrnik/tele/power_board/power
+      availability_topic: vetrnik/tele/availability
 
-  - platform: mqtt
-    name: Vetrnik vykonova elektronika komunikuje
-    device_class: connectivity
-    state_topic: vetrnik/tele/power_board/valid
-    payload_on: "1"
-    payload_off: "0"
-    availability_topic: vetrnik/tele/availability
+    - name: Vetrnik teplota chladice s tranzistory
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_topic: vetrnik/tele/power_board/temperature/heatsink
+      availability_topic: vetrnik/tele/availability
 
-select:
-  - platform: mqtt
-    name: Vetrnik strategie rizeni
-    state_topic: vetrnik/tele/control/strategy
-    command_topic: vetrnik/cmnd/control/strategy
-    options:
-      - control_shorted
-      - control_manual
-      - control_MQTT
-      - control_lisp
-    availability_topic: vetrnik/tele/availability
+    - name: Vetrnik teplota chladice s usmernovacem
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_topic: vetrnik/tele/power_board/temperature/rectifier
+      availability_topic: vetrnik/tele/availability
 
-switch:
-  - platform: mqtt
-    name: Vetrnik cerpadlo
-    icon: "mdi:pump"
-    state_topic: vetrnik/tele/pump
-    command_topic: vetrnik/cmnd/pump
-    payload_on: "1"
-    payload_off: "0"
-    availability_topic: vetrnik/tele/availability
+    - name: Vetrnik teplota vody
+      unit_of_measurement: "°C"
+      device_class: temperature
+      state_topic: vetrnik/tele/temperature/voda
+      availability_topic: vetrnik/tele/availability
 
-  - platform: mqtt
-    name: Vetrnik podsviceni displeje
-    icon: "mdi:brightness-5"
-    state_topic: vetrnik/tele/display/backlight
-    command_topic: vetrnik/cmnd/display/backlight
-    payload_on: "1"
-    payload_off: "0"
-    availability_topic: vetrnik/tele/availability
+    - name: Vetrnik pocet chyb
+      unit_of_measurement: errors
+      state_topic: vetrnik/tele/power_board/error_count
+      availability_topic: vetrnik/tele/availability
+
+    - name: Vetrnik strida
+      unit_of_measurement: "%"
+      value_template: '{{ ((value|int(0))*100/255)|round(1)  }}'
+      state_topic: vetrnik/tele/power_board/duty
+      availability_topic: vetrnik/tele/availability
+
+    - name: Vetrnik maximalni strida
+      unit_of_measurement: "%"
+      value_template: '{{ ((value|int(0))*100/255)|round(1) }}'
+      state_topic: vetrnik/tele/power_board/OCP_max_duty
+      availability_topic: vetrnik/tele/availability
+
+    - name: Vetrnik energie
+      unit_of_measurement: kWh
+      state_topic: vetrnik/tele/stats/energy
+      state_class: total_increasing
+      device_class: energy
+      availability_topic: vetrnik/tele/availability
+
+    - name: Vetrnik rezim vykonove elektroniky
+      state_topic: vetrnik/tele/power_board/mode
+      value_template: >-
+        {%
+          set modes = {
+            0: "shorted",
+            1: "stopping",
+            2: "const_duty",
+          }
+        %}
+        {{ modes[value | int(0)] }}
+      availability_topic: vetrnik/tele/availability
+
+    - name: Vetrnik zpravy vykonove elektroniky
+      state_topic: vetrnik/tele/raw/errors
+      availability_topic: vetrnik/tele/availability
 
 
-script:
-  vetrnik_start:
-    alias: Vetrnik START
-    icon: "mdi:play"
-    sequence:
-      - service: mqtt.publish
-        data:
-          topic: vetrnik/cmnd/lisp
-          payload: "(btn1_long)"
+  binary_sensor:
+    - name: Vetrnik muze topit
+      state_topic: vetrnik/tele/power_board/enabled
+      device_class: running
+      payload_on: "1"
+      payload_off: "0"
+      availability_topic: vetrnik/tele/availability
 
-  vetrnik_stop:
-    alias: Vetrnik STOP
-    icon: "mdi:stop"
-    sequence:
-      - service: mqtt.publish
-        data:
-          topic: vetrnik/cmnd/lisp
-          payload: "(btn1_short)"
+    - name: Vetrnik chladi
+      #device_class: heat  # it's not "too hot", it's just that the fan is running
+      device_class: running
+      state_topic: vetrnik/tele/power_board/fan
+      payload_on: "1"
+      payload_off: "0"
+      availability_topic: vetrnik/tele/availability
 
-  vetrnik_pb_clear_errors:
-    alias: Vetrnik smazat chyby vykonove elektroniky
-    sequence:
-      - service: mqtt.publish
-        data:
-          topic: vetrnik/cmnd/power_board/command
-          payload: "clear_errors"
+    - name: Vetrnik nouzovy rezim
+      state_topic: vetrnik/tele/power_board/emergency
+      device_class: problem
+      payload_on: "1"
+      payload_off: "0"
+      availability_topic: vetrnik/tele/availability
 
-  vetrnik_pb_reset:
-    alias: Vetrnik reset vykonove elektroniky
-    icon: "mdi:restart"
-    sequence:
-      - service: mqtt.publish
-        data:
-          topic: vetrnik/cmnd/power_board/command
-          payload: "reset"
+    - name: Vetrnik poslednich 5 minut
+      device_class: power
+      state_topic: vetrnik/tele/power_board/last5m
+      payload_on: "1"
+      payload_off: "0"
+      availability_topic: vetrnik/tele/availability
+
+    - name: Vetrnik vykonova elektronika komunikuje
+      device_class: connectivity
+      state_topic: vetrnik/tele/power_board/valid
+      payload_on: "1"
+      payload_off: "0"
+      availability_topic: vetrnik/tele/availability
+
+  select:
+    - name: Vetrnik strategie rizeni
+      state_topic: vetrnik/tele/control/strategy
+      command_topic: vetrnik/cmnd/control/strategy
+      options:
+        - control_shorted
+        - control_manual
+        - control_MQTT
+        - control_lisp
+      availability_topic: vetrnik/tele/availability
+
+  switch:
+    - name: Vetrnik cerpadlo
+      icon: "mdi:pump"
+      state_topic: vetrnik/tele/pump
+      command_topic: vetrnik/cmnd/pump
+      payload_on: "1"
+      payload_off: "0"
+      availability_topic: vetrnik/tele/availability
+
+    - name: Vetrnik podsviceni displeje
+      icon: "mdi:brightness-5"
+      state_topic: vetrnik/tele/display/backlight
+      command_topic: vetrnik/cmnd/display/backlight
+      payload_on: "1"
+      payload_off: "0"
+      availability_topic: vetrnik/tele/availability
+
+  button:
+    - name: Vetrnik START
+      command_topic: vetrnik/cmnd/lisp
+      payload_press: "(btn1_long)"
+      icon: "mdi:play"
+
+    - name: Vetrnik STOP
+      command_topic: vetrnik/cmnd/lisp
+      payload_press: "(btn1_short)"
+      icon: "mdi:stop"
+
+    - name: Vetrnik smazat chyby vykonove elektroniky
+      command_topic: vetrnik/cmnd/power_board/command
+      payload_press: "clear_errors"
+
+    - name: Vetrnik reset vykonove elektroniky
+      command_topic: vetrnik/cmnd/power_board/command
+      payload_press: "reset"
+      icon: "mdi:restart"
 
 
 automation:
@@ -228,10 +197,9 @@ automation:
         id: Vykonova elektronika nekomunikuje
       - platform: state
         entity_id: select.vetrnik_strategie_rizeni
-        # TODO not supported in 2021.8 (I think)
-        #not_to:
-        #  - unavailable
-        #  - unknown
+        not_to:
+          - unavailable
+          - unknown
         for:
           minutes: 2
         id: Zmena strategie rizeni
@@ -239,20 +207,7 @@ automation:
         entity_id: binary_sensor.vetrnik_nouzovy_rezim
         to: "on"
         id: Nouzovy rezim
-    condition:
-      - condition: or
-        conditions:
-          - condition: not
-            conditions:
-              - condition: trigger
-                id: Zmena strategie rizeni
-          - condition: not
-            conditions:
-              - condition: state
-                entity_id: select.vetrnik_strategie_rizeni
-                state:
-                  - unavailable
-                  - unknown
+    condition: []
     action:
       - service: notify.email_vetrnik
         data:
