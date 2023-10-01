@@ -161,20 +161,24 @@ mqtt:
       command_topic: vetrnik/cmnd/lisp
       payload_press: "(btn1_long)"
       icon: "mdi:play"
+      availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik STOP
       command_topic: vetrnik/cmnd/lisp
       payload_press: "(btn1_short)"
       icon: "mdi:stop"
+      availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik smazat chyby vykonove elektroniky
       command_topic: vetrnik/cmnd/power_board/command
       payload_press: "clear_errors"
+      availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik reset vykonove elektroniky
       command_topic: vetrnik/cmnd/power_board/command
       payload_press: "reset"
       icon: "mdi:restart"
+      availability_topic: vetrnik/tele/availability
 
 
 automation:
