@@ -183,6 +183,7 @@ mqtt:
 
 automation:
   - alias: Vetrnik notifikace
+    id: vetrnik_notifikace
     mode: queued
     trigger:
       - platform: numeric_state
