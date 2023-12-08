@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "zvire-vetrnik-control")(type "KiCad")(uri "${KIPRJMOD}/lib/vetrnik-control.pretty")(options "")(descr ""))
+)
