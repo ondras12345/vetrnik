@@ -1,4 +1,4 @@
-# KiCAD lib for zvire-vetrnik-control
+# KiCAD lib for vetrnik-control
 
 ## STM32F401 blackpill
 https://github.com/yet-another-average-joe/Kicad-STM32/compare/master...piit79:Kicad-STM32:master
