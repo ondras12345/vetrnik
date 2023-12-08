@@ -180,6 +180,13 @@ mqtt:
       icon: "mdi:restart"
       availability_topic: vetrnik/tele/availability
 
+    # TODO test
+    #- name: Vetrnik reset ridici elektroniky
+    #  command_topic: vetrnik/cmnd/cli
+    #  payload_press: "reset"
+    #  icon: "mdi:restart"
+    #  availability_topic: vetrnik/tele/availability
+
 
 automation:
   - alias: Vetrnik notifikace
@@ -212,7 +219,14 @@ automation:
         entity_id: binary_sensor.vetrnik_nouzovy_rezim
         to: "on"
         id: Nouzovy rezim
-    condition: []
+    condition:
+      - or:
+        - not:
+          - condition: trigger
+            id: Zmena strategie rizeni
+        - alias: V predchozim stavu byl alespon 2 minuty (trigger prijde po dalsich 2 minutach)
+          condition: template
+          value_template: '{{ trigger.from_state.last_changed < utcnow() - timedelta(minutes=4) }}'
     action:
       - service: notify.email_vetrnik
         data:
