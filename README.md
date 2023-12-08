@@ -8,8 +8,7 @@ turbine.
 ## Features / design goals
 - No battery.
 - Maximum power point tracking.
-- Power to resistive heating elements must be AC to prevent electrolytic
-  corrosion.
+- Power to resistive heating elements is AC to prevent electrolytic corrosion.
 - MQTT telemetry.
 - Home Assistant integration via MQTT.
 - Energy meter.
