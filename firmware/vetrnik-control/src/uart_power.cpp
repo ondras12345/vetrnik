@@ -58,7 +58,6 @@ void uart_power_init()
  */
 bool uart_power_loop()
 {
-    static uint8_t buff_i = 0;
     static char name = '\0';
     static unsigned long value = 0;
     static bool text_message = false;
