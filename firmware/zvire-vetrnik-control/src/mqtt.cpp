@@ -519,6 +519,8 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
         memcpy(buff, payload, command_length);
         buff[command_length] = '\0';
         CLI_execute(buff);
+        // TODO capture command response
+        // https://github.com/JAndrassy/StreamLib
         return;
     }
 }

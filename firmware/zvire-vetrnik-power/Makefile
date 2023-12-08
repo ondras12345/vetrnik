@@ -10,8 +10,8 @@ SSH_HOST ?= ntb1## SSH host for upload_remote
 ##
 ## 		TARGETS
 .PHONY: all
-all:            ## Compile and upload, default target for Vim
-all: compile_commands.json compile  # upload
+all:            ## Compile, default target for Vim
+all: compile_commands.json compile
 
 .PHONY: compile
 compile:        ## Compile firmware.
