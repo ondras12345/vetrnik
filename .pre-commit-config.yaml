@@ -19,33 +19,33 @@ repos:
     hooks:
       - id: check-power
         name: make check in power firmware
-        entry: sh -c 'cd firmware/zvire-vetrnik-power && make check'
+        entry: sh -c 'cd firmware/vetrnik-power && make check'
         language: system
         pass_filenames: false
         verbose: true
-        files: ^firmware/zvire-vetrnik-power/(src|lib|platformio.ini)
+        files: ^firmware/vetrnik-power/(src|lib|platformio.ini)
 
       - id: check-control
         name: make check in control firmware
-        entry: sh -c 'cd firmware/zvire-vetrnik-control && make check'
+        entry: sh -c 'cd firmware/vetrnik-control && make check'
         language: system
         pass_filenames: false
         verbose: true
-        files: ^firmware/zvire-vetrnik-control/(src|lib|platformio.ini)
+        files: ^firmware/vetrnik-control/(src|lib|platformio.ini)
 
       - id: test-power
         name: make test in power firmware
-        entry: sh -c 'cd firmware/zvire-vetrnik-power && make test'
+        entry: sh -c 'cd firmware/vetrnik-power && make test'
         language: system
         pass_filenames: false
-        files: ^firmware/zvire-vetrnik-power/(lib|platformio.ini)
+        files: ^firmware/vetrnik-power/(lib|platformio.ini)
 
       - id: test-control
         name: make test in control firmware
-        entry: sh -c 'cd firmware/zvire-vetrnik-control && make test'
+        entry: sh -c 'cd firmware/vetrnik-control && make test'
         language: system
         pass_filenames: false
-        files: ^firmware/zvire-vetrnik-control/(lib|platformio.ini)
+        files: ^firmware/vetrnik-control/(lib|platformio.ini)
 
       - id: codespell
         name: Check Spelling
@@ -53,3 +53,4 @@ repos:
         entry: codespell
         language: python
         types: [text]
+        exclude: ^firmware/vetrnik-power/lib/gpio

@@ -1,5 +1,6 @@
-# zvire-vetrnik-control
-Firmware for STM32F4. Control via MQTT, etc.
+# vetrnik-control
+Firmware for STM32F4. Handles telemetry and remote control via MQTT,
+MPPT controller, etc.
 
 ## Architecture
 ```text
@@ -45,12 +46,12 @@ Firmware for STM32F4. Control via MQTT, etc.
 -----------------|-------------------------------------------------------------
                  V
     +------------+--------+
-    | zvire-vetrnik-power |
+    |    vetrnik-power    |
     +---------------------+
 ```
 
 
-## Lisp-like repl
+## Lisp-like REPL
 A Lisp-like interpreted language called [fe](https://github.com/rxi/fe) is
 included. It can be used by calling the `lisp` CLI command or via MQTT.
 

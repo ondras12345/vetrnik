@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# exapmle usage:
+# example usage:
 # - copy lisp code
 # xsel -b -o | ./tools/lisp-minify | mosquitto_pub -h localhost -t vetrnik/cmnd/lisp --stdin-line
 

@@ -12,7 +12,7 @@ typedef struct {
     unsigned long retrieved_millis;
     bool valid;         ///< false before first status report is received
     uint16_t time;      ///< should increment every second
-    uint8_t mode;       ///< see zvire-vetrnik-power/src/globals.h mode_t
+    uint8_t mode;       ///< see vetrnik-power/src/globals.h mode_t
     uint8_t duty;       ///< output duty cycle, 0-255
     uint8_t OCP_max_duty;  ///< OCP duty cycle limit
     uint16_t RPM;       ///< turbine RPM
