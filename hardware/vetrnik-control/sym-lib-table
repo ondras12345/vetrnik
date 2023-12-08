@@ -1,4 +1,5 @@
 (sym_lib_table
   (version 7)
   (lib (name "zvire-vetrnik-control")(type "Legacy")(uri "${KIPRJMOD}/lib/vetrnik-control.lib")(options "")(descr ""))
+  (lib (name "vetrnik-control-rescue")(type "KiCad")(uri "${KIPRJMOD}/vetrnik-control-rescue.kicad_sym")(options "")(descr ""))
 )
