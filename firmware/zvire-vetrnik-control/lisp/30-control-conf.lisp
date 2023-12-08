@@ -1,5 +1,5 @@
 ; configuration
-(= SA 15) ; step authority
+(= SA 5) ; step authority
 (= RL 80) ; RPM low
 (= RH 1000) ; RPM high, TODO
 (= T0M 85) ; max t0
