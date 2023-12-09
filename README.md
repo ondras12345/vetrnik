@@ -88,6 +88,82 @@ This command does NOT request a new conversion.
 [8] : 0.00 C
 [9] : 0.00 C
 
+vetrnik-control:$ SPIflash -h
+Usage: SPIflash [erase_chip|ls | create name length erasable | rm name
+   | dump name start | dumpchip start | erase filename | ed filename start]
+
+vetrnik-control:$ SPIflash ls
+Files:
+address (HEX)	name	size (Bytes)
+010000	settings	65536
+020000	init.lisp	65536
+
+vetrnik-control:$ lisp (= test (/ (+ 1 3) 2))
+nil
+Success: 1
+
+vetrnik-control:$ lisp test
+2
+Success: 1
+
+vetrnik-control:$ log
+Usage: log (all|new)
+
+vetrnik-control:$ log all
+Printing whole log...
+---
+[      0] event: 0x0D log reinit
+[      0] boot: 0x05 POWER-ON_RESET (POR) / POWER-DOWN_RESET (PDR)
+[      0] event: 0x00 Eth begin
+[      5] event: 0x01 Eth got IP
+[      5] control strategy: old=control_shorted new=control_shorted
+[      5] MQTT state: -1 DISCONNECTED
+[     20] event: 0x03 MQTT connected
+[     21] MQTT state: 0 CONNECTED
+[   6315] control strategy: old=control_shorted new=control_lisp
+[  82610] event: 0x10 DS18B20 error
+[ 966931] MQTT state: -3 CONNECTION_LOST
+[ 966932] event: 0x03 MQTT connected
+[ 966932] MQTT state: 0 CONNECTED
+[3386627] MQTT state: -2 CONNECT_FAILED
+[3386810] event: 0x03 MQTT connected
+[3386810] MQTT state: 0 CONNECTED
+[3386870] event: 0x03 MQTT connected
+[3387652] MQTT state: -3 CONNECTION_LOST
+[3387652] event: 0x03 MQTT connected
+[3387652] MQTT state: 0 CONNECTED
+[3387712] event: 0x03 MQTT connected
+[3387772] MQTT state: -3 CONNECTION_LOST
+[3387772] event: 0x03 MQTT connected
+[3387772] MQTT state: 0 CONNECTED
+[3387814] control strategy: old=control_lisp new=control_shorted
+[      0] boot: 0x04 SOFTWARE_RESET
+[      0] event: 0x00 Eth begin
+[      5] event: 0x01 Eth got IP
+[      5] control strategy: old=control_shorted new=control_shorted
+[      5] MQTT state: -1 DISCONNECTED
+[     20] event: 0x03 MQTT connected
+[     20] MQTT state: 0 CONNECTED
+[     28] MQTT receive: length=1
+[     29] MQTT receive: length=11
+[     29] control strategy: old=control_shorted new=control_lisp
+[ 118759] MQTT state: -3 CONNECTION_LOST
+[ 118760] event: 0x03 MQTT connected
+[ 118760] MQTT state: 0 CONNECTED
+[ 721373] MQTT state: -3 CONNECTION_LOST
+[ 721373] MQTT state: -2 CONNECT_FAILED
+[ 721414] event: 0x03 MQTT connected
+[ 721414] MQTT state: 0 CONNECTED
+[ 982793] MQTT state: -3 CONNECTION_LOST
+[ 982794] event: 0x03 MQTT connected
+[ 982794] MQTT state: 0 CONNECTED
+[ 983379] MQTT state: -3 CONNECTION_LOST
+[ 983380] event: 0x03 MQTT connected
+[ 983380] MQTT state: 0 CONNECTED
+[2274043] MQTT receive: length=1
+[2274062] MQTT receive: length=1
+done
+
 vetrnik-control:$
 ```
 

@@ -223,3 +223,9 @@ you want to use the `telnet` command:
     mode character
     # TODO improve
 ```
+
+
+## Building
+Just run `make` in this directory. GNU/Linux OS with PlatformIO installed is
+required.
+Type `make help` for more info.
