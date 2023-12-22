@@ -63,6 +63,7 @@ void log_add_record_mqtt_state(int state);
 void log_add_record_slow_loop(uint32_t duration, uint32_t mid_duration);
 void log_add_event(log_event_t event);
 void log_add_event_and_println(log_event_t event, Print * response);
+void log_update_lastms();
 
 void log_print_all(Print * response);
 bool log_print_new(Print * response, size_t max_count=-1);

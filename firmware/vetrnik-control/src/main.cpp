@@ -166,6 +166,8 @@ void loop()
     }
     rollover_prev_millis = now;
 
+    log_update_lastms();
+
 
 #ifdef WATCHDOG_TIME
     IWatchdog.reload();

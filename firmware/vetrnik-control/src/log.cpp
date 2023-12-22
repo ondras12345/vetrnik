@@ -14,7 +14,11 @@ typedef struct
         // https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html#Type%2Dpunning
         uint8_t dump[8];
 
-        reset_cause_t reboot_reset_cause;
+        struct
+        {
+            uint32_t lastms;
+            reset_cause_t reset_cause;
+        } reboot_info;
 
         log_event_t event;
 
@@ -55,6 +59,8 @@ static size_t read_index __attribute__((__section__(".noinit")));
 
 static uint64_t log_magic __attribute__((__section__(".noinit")));
 static const uint64_t log_magic_correct = 0x5A5ADEADBEEF5A5A;
+
+static unsigned long log_lastms __attribute__((__section__(".noinit")));
 
 static char print_buffer[80 + sizeof("\r\n")];
 
@@ -194,7 +200,8 @@ void log_add_record_reboot(reset_cause_t reset_cause)
     log_record_t record;
     record.time = 0;
     record.type = kReboot;
-    record.reboot_reset_cause = reset_cause;
+    record.reboot_info.reset_cause = reset_cause;
+    record.reboot_info.lastms = log_lastms;
     log_add_record(record);
 }
 
@@ -271,10 +278,11 @@ static void print_record(log_record_t record, Print * response)
         case kReboot:
             snprintf(
                 print_buffer, sizeof print_buffer,
-                "%s boot: 0x%02X %s\r\n",
+                "%s boot: 0x%02X %s lastms=%" PRIu32 "\r\n",
                 timestamp,
-                record.reboot_reset_cause,
-                reset_cause_get_name(record.reboot_reset_cause)
+                record.reboot_info.reset_cause,
+                reset_cause_get_name(record.reboot_info.reset_cause),
+                record.reboot_info.lastms
             );
             break;
 
@@ -400,4 +408,17 @@ bool log_print_new(Print * response, size_t max_count)
     }
 
     return read_index == write_index;
+}
+
+
+/**
+ * Update lastms value.
+ * This function should be called after a full loop,
+ * but not before log_add_record_reboot() is called in setup.
+ * Lastms (millis) value is logged at startup to aid with debugging.
+ * It should help correlate the time of reset with events from previous boot.
+ */
+void log_update_lastms()
+{
+    log_lastms = millis();
 }
