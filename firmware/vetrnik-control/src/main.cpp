@@ -151,11 +151,21 @@ void loop()
     ota_loop();
     display_loop();
 
-    unsigned long loop_duration = millis() - loop_start_millis;
+    unsigned long now = millis();
+    unsigned long loop_duration = now - loop_start_millis;
     if (loop_duration >= 1500U)
     {
         log_add_record_slow_loop(loop_duration, loop_duration_mid);
     }
+
+    // detect & log millis rollover
+    static unsigned long rollover_prev_millis = 0;
+    if (now < rollover_prev_millis)
+    {
+        log_add_event(kMillisRollover);
+    }
+    rollover_prev_millis = now;
+
 
 #ifdef WATCHDOG_TIME
     IWatchdog.reload();

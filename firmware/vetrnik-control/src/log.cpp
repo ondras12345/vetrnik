@@ -116,6 +116,9 @@ const char * get_event_string(log_event_t event)
 
         case kSoftwareReset:
             return "software reset";
+
+        case kMillisRollover:
+            return "millis rollover";
     }
 
     return "?";
