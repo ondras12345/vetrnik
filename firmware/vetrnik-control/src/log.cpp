@@ -253,11 +253,12 @@ void log_add_record_slow_loop(uint32_t duration, uint32_t mid_duration)
 
 static void print_record(log_record_t record, Print * response)
 {
-    char timestamp[7+2+1];
+    char timestamp[7 + 1 + sizeof "[.]"];
     snprintf(
         timestamp, sizeof timestamp,
-        "[%7lu]",
-        record.time / 1000UL
+        "[%7lu.%u]",
+        record.time / 1000UL,
+        (unsigned int)((record.time / 100UL) % 10UL)
     );
 
     switch (record.type)
