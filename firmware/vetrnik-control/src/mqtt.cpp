@@ -117,10 +117,17 @@ void MQTT_loop()
     static unsigned long MQTTLastReconnect = 0;
     static unsigned long MQTT_last_full_loop = 0;
 
+    now = millis();
     if (MQTTReconnectCount > 6)
     {
-        if ((unsigned long)(millis() - MQTTLastReconnect) < MQTTReconnectRate*3)
+        if (now - MQTTLastReconnect < MQTTReconnectRate*3)
             return;
+    }
+
+    if (now - MQTT_last_full_loop >= MQTTWaitBeforeEthernetReset)
+    {
+        MQTT_last_full_loop = now;
+        MQTT_reinit();
     }
 
     // force reporting of values after successful MQTT connection

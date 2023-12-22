@@ -24,6 +24,7 @@
 #define MQTTclientID "vetrnik"  // TODO make this a conf option
 #define MQTTReconnectRate 20*1000UL  // in ms
 #define MQTTWaitBeforeReconnect 5*1000UL  // in ms
+#define MQTTWaitBeforeEthernetReset 15*60000UL  // in ms
 #define MQTTtopic_prefix                    "vetrnik/"
 #define MQTTtopic_tele                      MQTTtopic_prefix "tele/"
 #define MQTTtopic_cmnd                      MQTTtopic_prefix "cmnd/"
