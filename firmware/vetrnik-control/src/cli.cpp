@@ -878,6 +878,7 @@ static void cmnd_free(char *args, Stream *response)
 static void cmnd_reset(char *args, Stream *response)
 {
     response->println("Resetting");
+    log_add_event(kSoftwareReset);
     delay(100);
     NVIC_SystemReset();
 }

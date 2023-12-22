@@ -48,6 +48,7 @@ typedef enum
     kPumpOn,
     kPumpOff,
     kDS18B20Error,
+    kSoftwareReset,
 } log_event_t;
 
 #define LOG_RECORD_COUNT 1024
