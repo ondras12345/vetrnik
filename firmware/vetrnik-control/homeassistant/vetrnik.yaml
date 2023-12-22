@@ -73,6 +73,11 @@ mqtt:
       device_class: energy
       availability_topic: vetrnik/tele/availability
 
+    - name: Vetrnik energie Ws
+      unit_of_measurement: Ws
+      state_topic: vetrnik/tele/stats/energy_Ws
+      availability_topic: vetrnik/tele/availability
+
     - name: Vetrnik rezim vykonove elektroniky
       state_topic: vetrnik/tele/power_board/mode
       value_template: >-
