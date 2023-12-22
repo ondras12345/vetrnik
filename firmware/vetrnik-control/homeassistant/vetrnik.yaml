@@ -188,14 +188,37 @@ mqtt:
     #  availability_topic: vetrnik/tele/availability
 
 
+input_number:
+  # nemenit rucne, pouzivany jako pamet pro automatizaci
+  vetrnik_naposledy_reportovany_pocet_chyb:
+    initial: 0
+    min: 0
+    max: 10
+    step: 1
+
+
 automation:
+  - alias: Vetrnik reset poctu chyb
+    id: vetrnik_reset_poctu_chyb
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.vetrnik_pocet_chyb
+        below: input_number.vetrnik_naposledy_reportovany_pocet_chyb
+    condition: []
+    action:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.vetrnik_naposledy_reportovany_pocet_chyb
+        data:
+          value: '{{ states("sensor.vetrnik_pocet_chyb") }}'
+
   - alias: Vetrnik notifikace
     id: vetrnik_notifikace
     mode: queued
     trigger:
       - platform: numeric_state
         entity_id: sensor.vetrnik_pocet_chyb
-        above: 0
+        above: input_number.vetrnik_naposledy_reportovany_pocet_chyb
         id: Chyba vykonove elektroniky
       - platform: state
         entity_id: sensor.vetrnik_pocet_chyb
@@ -228,6 +251,15 @@ automation:
           condition: template
           value_template: '{{ trigger.from_state.last_changed < utcnow() - timedelta(minutes=4) }}'
     action:
+      - if:
+          - condition: trigger
+            id: Chyba vykonove elektroniky
+        then:
+          - service: input_number.set_value
+            target:
+              entity_id: input_number.vetrnik_naposledy_reportovany_pocet_chyb
+            data:
+              value: '{{ states("sensor.vetrnik_pocet_chyb") }}'
       - service: notify.email_vetrnik
         data:
           title: "[vetrnik] {{ trigger.id }}"
