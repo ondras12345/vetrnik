@@ -115,6 +115,7 @@ void MQTT_loop()
 
     static uint_fast8_t MQTTReconnectCount = 0;
     static unsigned long MQTTLastReconnect = 0;
+    static unsigned long MQTT_last_full_loop = 0;
 
     if (MQTTReconnectCount > 6)
     {
@@ -127,7 +128,9 @@ void MQTT_loop()
 
     if (!MQTTClient.connected())
     {
-        if((unsigned long)(millis() - MQTTLastReconnect) >= MQTTReconnectRate)
+        now = millis();
+        if (now - MQTTLastReconnect >= MQTTReconnectRate &&
+            now - MQTT_last_full_loop >= MQTTWaitBeforeReconnect)
         {
             INFO->println("Connecting MQTT...");
             if (MQTTClient.connect(MQTTclientID, settings.MQTTuser, settings.MQTTpassword,
@@ -386,6 +389,8 @@ uint_fast8_t log_id = 0;
     // cppcheck-suppress knownConditionTrueFalse
     if ((uint32_t)(~(log_skipped | log_succeeded)))
         log_add_record_mqtt_publish(log_skipped, log_succeeded);
+
+    MQTT_last_full_loop = millis();
 }
 
 
