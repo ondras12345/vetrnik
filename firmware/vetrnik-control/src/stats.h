@@ -4,7 +4,7 @@
 typedef struct {
     /// Energy since last reset in Wh
     uint32_t energy;
-    /// Energy in Ws
+    /// Sub-Wh energy in Ws, always less than 3600
     uint16_t energy_Ws;
 } stats_t;
 

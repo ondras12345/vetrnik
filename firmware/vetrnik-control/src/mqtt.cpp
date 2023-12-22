@@ -328,6 +328,14 @@ uint_fast8_t log_id = 0;
         PUBLISH_LOG(MQTTtopic_tele_stats "energy", tmp, true);
     }
 
+    if (COND_NEQ(stats.energy_Ws) || force_report)
+    {
+        prev_stats.energy_Ws = stats.energy_Ws;
+        MAKETMP_UINT(stats.energy_Ws);
+        log_id = 22;
+        PUBLISH_LOG(MQTTtopic_tele_stats "energy_Ws", tmp, true);
+    }
+
     static uint16_t prev_DS18B20_readings[SENSOR_DS18B20_COUNT] = { 0 };
     for (uint_fast8_t i = 0; i < SENSOR_DS18B20_COUNT; i++)
     {
@@ -349,7 +357,7 @@ uint_fast8_t log_id = 0;
         reading = (reading + 5) / 10;
         MAKETMP_DECIMAL(reading, 1);
         // Not ideal, will show up as succeeded if at least one call succeeded.
-        log_id = 22;
+        log_id = 23;
         PUBLISH_LOG(topic, tmp, true);
     }
 
@@ -359,7 +367,7 @@ uint_fast8_t log_id = 0;
     {
         prev_pump = pump;
         MAKETMP_BOOL(pump);
-        log_id = 23;
+        log_id = 24;
         PUBLISH_LOG(MQTTtopic_tele_pump, tmp, true);
     }
 
@@ -370,7 +378,7 @@ uint_fast8_t log_id = 0;
     {
         prev_backlight = backlight;
         MAKETMP_BOOL(backlight);
-        log_id = 24;
+        log_id = 25;
         PUBLISH_LOG(MQTTtopic_tele_display_backlight, tmp, true);
     }
 
