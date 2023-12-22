@@ -26,7 +26,7 @@ void stats_new_state()
     }
 
     prev_valid = power_board_status.valid;
-    last_ms = millis();
+    last_ms = now;
 
     while (stats.energy_Ws >= 3600)
     {
