@@ -10,7 +10,6 @@ stats_t stats = {0};
  */
 void stats_new_state()
 {
-    static uint16_t energy_small = 0;  ///< Ws
     static unsigned long last_ms = 0;
     static bool prev_valid = false;
 
@@ -19,7 +18,7 @@ void stats_new_state()
     if (power_board_status.valid && prev_valid)
     {
         static uint16_t power = 0;
-        energy_small += power * (unsigned long)(now - last_ms) / 1000UL / 10;
+        stats.energy_Ws += power * (unsigned long)(now - last_ms) / 1000UL / 10;
 
         // W * 10
         if (power_board_status.duty == 0) power = 0;
@@ -29,9 +28,9 @@ void stats_new_state()
     prev_valid = power_board_status.valid;
     last_ms = millis();
 
-    while (energy_small >= 3600)
+    while (stats.energy_Ws >= 3600)
     {
-        energy_small -= 3600;
+        stats.energy_Ws -= 3600;
         stats.energy++;
     }
 }
