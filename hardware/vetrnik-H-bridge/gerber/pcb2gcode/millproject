@@ -1,0 +1,72 @@
+# Copy this file to your gerber directory and name it `millproject`
+# See `man pcb2gcode`
+
+# Set paths to gbr files
+front=../vetrnik-H-bridge-F_Cu.gbr
+drill=../vetrnik-H-bridge.drl
+outline=../vetrnik-H-bridge-Edge_Cuts.gbr
+# zadni stranu nefrezujeme, aby nebylo potreba otacet
+
+
+# Machine settings
+metric=true
+metricoutput=true
+zsafe=2
+spinup-time=1
+zchange=10
+# zchange-absolute interacts badly with bCNC autolevel.
+#zchange-absolute=true
+g0-vertical-speed=500
+g0-horizontal-speed=800
+nog81=true
+# Keep M6 and handle in bCNC
+#nom6=true
+nog64=true
+
+
+# Optimization
+# TODO
+#optimise=?
+#path-finding-limit=?
+
+
+# Milling
+mill-diameters=1.0mm,0.39mm
+mill-feed=200
+mill-vertfeed=80
+mill-speed=10000
+zwork=-0.14
+
+# Uncomment to enable multi-pass isolation
+isolation-width=2.0mm  # TODO
+milling-overlap=50%
+
+# Voronoi mode (not tested)
+#voronoi=true
+#preserve-thermal-reliefs=true
+
+
+# Drilling
+drill-side=front
+zdrill=-1.75
+drill-feed=120
+drill-speed=10000
+# I only want to drill 0.8mm vias, PTH for wires should be left undrilled.
+drills-available=0.8mm:-0.0mm:+0.0mm
+
+zmilldrill=-1.70
+milldrill-diameter=1.0
+min-milldrill-hole-diameter=1.2
+# outline (cut-) feeds and speeds are used
+
+# Outline
+cutter-diameter=1.0
+zcut=-1.70
+cut-feed=80
+cut-vertfeed=30
+cut-speed=10000
+cut-infeed=0.85
+cut-side=front
+bridges=2mm
+zbridges=-0.8mm
+bridgesnum=2
