@@ -2067,7 +2067,7 @@
   )
 
   (symbol (lib_id "Device:C") (at 207.01 101.6 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no) (fields_autoplaced)
+    (in_bom yes) (on_board yes) (dnp yes) (fields_autoplaced)
     (uuid 10f7605b-0a43-4672-8231-b8f527b52d13)
     (property "Reference" "C11" (at 209.931 100.3879 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -3556,7 +3556,7 @@
   )
 
   (symbol (lib_id "Device:C") (at 207.01 50.8 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid d31ee14e-0529-4ab1-b9b2-a411071d3682)
     (property "Reference" "C10" (at 209.931 49.5879 0)
       (effects (font (size 1.27 1.27)) (justify left))

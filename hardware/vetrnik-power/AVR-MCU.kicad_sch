@@ -1491,6 +1491,9 @@
   (junction (at 142.24 45.72) (diameter 0) (color 0 0 0 0)
     (uuid 0fcd00f9-4987-4d5b-950d-ae6ba1edf278)
   )
+  (junction (at 232.41 114.3) (diameter 0) (color 0 0 0 0)
+    (uuid 10524d23-3d18-4c4a-9c2d-c0fb6e51a63c)
+  )
   (junction (at 246.38 38.1) (diameter 0) (color 0 0 0 0)
     (uuid 26dc9060-beb2-4bf9-a22a-7c261223f608)
   )
@@ -1503,8 +1506,14 @@
   (junction (at 111.76 25.4) (diameter 0) (color 0 0 0 0)
     (uuid 519ce67b-d7e0-44ff-9359-88b9ad4948ec)
   )
+  (junction (at 156.21 104.14) (diameter 0) (color 0 0 0 0)
+    (uuid 558ee503-881b-4ebc-bfac-dae224c59451)
+  )
   (junction (at 101.6 69.85) (diameter 0) (color 0 0 0 0)
     (uuid 55ef6317-baad-4af1-a11b-79a724211f21)
+  )
+  (junction (at 156.21 63.5) (diameter 0) (color 0 0 0 0)
+    (uuid 5e2435d6-1020-4d82-9f73-94c0a62625b4)
   )
   (junction (at 114.3 134.62) (diameter 0) (color 0 0 0 0)
     (uuid 67bd95bb-913d-4445-8653-a55c9471f117)
@@ -1573,9 +1582,17 @@
     (stroke (width 0) (type default))
     (uuid 0233f14b-7f50-49fb-9dee-32ef1f76e0ad)
   )
+  (wire (pts (xy 232.41 114.3) (xy 232.41 115.57))
+    (stroke (width 0) (type default))
+    (uuid 02accf61-708b-4169-8874-66d9b5771169)
+  )
   (wire (pts (xy 125.73 25.4) (xy 130.81 25.4))
     (stroke (width 0) (type default))
     (uuid 02df7704-1131-4bbe-9fde-4005eaa5c711)
+  )
+  (wire (pts (xy 232.41 114.3) (xy 241.3 114.3))
+    (stroke (width 0) (type default))
+    (uuid 04148bc5-92ff-45c5-aba4-8a02dd498429)
   )
   (wire (pts (xy 154.94 66.04) (xy 165.1 66.04))
     (stroke (width 0) (type default))
@@ -1641,7 +1658,7 @@
     (stroke (width 0) (type default))
     (uuid 1e2584c8-fda0-4ffb-a08d-5952c2760635)
   )
-  (wire (pts (xy 154.94 104.14) (xy 165.1 104.14))
+  (wire (pts (xy 154.94 104.14) (xy 156.21 104.14))
     (stroke (width 0) (type default))
     (uuid 1e749e89-6d43-4809-96c8-31d3fa3f9d02)
   )
@@ -1656,6 +1673,10 @@
   (wire (pts (xy 25.4 140.97) (xy 34.29 140.97))
     (stroke (width 0) (type default))
     (uuid 227077f5-8e18-4278-8d37-79cedf1c2572)
+  )
+  (wire (pts (xy 156.21 63.5) (xy 165.1 63.5))
+    (stroke (width 0) (type default))
+    (uuid 22d362eb-139a-4f48-8286-fcbe362fe26e)
   )
   (wire (pts (xy 252.73 137.16) (xy 255.27 137.16))
     (stroke (width 0) (type default))
@@ -1676,6 +1697,10 @@
   (wire (pts (xy 142.24 48.26) (xy 142.24 45.72))
     (stroke (width 0) (type default))
     (uuid 2ac5674d-8215-4595-9e0d-c15d0abec101)
+  )
+  (wire (pts (xy 156.21 63.5) (xy 156.21 104.14))
+    (stroke (width 0) (type default))
+    (uuid 2c71d741-8273-4b2d-8858-afb9ce6e23cd)
   )
   (wire (pts (xy 63.5 36.83) (xy 50.8 36.83))
     (stroke (width 0) (type default))
@@ -1853,6 +1878,10 @@
     (stroke (width 0) (type default))
     (uuid 73fbded6-687c-453e-a695-b38b72af8012)
   )
+  (wire (pts (xy 232.41 123.19) (xy 232.41 124.46))
+    (stroke (width 0) (type default))
+    (uuid 76888b23-a20a-4f4f-bbf5-6506f79e051a)
+  )
   (wire (pts (xy 114.3 147.32) (xy 114.3 152.4))
     (stroke (width 0) (type default))
     (uuid 784baa4f-e2c3-47c1-988c-14e718d72560)
@@ -1957,6 +1986,10 @@
     (stroke (width 0) (type default))
     (uuid a4354afd-7d66-4a81-9f2a-f55a58efeca4)
   )
+  (wire (pts (xy 156.21 63.5) (xy 154.94 63.5))
+    (stroke (width 0) (type default))
+    (uuid a468fe87-4018-456c-b3e9-43d8e9a2464c)
+  )
   (wire (pts (xy 34.29 101.6) (xy 34.29 100.33))
     (stroke (width 0) (type default))
     (uuid a55f895f-2fec-4b37-b22c-4c674b2efd20)
@@ -1980,10 +2013,6 @@
   (wire (pts (xy 99.06 69.85) (xy 101.6 69.85))
     (stroke (width 0) (type default))
     (uuid abc926ff-8fb1-4836-ab5a-33841f06c66b)
-  )
-  (wire (pts (xy 165.1 63.5) (xy 154.94 63.5))
-    (stroke (width 0) (type default))
-    (uuid adf9256a-fe5a-4483-a10e-3365c7b6c745)
   )
   (wire (pts (xy 88.9 88.9) (xy 95.25 88.9))
     (stroke (width 0) (type default))
@@ -2040,6 +2069,10 @@
   (wire (pts (xy 88.9 91.44) (xy 88.9 88.9))
     (stroke (width 0) (type default))
     (uuid c714c8eb-a06e-47d4-b437-6784d71c48ae)
+  )
+  (wire (pts (xy 156.21 104.14) (xy 165.1 104.14))
+    (stroke (width 0) (type default))
+    (uuid cb718ec9-10b2-422e-b5f7-544580ca8a4a)
   )
   (wire (pts (xy 124.46 66.04) (xy 121.92 66.04))
     (stroke (width 0) (type default))
@@ -2101,7 +2134,7 @@
     (stroke (width 0) (type default))
     (uuid e0471ed5-9739-4b1f-84ee-5d09903b09d2)
   )
-  (wire (pts (xy 224.79 114.3) (xy 241.3 114.3))
+  (wire (pts (xy 218.44 114.3) (xy 232.41 114.3))
     (stroke (width 0) (type default))
     (uuid e2cb7daf-74c7-4493-8290-a4766ecd66cc)
   )
@@ -2218,8 +2251,8 @@
     (uuid feaa8a8a-21bf-4dfe-b858-bc7817390df2)
   )
 
-  (text "TODO PD5 cannot do PWM on ATmega8 - only other choice would be PB3 (i think)"
-    (at 184.15 91.44 0)
+  (text "mod: PD5 cannot do PWM on ATmega8 - connected to PB3"
+    (at 172.72 88.9 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 0667eef8-04aa-4385-ad9a-273ec7d1b6e6)
   )
@@ -2227,15 +2260,6 @@
     (at 91.44 165.1 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 312ec8da-7074-4cd8-b4a4-21b972730269)
-  )
-  (text "TODO which timer/counter to measure freq / RPM?" (at 184.15 88.9 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 4bb99fea-795d-4a45-9e1f-63f86026eacd)
-  )
-  (text "It's probably not a good idea to use both ACS712 at the same time.\nCheck current consumption from isolated supply before doing that."
-    (at 205.74 163.83 0)
-    (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 7e2010d8-0514-4e37-a4ce-79c0399191f4)
   )
   (text "PD2, PD3 interrupts" (at 175.26 97.79 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
@@ -2255,136 +2279,136 @@
     (uuid f2cc2813-e41c-460f-8790-13b5dcc0fb58)
   )
 
-  (label "MISO" (at 165.1 66.04 180)
+  (label "MISO" (at 165.1 66.04 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 210aef0e-1cf2-4f63-aa72-651ee3ebbf6a)
   )
-  (label "MOSI" (at 165.1 63.5 180)
+  (label "MOSI" (at 165.1 63.5 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 315883ee-7354-478a-9c0a-0c7760a6d733)
   )
-  (label "ADC3_NTC1" (at 203.2 38.1 180)
+  (label "ADC3_NTC1" (at 203.2 38.1 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 499afdad-66fb-478d-85b0-b1caf97465b6)
   )
-  (label "MOSI" (at 63.5 36.83 180)
+  (label "MOSI" (at 63.5 36.83 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 518dbf84-ba20-445f-a551-d4257c7e3d85)
   )
-  (label "SCK" (at 165.1 68.58 180)
+  (label "SCK" (at 165.1 68.58 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 51a6666f-25fc-4910-91eb-5595438dbb85)
   )
-  (label "SCK" (at 63.5 39.37 180)
+  (label "SCK" (at 63.5 39.37 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 5519c2a1-100e-46c3-8e74-b8466ad6d518)
   )
-  (label "ADC1_ACS712" (at 224.79 139.7 0)
+  (label "ADC1_ACS712" (at 224.79 139.7 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 56646750-d4b5-454c-aee7-35e35950e105)
   )
-  (label "~{SHORT}" (at 162.56 106.68 180)
+  (label "~{SHORT}" (at 162.56 106.68 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 5bcf51ac-6cb3-48f6-a1e3-82ffa6a5edfc)
   )
-  (label "~{RST}" (at 114.3 55.88 0)
+  (label "~{RST}" (at 114.3 55.88 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 652b9562-ccf1-4eb0-9266-611f32628f19)
   )
-  (label "RPM" (at 135.89 134.62 180)
+  (label "RPM" (at 135.89 134.62 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 66ff683b-dc38-4e13-af40-e88ffab7f794)
   )
-  (label "~{RST}" (at 63.5 88.9 180)
+  (label "~{RST}" (at 63.5 88.9 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 6c540be3-ee03-4ff9-9e47-d43731ade94a)
   )
-  (label "ADC2_ACS712_2" (at 171.45 78.74 180)
+  (label "ADC2_NTC2" (at 171.45 78.74 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 80feddc8-1290-4abb-ae08-270330ef004b)
   )
-  (label "ADC0_VSENSE" (at 171.45 73.66 180)
+  (label "ADC0_VSENSE" (at 171.45 73.66 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 83192897-5f2c-49f2-9426-b8881c1bb450)
   )
-  (label "MISO" (at 63.5 34.29 180)
+  (label "MISO" (at 63.5 34.29 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 88d75834-0d89-47a8-b30b-a063bd85d81d)
   )
-  (label "ADC0_VSENSE" (at 274.32 38.1 180)
+  (label "ADC0_VSENSE" (at 274.32 38.1 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 8bb06236-81b1-4b84-bc75-de427803dfcf)
   )
-  (label "ADC2_ACS712_2" (at 224.79 114.3 0)
+  (label "ADC2_NTC2" (at 218.44 114.3 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid ad08622b-4413-4661-bc98-42cf899f7b94)
   )
-  (label "~{RST}" (at 63.5 41.91 180)
+  (label "~{RST}" (at 63.5 41.91 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid bd5b86be-c4d9-4b35-bd29-24fdf1cea76c)
   )
-  (label "ADC1_ACS712" (at 171.45 76.2 180)
+  (label "ADC1_ACS712" (at 171.45 76.2 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid ed921497-6f4b-4deb-b2c7-11bd585c1ae3)
   )
-  (label "ADC3_NTC1" (at 171.45 81.28 180)
+  (label "ADC3_NTC1" (at 171.45 81.28 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid f30379e9-24a0-45a3-9781-ec9ddae1a8ff)
   )
-  (label "RPM" (at 171.45 96.52 180)
+  (label "RPM" (at 171.45 96.52 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid f85712cf-22a8-4ff1-b440-07118492bb40)
   )
 
-  (hierarchical_label "REL2" (shape output) (at 165.1 86.36 0)
+  (hierarchical_label "REL2" (shape output) (at 165.1 86.36 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid 08ce255b-9f53-45c0-b46c-302282b09c78)
   )
-  (hierarchical_label "SHORT" (shape output) (at 207.01 100.33 0)
+  (hierarchical_label "SHORT" (shape output) (at 207.01 100.33 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid 63132f30-0b9e-4a57-af18-a9812b08816e)
   )
-  (hierarchical_label "PWM2" (shape output) (at 165.1 60.96 0)
+  (hierarchical_label "PWM2" (shape output) (at 165.1 60.96 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid 8875fdfa-ce0c-486b-8b95-10428b098b0c)
   )
-  (hierarchical_label "REL1" (shape output) (at 165.1 55.88 0)
+  (hierarchical_label "REL1" (shape output) (at 165.1 55.88 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid 8bcd152c-265b-4d90-bec2-9c4a50e50649)
   )
-  (hierarchical_label "PWM1" (shape output) (at 165.1 58.42 0)
+  (hierarchical_label "PWM1" (shape output) (at 165.1 58.42 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid a111e831-88cb-42b9-89cb-0d8c4fd844a1)
   )
-  (hierarchical_label "REL4" (shape output) (at 165.1 68.58 0)
+  (hierarchical_label "REL4" (shape output) (at 165.1 68.58 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid b7c036f7-90e0-41b4-afc0-ae03d9060e1d)
   )
-  (hierarchical_label "RX" (shape input) (at 165.1 91.44 0)
+  (hierarchical_label "RX" (shape input) (at 165.1 91.44 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid bf73629b-5457-4dde-a3d2-02d8373a6d8c)
   )
-  (hierarchical_label "~{ENABLE}" (shape input) (at 165.1 99.06 0)
+  (hierarchical_label "~{ENABLE}" (shape input) (at 165.1 99.06 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid c393f2b0-a91d-4316-970d-e76df21d0736)
   )
-  (hierarchical_label "REL3" (shape output) (at 165.1 83.82 0)
+  (hierarchical_label "REL3" (shape output) (at 165.1 83.82 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid cabee115-1a1a-4b63-87f1-a6855e165173)
   )
-  (hierarchical_label "VSENSE" (shape input) (at 222.25 38.1 180)
+  (hierarchical_label "VSENSE" (shape input) (at 222.25 38.1 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right))
     (uuid cc969197-9bce-4a77-b7c5-aa47cb918749)
   )
-  (hierarchical_label "FAN" (shape output) (at 165.1 104.14 0)
+  (hierarchical_label "FAN" (shape output) (at 165.1 104.14 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid e940f266-d881-423d-8d7e-07c5a65ef83e)
   )
-  (hierarchical_label "~{SD}" (shape output) (at 165.1 109.22 0)
+  (hierarchical_label "~{SD}" (shape output) (at 165.1 109.22 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid e9c90eed-b07c-464e-8c7c-7a2a0cf3f36a)
   )
-  (hierarchical_label "TX" (shape output) (at 165.1 93.98 0)
+  (hierarchical_label "TX" (shape output) (at 165.1 93.98 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid f129b920-3886-4e8f-ac4d-d1f5bb2aa5fc)
   )
@@ -2431,6 +2455,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 86ad8489-cd1c-41a6-81c5-3b35d060cb2a))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR078") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:R") (at 105.41 147.32 0) (unit 1)
@@ -2475,6 +2506,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 3429c4e5-1348-403b-b800-18c1408d2b5e))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR085") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Isolator:LTV-817") (at 76.2 139.7 0) (unit 1)
@@ -2550,9 +2588,6 @@
     (pin "9" (uuid 045eddc2-da9b-4b33-bb75-08c1c2db049b))
     (instances
       (project "vetrnik-power"
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "U12") (unit 1)
-        )
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
           (reference "U12") (unit 1)
         )
@@ -2576,6 +2611,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 0f0f8e48-c13f-4d7c-97bd-99258d5a4783))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR092") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+5P") (at 139.7 44.45 0) (unit 1)
@@ -2594,6 +2636,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 8ae91d39-85cf-4528-b738-f4bc0ec460a1))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR091") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:C") (at 101.6 95.25 0) (unit 1)
@@ -2664,6 +2713,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 72ffdcc0-7caa-414b-915f-484ec8794ae4))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR083") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+5P") (at 95.25 86.36 0) (unit 1)
@@ -2682,6 +2738,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid ec1ef2ec-ccb0-4419-b968-633db90f6be2))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR082") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:Crystal") (at 101.6 63.5 270) (unit 1)
@@ -2802,6 +2865,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 9807725a-44dc-4a6e-8be0-3d0de9cc9441))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR081") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Connector:AVR-ISP-6") (at 40.64 39.37 0) (unit 1)
@@ -2850,6 +2920,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 6b48a94c-25fe-404b-9852-874703af755d))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR075") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+5P") (at 38.1 24.13 0) (unit 1)
@@ -2868,6 +2945,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 1cc8b85f-4866-48b5-afbe-4412b6108744))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR074") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:C") (at 50.8 95.25 0) (unit 1)
@@ -2938,6 +3022,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 68338f6c-e079-428c-a4b3-e9f2f238ee49))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR077") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+5P") (at 50.8 76.2 0) (unit 1)
@@ -2956,6 +3047,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 4a0bebfb-dee7-45c2-846c-b1450f79f662))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR076") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:R") (at 41.91 88.9 270) (unit 1)
@@ -3026,6 +3124,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid cc60c8bd-7268-40ab-8fd5-4db936055c2a))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR073") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Transistor_BJT:BC846") (at 200.66 106.68 0) (unit 1)
@@ -3097,6 +3202,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 9335420b-25fe-4ea4-8562-d6a5ac259344))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR084") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+5P") (at 130.81 24.13 0) (unit 1)
@@ -3115,6 +3227,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 6cbf27f3-4ce0-402b-8260-e71aeecbc4a8))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR090") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+12P") (at 88.9 24.13 0) (unit 1)
@@ -3133,6 +3252,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 00ca3f70-7f1c-44b2-a877-6907ae83e8b8))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR079") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Regulator_Linear:L78L05_TO92") (at 101.6 25.4 0) (unit 1)
@@ -3230,6 +3356,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid bc66adf6-dadf-4672-ab84-9f5a5c11585e))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR080") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 111.76 35.56 0) (unit 1)
@@ -3248,6 +3381,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid e6cac49f-d3d0-46b1-b566-16d382950cd1))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR086") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 203.2 114.3 0) (unit 1)
@@ -3266,6 +3406,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 2f0e6809-8fd7-4dd2-967d-87b30f2e9859))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR096") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:C") (at 114.3 82.55 0) (unit 1)
@@ -3310,6 +3457,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid b3a296cb-dc59-457b-b66c-51b0552a72d0))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR087") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 114.3 152.4 0) (unit 1)
@@ -3328,6 +3482,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid a5138e4b-06a7-41af-8559-134add598d6c))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR089") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Diode:1N4148W") (at 55.88 139.7 270) (unit 1)
@@ -3451,6 +3612,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid da9bccf2-5f72-4157-8a81-444c89a86d55))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR097") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 241.3 48.26 0) (unit 1)
@@ -3469,6 +3637,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid d0d405d9-eb1b-4b9b-86dd-a930805d51f9))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR098") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:C") (at 180.34 44.45 0) (unit 1)
@@ -3513,6 +3688,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 2ae2fb8b-22af-4304-8170-6fa41ba2c23a))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR093") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:C") (at 259.08 43.18 0) (unit 1)
@@ -3557,6 +3739,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid c3a73fd2-26c2-4658-8816-6a3200a36246))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR0105") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:C") (at 241.3 144.78 0) (unit 1)
@@ -3601,6 +3790,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 1078cee4-18c5-4d58-8bbf-8ea1bba1be79))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR0100") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:C") (at 95.25 147.32 0) (unit 1)
@@ -3645,6 +3841,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 946fe0ef-2fe0-46c3-8696-3fcc5c7711f2))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR014") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:C") (at 127 143.51 0) (unit 1)
@@ -3689,6 +3892,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid f0a5834f-bc45-45c5-b0e4-2fa70855b4d3))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR021") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Connector_Generic:Conn_01x02") (at 20.32 138.43 0) (mirror y) (unit 1)
@@ -3786,6 +3996,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 012d9765-cf1e-48d9-972f-20bc0660e393))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR088") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:R") (at 190.5 44.45 0) (unit 1)
@@ -3859,6 +4076,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid cc23dd0d-d310-479f-9c5b-753dcd29aa91))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR095") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+5P") (at 190.5 25.4 0) (unit 1)
@@ -3877,6 +4101,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 515a743d-3ae8-4dec-a6b1-06e59974fb6e))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR094") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Connector_Generic:Conn_01x03") (at 260.35 139.7 0) (unit 1)
@@ -3922,6 +4153,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 44465634-966d-4f09-b9c0-8341d8667407))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR0104") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+5P") (at 252.73 134.62 0) (unit 1)
@@ -3940,6 +4178,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid b6fa2a17-e036-4a18-a5fe-21f1b0698215))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR0103") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:C") (at 274.32 139.7 0) (unit 1)
@@ -3984,6 +4229,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid df183090-9af0-4088-bd70-979ac756a0e7))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR0109") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+5P") (at 274.32 134.62 0) (unit 1)
@@ -4002,6 +4254,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 04b607f4-bb9d-4e60-ba2a-2fe9fffd38f0))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR0108") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Connector_Generic:Conn_01x03") (at 260.35 114.3 0) (unit 1)
@@ -4010,7 +4269,7 @@
     (property "Reference" "J16" (at 262.382 113.2332 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Value" "ACS712_2" (at 262.382 115.5446 0)
+    (property "Value" "NTC2" (at 262.382 115.5446 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Footprint" "Connector_Molex:Molex_KK-254_AE-6410-03A_1x03_P2.54mm_Vertical" (at 260.35 114.3 0)
@@ -4047,6 +4306,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 5aab1422-c55c-41b0-9aa1-de3bcbb78aa7))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR0102") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+5P") (at 252.73 109.22 0) (unit 1)
@@ -4065,6 +4331,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid a84778de-6b0a-41c0-8de2-7746691d7dc8))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR0101") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:C") (at 241.3 119.38 0) (unit 1)
@@ -4109,6 +4382,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 93260c0d-e533-4bda-b9e6-0ca22221a070))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR099") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:C") (at 274.32 114.3 0) (unit 1)
@@ -4153,6 +4433,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid d4fa9c44-73fa-483d-ad49-ca520a1fe566))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR0107") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+5P") (at 274.32 109.22 0) (unit 1)
@@ -4171,6 +4458,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid c84966f9-b0b4-4774-a9c7-c46dd2f5e172))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR0106") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Connector:TestPoint_2Pole") (at 120.65 25.4 0) (unit 1)
@@ -4218,9 +4512,6 @@
     (pin "2" (uuid 092dc51a-5abc-4a9d-aeaf-3027fc971bfd))
     (instances
       (project "vetrnik-power"
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "JP1") (unit 1)
-        )
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
           (reference "JP1") (unit 1)
         )
@@ -4248,6 +4539,57 @@
       (project "vetrnik-power"
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
           (reference "#FLG06") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Device:R") (at 232.41 119.38 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 901ca414-743a-4888-a630-b4a5d136d4e7)
+    (property "Reference" "R48" (at 234.188 118.2116 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "4k7" (at 234.188 120.523 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder" (at 230.632 119.38 90)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 232.41 119.38 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid a0730424-0d64-485f-b04a-9ce323226b85))
+    (pin "2" (uuid 5a7e545f-15ed-4cc5-9ecf-77d2b1cf5fce))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "R48") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "power:GNDPWR") (at 232.41 124.46 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid e0d645f7-dd92-4746-bc50-baf1a9c14b73)
+    (property "Reference" "#PWR0110" (at 232.41 129.54 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Value" "GNDPWR" (at 232.5116 128.3716 0)
+      (effects (font (size 1.27 1.27)))
+    )
+    (property "Footprint" "" (at 232.41 125.73 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "" (at 232.41 125.73 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid f1add5f8-d83d-450e-9bc5-2d4d63abf28e))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000631769d8"
+          (reference "#PWR0110") (unit 1)
         )
       )
     )

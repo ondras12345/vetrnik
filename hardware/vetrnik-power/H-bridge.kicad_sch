@@ -230,6 +230,60 @@
         )
       )
     )
+    (symbol "Diode:1.5KExxA" (pin_numbers hide) (pin_names (offset 1.016) hide) (in_bom yes) (on_board yes)
+      (property "Reference" "D" (at 0 2.54 0)
+        (effects (font (size 1.27 1.27)))
+      )
+      (property "Value" "1.5KExxA" (at 0 -2.54 0)
+        (effects (font (size 1.27 1.27)))
+      )
+      (property "Footprint" "Diode_THT:D_DO-201AE_P15.24mm_Horizontal" (at 0 -5.08 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "Datasheet" "https://www.vishay.com/docs/88301/15ke.pdf" (at -1.27 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_keywords" "diode TVS voltage suppressor" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_description" "1500W unidirectional TRANSZORB® Transient Voltage Suppressor, DO-201AE" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (property "ki_fp_filters" "D?DO?201AE*" (at 0 0 0)
+        (effects (font (size 1.27 1.27)) hide)
+      )
+      (symbol "1.5KExxA_0_1"
+        (polyline
+          (pts
+            (xy -0.762 1.27)
+            (xy -1.27 1.27)
+            (xy -1.27 -1.27)
+          )
+          (stroke (width 0.254) (type default))
+          (fill (type none))
+        )
+        (polyline
+          (pts
+            (xy 1.27 1.27)
+            (xy 1.27 -1.27)
+            (xy -1.27 0)
+            (xy 1.27 1.27)
+          )
+          (stroke (width 0.254) (type default))
+          (fill (type none))
+        )
+      )
+      (symbol "1.5KExxA_1_1"
+        (pin passive line (at -3.81 0 0) (length 2.54)
+          (name "A1" (effects (font (size 1.27 1.27))))
+          (number "1" (effects (font (size 1.27 1.27))))
+        )
+        (pin passive line (at 3.81 0 180) (length 2.54)
+          (name "A2" (effects (font (size 1.27 1.27))))
+          (number "2" (effects (font (size 1.27 1.27))))
+        )
+      )
+    )
     (symbol "Diode:1.5KExxCA" (pin_numbers hide) (pin_names (offset 1.016) hide) (in_bom yes) (on_board yes)
       (property "Reference" "D" (at 0 2.54 0)
         (effects (font (size 1.27 1.27)))
@@ -1238,6 +1292,9 @@
   (junction (at 88.9 147.32) (diameter 0) (color 0 0 0 0)
     (uuid e28df3f1-4887-4ffd-abb9-82c2cf3e27c6)
   )
+  (junction (at 55.88 147.32) (diameter 0) (color 0 0 0 0)
+    (uuid e4e950bf-b358-4a5e-b953-b0da1322f7ad)
+  )
   (junction (at 25.4 139.7) (diameter 0) (color 0 0 0 0)
     (uuid e77249d0-814e-43aa-a683-e3b02e91dc5a)
   )
@@ -1521,6 +1578,10 @@
     (stroke (width 0) (type default))
     (uuid 52f32041-beff-4a6b-b4ac-900b3ffaf51e)
   )
+  (wire (pts (xy 48.26 137.16) (xy 55.88 137.16))
+    (stroke (width 0) (type default))
+    (uuid 5345f534-e92d-4f04-93d7-4b6ed3ecc833)
+  )
   (wire (pts (xy 165.1 76.2) (xy 184.15 76.2))
     (stroke (width 0) (type default))
     (uuid 53c16321-2315-4412-a9b4-3af0b5672e95)
@@ -1561,7 +1622,7 @@
     (stroke (width 0) (type default))
     (uuid 5c287a40-e8b5-4033-abd1-86856d73630f)
   )
-  (wire (pts (xy 55.88 148.59) (xy 55.88 146.05))
+  (wire (pts (xy 55.88 148.59) (xy 55.88 147.32))
     (stroke (width 0) (type default))
     (uuid 5cd6959d-2742-4f5e-a1c4-e0142d743aee)
   )
@@ -1813,6 +1874,10 @@
     (stroke (width 0) (type default))
     (uuid a007234f-6764-4a96-bc6e-06ebbf354018)
   )
+  (wire (pts (xy 55.88 147.32) (xy 55.88 146.05))
+    (stroke (width 0) (type default))
+    (uuid a084d64c-1c21-42f0-b552-730d476e2ba9)
+  )
   (wire (pts (xy 147.32 88.9) (xy 149.86 88.9))
     (stroke (width 0) (type default))
     (uuid a140867b-73bc-4459-984b-32748abc0a6e)
@@ -1885,6 +1950,10 @@
     (stroke (width 0) (type default))
     (uuid b4a4a707-f813-4f0e-9cc0-971d7c46e95b)
   )
+  (wire (pts (xy 48.26 147.32) (xy 55.88 147.32))
+    (stroke (width 0) (type default))
+    (uuid b4f58dbb-86b6-4163-89c8-aac249140c14)
+  )
   (wire (pts (xy 146.05 106.68) (xy 157.48 106.68))
     (stroke (width 0) (type default))
     (uuid b89d3d2c-f1cb-4f1b-ac75-b2166969f189)
@@ -1892,6 +1961,10 @@
   (wire (pts (xy 106.68 85.09) (xy 106.68 83.82))
     (stroke (width 0) (type default))
     (uuid baf57246-f1c0-4c65-b877-17e2d8510f6b)
+  )
+  (wire (pts (xy 48.26 138.43) (xy 48.26 137.16))
+    (stroke (width 0) (type default))
+    (uuid bbf76caa-aee8-48e6-8c12-58b8f14db36f)
   )
   (wire (pts (xy 67.31 185.42) (xy 67.31 180.34))
     (stroke (width 0) (type default))
@@ -2029,6 +2102,10 @@
     (stroke (width 0) (type default))
     (uuid e0e9ec7b-fb3d-4d58-8d6a-1e05494fb100)
   )
+  (wire (pts (xy 48.26 146.05) (xy 48.26 147.32))
+    (stroke (width 0) (type default))
+    (uuid e0faf34f-a24d-48ad-9d54-e108db895968)
+  )
   (wire (pts (xy 25.4 100.33) (xy 25.4 88.9))
     (stroke (width 0) (type default))
     (uuid e3603e53-95b8-4222-9a9e-585b3c686c8e)
@@ -2130,6 +2207,11 @@
     (uuid ffb25496-d85b-47aa-8b29-af3bbc6875cf)
   )
 
+  (text "mod: 5-pin connector for vetrnik-H-bridge:\n+12P, IN1, ~{SD}, IN2, GNDPWR"
+    (at 110.49 76.2 0)
+    (effects (font (size 1.27 1.27)) (justify left bottom))
+    (uuid 027c4df0-97d3-4655-a7e2-d67c34d19af1)
+  )
   (text "+12P and GNDPWR are isolated from +12V and GND\nThis should prevent electrolysis from taking place in the boiler."
     (at 16.51 17.78 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
@@ -2145,70 +2227,71 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 4fb56857-6330-4e3e-aec2-d79dced0efcb)
   )
-  (text "TODO RC snubber design" (at 173.99 67.31 0)
+  (text "TODO improve RC snubber design?" (at 173.99 67.31 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 5d8b2884-b184-4e09-86fe-42fbb4e9282c)
   )
-  (text "OVP should trip at 180 V\n178.5 V ... 5.70 V\n90.8 V ... 2.90 V"
-    (at 67.31 165.1 0)
+  (text "OVP should trip at 128V (standoff voltage of 1.5KE150A)\nSee OVP-hysteresis.ods\n(128V ... 4.09V)\n109V ... 3.49V\n56V  ... 1.79V\nWARNING: +12VP is UNREGULATED 12V!"
+    (at 85.09 173.99 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 7a9294d4-2f4f-4641-94c0-a995374ebb7a)
+    (uuid 9a915a00-9e5c-4e03-96b7-5fbb6135f27a)
   )
-  (text "TODO s/22u/10u/ ??" (at 140.97 82.55 0)
+  (text "mod: added R49 instead\nof making R26 10k" (at 29.21 152.4 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid 8a5165f1-ce54-43b0-884d-93266b1d2eb6)
+    (uuid b5d2da4a-91a8-4c26-baff-e8afab884460)
   )
-  (text "UF400x diodes are much faster than 1N400x" (at 109.22 74.93 0)
+  (text "2024-03 mod: DNP components moved to vetrnik-H-bridge"
+    (at 165.1 44.45 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
-    (uuid cea2063d-9e86-40c6-ab3f-21d005e2bb79)
+    (uuid dae5c25e-7e63-46bc-abe3-305d0e950e5c)
   )
-  (text "TODO calculate filtering caps" (at 34.29 85.09 0)
+  (text "TODO add extra filtering caps?" (at 34.29 85.09 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid e59c10d8-5288-48d8-beff-2bddcc7402c5)
   )
 
-  (label "DC-" (at 49.53 181.61 0)
+  (label "DC-" (at 49.53 181.61 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 5ea4d111-8d9d-46c2-98c9-0a18a475f356)
   )
-  (label "DC+" (at 19.05 127 0)
+  (label "DC+" (at 19.05 127 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 6007d09e-60a7-425d-be1e-8d4e00b7bee5)
   )
-  (label "DC-" (at 19.05 152.4 0)
+  (label "DC-" (at 19.05 152.4 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 71964d10-7de3-42b0-9e49-bada3abfa0c9)
   )
-  (label "DC+" (at 49.53 156.21 0)
+  (label "DC+" (at 49.53 156.21 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 8e0fe15a-2f9d-4358-b710-e9558715da43)
   )
-  (label "DC-" (at 64.77 114.3 0)
+  (label "DC-" (at 64.77 114.3 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 957b5de9-08cd-4dac-b87a-445842b86d5f)
   )
-  (label "DC+" (at 83.82 88.9 180)
+  (label "DC+" (at 83.82 88.9 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid d195d916-9e8d-4fb1-8710-6926b28192b9)
   )
 
-  (hierarchical_label "~{OVP}" (shape output) (at 102.87 158.75 0)
+  (hierarchical_label "~{OVP}" (shape output) (at 102.87 158.75 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid 69ebaa57-edb3-4eb6-83eb-a5a3b5c7f704)
   )
-  (hierarchical_label "IN2" (shape input) (at 266.7 101.6 0)
+  (hierarchical_label "IN2" (shape input) (at 266.7 101.6 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid 82495076-fdb3-42ab-b929-0af4e2986d01)
   )
-  (hierarchical_label "~{SD}" (shape input) (at 97.79 104.14 180)
+  (hierarchical_label "~{SD}" (shape input) (at 97.79 104.14 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right))
     (uuid 9eeb6ca0-b634-440a-abae-61b880633be2)
   )
-  (hierarchical_label "IN1" (shape input) (at 97.79 101.6 180)
+  (hierarchical_label "IN1" (shape input) (at 97.79 101.6 180) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify right))
     (uuid ed6cd953-5d70-43ba-bbaf-1806c11124cc)
   )
-  (hierarchical_label "VSENSE" (shape output) (at 30.48 139.7 0)
+  (hierarchical_label "VSENSE" (shape output) (at 30.48 139.7 0) (fields_autoplaced)
     (effects (font (size 1.27 1.27)) (justify left))
     (uuid f4a14dcb-4ccc-4fee-bfeb-0a4810533135)
   )
@@ -2229,6 +2312,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid c57e0c8f-420c-415c-b4fe-dea5080b42b5))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR057") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+12P") (at 106.68 83.82 0) (unit 1)
@@ -2247,6 +2337,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 66db95aa-56be-4d16-beca-40d1466a67c3))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR060") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+12P") (at 127 83.82 0) (unit 1)
@@ -2265,6 +2362,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 473bf1c8-3aa5-4eb4-b359-2549509adf85))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR063") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+12P") (at 241.3 83.82 0) (unit 1)
@@ -2283,6 +2387,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid a079b31f-be56-478e-9f3e-9061002fe215))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR066") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+12P") (at 257.81 83.82 0) (unit 1)
@@ -2301,6 +2412,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 7827d20c-dac6-4463-afae-88465cbd0498))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR068") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+12P") (at 269.24 83.82 0) (unit 1)
@@ -2319,6 +2437,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid e1436088-b933-476c-b72d-91e7ef042de3))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR071") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+12P") (at 88.9 135.89 0) (unit 1)
@@ -2337,6 +2462,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid bf951527-4cc6-44fa-8e6f-5e6d209a9def))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR056") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+12P") (at 55.88 125.73 0) (unit 1)
@@ -2355,6 +2487,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid a7003a06-d7f5-4707-8374-b54a5cff61ea))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR052") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+12P") (at 38.1 167.64 0) (unit 1)
@@ -2373,6 +2512,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid d1612822-20a7-4058-b1dd-f58b957f5ec5))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR050") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:+12P") (at 25.4 167.64 0) (unit 1)
@@ -2391,6 +2537,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid e6b483fc-42f0-4879-85ea-8bc6f90e071f))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR046") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 85.09 115.57 0) (unit 1)
@@ -2409,6 +2562,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 3e0cb7b7-4c64-4cd2-9bc9-05da41c0a1d2))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR055") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 25.4 187.96 0) (unit 1)
@@ -2427,6 +2587,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 839a4900-347a-4a11-9a37-32cf88b6f532))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR047") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 38.1 187.96 0) (unit 1)
@@ -2445,6 +2612,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid fc83081d-e999-4196-92bd-0244d5cda2f2))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR051") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 55.88 148.59 0) (unit 1)
@@ -2463,6 +2637,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 16c05f45-5b56-415a-bd0a-bd66de3c429b))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR053") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 105.41 115.57 0) (unit 1)
@@ -2481,6 +2662,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid c5bc6587-88e6-4c6e-9ef7-fe2763abc7ba))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR059") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 114.3 115.57 0) (unit 1)
@@ -2499,6 +2687,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 87cda067-5a43-4e43-ad02-677c27a2bbed))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR062") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 127 118.11 0) (unit 1)
@@ -2517,6 +2712,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid c0e02afe-48e4-4ffd-b975-e94a8b3759cf))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR064") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 95.25 93.98 0) (unit 1)
@@ -2535,6 +2737,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 828d208c-0f00-4dd5-9045-610bfa259d4a))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR058") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 106.68 93.98 0) (unit 1)
@@ -2553,6 +2762,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid ce5acbe6-bdb3-4907-9bf9-e0d355152261))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR061") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 184.15 129.54 0) (unit 1)
@@ -2571,6 +2787,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 97810a7b-bf89-4002-a568-d493069cb8eb))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR065") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 241.3 123.19 0) (unit 1)
@@ -2589,6 +2812,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 3653d6b3-73fa-4d31-8f2a-a96ecb1d96f5))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR067") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 257.81 114.3 0) (unit 1)
@@ -2607,6 +2837,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 00372bde-5359-4a37-9e25-d028c71dc63b))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR070") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 269.24 93.98 0) (unit 1)
@@ -2625,6 +2862,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 845185b6-46ed-4dea-ad38-344df317cc51))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR072") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "power:GNDPWR") (at 257.81 93.98 0) (unit 1)
@@ -2643,6 +2887,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid f386f8bf-9c45-484c-bdaf-5e2cf5a9a6e3))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR069") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "ondra:IXFP90N20X3M") (at 162.56 88.9 0) (unit 1)
@@ -2670,9 +2921,6 @@
       (project "vetrnik-power"
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "#Q1") (unit 1)
-        )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "#Q?") (unit 1)
         )
       )
     )
@@ -2704,9 +2952,6 @@
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "#Q2") (unit 1)
         )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "#Q?") (unit 1)
-        )
       )
     )
   )
@@ -2736,9 +2981,6 @@
       (project "vetrnik-power"
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "#Q3") (unit 1)
-        )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "#Q?") (unit 1)
         )
       )
     )
@@ -2770,15 +3012,12 @@
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "#Q4") (unit 1)
         )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "#Q?") (unit 1)
-        )
       )
     )
   )
 
   (symbol (lib_id "Driver_FET:IR2104") (at 127 101.6 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630c74b7)
     (property "Reference" "U8" (at 118.11 92.71 0)
       (effects (font (size 1.27 1.27)))
@@ -2808,15 +3047,12 @@
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "U8") (unit 1)
         )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "U?") (unit 1)
-        )
       )
     )
   )
 
   (symbol (lib_id "Driver_FET:IR2104") (at 241.3 101.6 0) (mirror y) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630c74be)
     (property "Reference" "U9" (at 250.19 93.98 0)
       (effects (font (size 1.27 1.27)))
@@ -2846,15 +3082,12 @@
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "U9") (unit 1)
         )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "U?") (unit 1)
-        )
       )
     )
   )
 
   (symbol (lib_id "Device:R") (at 143.51 88.9 270) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630c74c4)
     (property "Reference" "R33" (at 143.51 83.6422 90)
       (effects (font (size 1.27 1.27)))
@@ -2875,15 +3108,12 @@
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "R33") (unit 1)
         )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "R?") (unit 1)
-        )
       )
     )
   )
 
   (symbol (lib_id "Device:R") (at 143.51 114.3 270) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630c74ca)
     (property "Reference" "R34" (at 143.51 109.0422 90)
       (effects (font (size 1.27 1.27)))
@@ -2904,15 +3134,12 @@
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "R34") (unit 1)
         )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "R?") (unit 1)
-        )
       )
     )
   )
 
   (symbol (lib_id "Device:R") (at 223.52 88.9 270) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630c74d0)
     (property "Reference" "R36" (at 223.52 83.6422 90)
       (effects (font (size 1.27 1.27)))
@@ -2933,15 +3160,12 @@
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "R36") (unit 1)
         )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "R?") (unit 1)
-        )
       )
     )
   )
 
   (symbol (lib_id "Device:R") (at 223.52 114.3 270) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630c74d6)
     (property "Reference" "R37" (at 223.52 109.0422 90)
       (effects (font (size 1.27 1.27)))
@@ -2961,9 +3185,6 @@
       (project "vetrnik-power"
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "R37") (unit 1)
-        )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "R?") (unit 1)
         )
       )
     )
@@ -2991,15 +3212,12 @@
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "C11") (unit 1)
         )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "C?") (unit 1)
-        )
       )
     )
   )
 
   (symbol (lib_id "Device:C") (at 146.05 99.06 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630c7529)
     (property "Reference" "C13" (at 148.59 99.06 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -3020,15 +3238,12 @@
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "C13") (unit 1)
         )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "C?") (unit 1)
-        )
       )
     )
   )
 
   (symbol (lib_id "vetrnik-power-rescue:CP-Device") (at 139.7 99.06 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630c752f)
     (property "Reference" "C12" (at 133.35 100.33 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -3049,15 +3264,12 @@
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "C12") (unit 1)
         )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "C?") (unit 1)
-        )
       )
     )
   )
 
   (symbol (lib_id "Device:C") (at 229.87 99.06 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630c7556)
     (property "Reference" "C16" (at 231.14 101.6 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -3078,15 +3290,12 @@
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "C16") (unit 1)
         )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "C?") (unit 1)
-        )
       )
     )
   )
 
   (symbol (lib_id "vetrnik-power-rescue:CP-Device") (at 223.52 99.06 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630c755c)
     (property "Reference" "C15" (at 217.17 99.06 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -3107,15 +3316,12 @@
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "C15") (unit 1)
         )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "C?") (unit 1)
-        )
       )
     )
   )
 
   (symbol (lib_id "vetrnik-power-rescue:CP-Device") (at 257.81 88.9 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630c7575)
     (property "Reference" "C17" (at 260.8072 87.7316 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -3135,9 +3341,6 @@
       (project "vetrnik-power"
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "C17") (unit 1)
-        )
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "C?") (unit 1)
         )
       )
     )
@@ -3170,7 +3373,7 @@
   )
 
   (symbol (lib_id "Device:C") (at 269.24 88.9 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630e60f1)
     (property "Reference" "C18" (at 272.161 87.7316 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -3196,7 +3399,7 @@
   )
 
   (symbol (lib_id "Device:R") (at 114.3 110.49 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630e8148)
     (property "Reference" "R32" (at 116.078 109.3216 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -3222,7 +3425,7 @@
   )
 
   (symbol (lib_id "Device:R") (at 257.81 109.22 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630ed85e)
     (property "Reference" "R38" (at 259.588 108.0516 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -3248,7 +3451,7 @@
   )
 
   (symbol (lib_id "Device:R") (at 105.41 110.49 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000630f2263)
     (property "Reference" "R31" (at 107.188 109.3216 0)
       (effects (font (size 1.27 1.27)) (justify left))
@@ -3457,6 +3660,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid c125635f-45aa-4d10-8ebb-cd2f7925868c))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR048") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Diode:1.5KExxCA") (at 184.15 104.14 180) (unit 1)
@@ -3507,9 +3717,6 @@
     (pin "2" (uuid 031ef813-85e0-48cb-b7b2-ce6c607ad335))
     (instances
       (project "vetrnik-power"
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "C8") (unit 1)
-        )
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "C8") (unit 1)
         )
@@ -3558,6 +3765,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid a80c1717-5dcd-4117-bb83-db661268746b))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR049") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "Device:R") (at 55.88 162.56 0) (unit 1)
@@ -3637,9 +3851,6 @@
     (pin "8" (uuid 95b3fa50-0c41-448f-ae15-f76de81f3dc9))
     (instances
       (project "vetrnik-power"
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "U7") (unit 1)
-        )
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "U7") (unit 1)
         )
@@ -3672,9 +3883,6 @@
     (pin "8" (uuid 381cd5d4-3a98-4ad9-8fc7-972056d4e68d))
     (instances
       (project "vetrnik-power"
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "U7") (unit 2)
-        )
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "U7") (unit 2)
         )
@@ -3707,9 +3915,6 @@
     (pin "8" (uuid 788d87d3-96f7-46ac-8762-914aafce95ac))
     (instances
       (project "vetrnik-power"
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "U7") (unit 3)
-        )
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "U7") (unit 3)
         )
@@ -3906,7 +4111,7 @@
     (property "Reference" "R35" (at 189.23 89.9922 90)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Value" "10" (at 189.23 92.3036 90)
+    (property "Value" "10 / 0.5W" (at 191.77 92.71 90)
       (effects (font (size 1.27 1.27)))
     )
     (property "Footprint" "Resistor_THT:R_Axial_DIN0309_L9.0mm_D3.2mm_P12.70mm_Horizontal" (at 189.23 93.472 90)
@@ -3952,32 +4157,6 @@
     )
   )
 
-  (symbol (lib_id "Diode:1.5KExxCA") (at 40.64 101.6 90) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
-    (uuid 00000000-0000-0000-0000-00006333fc20)
-    (property "Reference" "D1" (at 42.672 100.4316 90)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Value" "1.5KE200CA" (at 41.91 104.14 90)
-      (effects (font (size 1.27 1.27)) (justify right))
-    )
-    (property "Footprint" "Diode_THT:D_DO-201AE_P15.24mm_Horizontal" (at 45.72 101.6 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (property "Datasheet" "https://www.vishay.com/docs/88301/15ke.pdf" (at 40.64 101.6 0)
-      (effects (font (size 1.27 1.27)) hide)
-    )
-    (pin "1" (uuid e816c348-15fc-4dfe-8213-4b44499321ef))
-    (pin "2" (uuid 5a04ad77-fe6c-4f79-a84a-9a852539a039))
-    (instances
-      (project "vetrnik-power"
-        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
-          (reference "D1") (unit 1)
-        )
-      )
-    )
-  )
-
   (symbol (lib_id "Connector_Generic:Conn_01x02") (at 154.94 116.84 0) (mirror x) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid 00000000-0000-0000-0000-00006335a8a1)
@@ -4005,7 +4184,7 @@
   )
 
   (symbol (lib_id "ondra:UF4004") (at 132.08 87.63 180) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000634318b4)
     (property "Reference" "D2" (at 132.08 82.1182 0)
       (effects (font (size 1.27 1.27)))
@@ -4034,7 +4213,7 @@
   )
 
   (symbol (lib_id "ondra:UF4004") (at 236.22 87.63 0) (unit 1)
-    (in_bom yes) (on_board yes) (dnp no)
+    (in_bom yes) (on_board yes) (dnp yes)
     (uuid 00000000-0000-0000-0000-0000634321c9)
     (property "Reference" "D4" (at 236.22 82.1182 0)
       (effects (font (size 1.27 1.27)))
@@ -4183,9 +4362,6 @@
     (pin "2" (uuid 2f60c6c3-670b-4e4e-b77a-041007c6b1ff))
     (instances
       (project "vetrnik-power"
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "NT1") (unit 1)
-        )
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "NT1") (unit 1)
         )
@@ -4209,6 +4385,13 @@
       (effects (font (size 1.27 1.27)) hide)
     )
     (pin "1" (uuid 11ca9105-0cbb-475d-99ce-edfd61d53b2c))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "#PWR054") (unit 1)
+        )
+      )
+    )
   )
 
   (symbol (lib_id "vetrnik-power-rescue:CP-Device") (at 71.12 101.6 0) (unit 1)
@@ -4233,9 +4416,6 @@
     (pin "2" (uuid b1a61eb2-f830-40e9-a54b-c11cd139584d))
     (instances
       (project "vetrnik-power"
-        (path "/d000ab55-1115-4660-b462-2188a80a3140"
-          (reference "C9") (unit 1)
-        )
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "C9") (unit 1)
         )
@@ -4263,6 +4443,58 @@
       (project "vetrnik-power"
         (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
           (reference "#FLG05") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Device:R") (at 48.26 142.24 0) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 76ca2790-9974-4084-baf0-150d8cd7bd59)
+    (property "Reference" "R49" (at 50.038 141.0716 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "22k" (at 50.038 143.383 0)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "Resistor_SMD:R_1206_3216Metric_Pad1.30x1.75mm_HandSolder" (at 46.482 142.24 90)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "~" (at 48.26 142.24 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "1" (uuid f6710964-032e-48ae-910e-6e66ae6fd676))
+    (pin "2" (uuid 80f9bf1b-6832-42f8-9986-0253fa4fec14))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "R49") (unit 1)
+        )
+      )
+    )
+  )
+
+  (symbol (lib_id "Diode:1.5KExxA") (at 40.64 101.6 270) (unit 1)
+    (in_bom yes) (on_board yes) (dnp no)
+    (uuid 7c62164d-c5cf-4ab5-ac7a-60ded4451a95)
+    (property "Reference" "D1" (at 42.672 100.3879 90)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Value" "1.5KE150A" (at 40.64 104.14 90)
+      (effects (font (size 1.27 1.27)) (justify left))
+    )
+    (property "Footprint" "Diode_THT:D_DO-201AE_P15.24mm_Horizontal" (at 35.56 101.6 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Datasheet" "https://www.vishay.com/docs/88301/15ke.pdf" (at 40.64 100.33 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (pin "2" (uuid 5d22ea1d-f022-430b-bb68-d12c49d0bf9c))
+    (pin "1" (uuid 3190d7b8-2e68-4aa2-81db-4db080340d3c))
+    (instances
+      (project "vetrnik-power"
+        (path "/d000ab55-1115-4660-b462-2188a80a3140/00000000-0000-0000-0000-0000630b76ff"
+          (reference "D1") (unit 1)
         )
       )
     )
