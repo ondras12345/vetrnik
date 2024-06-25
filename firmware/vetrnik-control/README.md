@@ -199,9 +199,16 @@ Test OOM:
   (= a (+ a 1))
 )
 ```
-On PC: a = 1852, does not get completely stuck (can still create new number
+On PC: a = 1852, does not get completely stuck (can still create new numeric
 variables)
 On STM (8*1024 bytes): a = 329
+
+Patch for testing in lab without DS18B20 sensors:
+```lisp
+(= ds18 (fn ()
+  23.4
+))
+```
 
 
 
@@ -225,7 +232,7 @@ you want to use the `telnet` command:
 ```
 
 
-## Building
+## Build
 Just run `make` in this directory. GNU/Linux OS with PlatformIO installed is
 required.
 Type `make help` for more info.
