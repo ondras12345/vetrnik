@@ -127,7 +127,7 @@ static void cmnd_conf(char *args, Stream *response)
         response->println("Missing value");
     }
 
-#define IPAddress_conf(name) \
+#define scanconf_IP(name, type) \
     else if (strcmp(setting_name, #name) == 0) \
     { \
         IPAddress addr; \
@@ -142,7 +142,7 @@ static void cmnd_conf(char *args, Stream *response)
         } \
     }
 
-#define String_conf(name) \
+#define scanconf_str(name, type) \
     else if (strcmp(setting_name, #name) == 0) \
     { \
         if (strlen(setting_value) < sizeof s.name) \
@@ -154,7 +154,9 @@ static void cmnd_conf(char *args, Stream *response)
             response->println("String too long"); \
     }
 
-#define uint8_conf(name) \
+#define scanconf_int(name, type) scanconf_##type(name)
+
+#define scanconf_uint8_t(name) \
     else if (strcmp(setting_name, #name) == 0) \
     { \
         unsigned int tmp; \
@@ -167,52 +169,47 @@ static void cmnd_conf(char *args, Stream *response)
         s.name = (uint8_t)tmp; \
     }
 
-#define Bool_conf(name) \
+#define scanconf_bool(name, type) \
     else if (strcmp(setting_name, #name) == 0) \
     { \
         s.name = (setting_value[0] == '1'); \
     }
 
-
-    else if (strcmp(setting_name, "ETH_MAC") == 0)
-    {
-        if (!parse_MAC(s.ETH_MAC, setting_value))
-            response->println("Invalid format, expected xx:xx:xx:xx:xx:xx");
+#define scanconf_MAC(name, type) \
+    else if (strcmp(setting_name, #name) == 0) \
+    { \
+        if (!parse_MAC(s.name, setting_value)) \
+            response->println("Invalid format, expected xx:xx:xx:xx:xx:xx"); \
     }
 
-    IPAddress_conf(ETH_IP)
-    IPAddress_conf(MQTTserver)
-    String_conf(MQTTuser)
-    String_conf(MQTTpassword)
-    uint8_conf(DS18B20_sampling)
-
-    else if (strcmp(setting_name, "DS18B20") == 0)
-    {
-        const char * const id = strsep(&setting_value, " ");
-        const char * const address = strsep(&setting_value, " ");
-        const char * const name = strsep(&setting_value, " ");
-        unsigned int sensor_id = 0;
-        if (setting_value[0] != '\0')
-        {
-            response->println("bad format");
-            goto bad;
-        }
-        sscanf(id, "%u", &sensor_id);
-        if (sensor_id >= SENSOR_DS18B20_COUNT)
-        {
-            response->println("bad id");
-            goto bad;
-        }
-        strncpy(s.DS18B20s[sensor_id].name, name, sizeof s.DS18B20s[0].name);
-        // strncpy does not guarantee NULL termination
-        s.DS18B20s[sensor_id].name[sizeof(s.DS18B20s[0].name) - 1] = '\0';
-        parse_onewire_address(s.DS18B20s[sensor_id].address, address);
+#define scanconf_DS18B20(name_unused, type_unused) \
+    else if (strcmp(setting_name, "DS18B20") == 0) \
+    { \
+        const char * const id = strsep(&setting_value, " "); \
+        const char * const address = strsep(&setting_value, " "); \
+        const char * const name = strsep(&setting_value, " "); \
+        unsigned int sensor_id = 0; \
+        if (setting_value[0] != '\0') \
+        { \
+            response->println("bad format"); \
+            goto bad; \
+        } \
+        sscanf(id, "%u", &sensor_id); \
+        if (sensor_id >= SENSOR_DS18B20_COUNT) \
+        { \
+            response->println("bad id"); \
+            goto bad; \
+        } \
+        strncpy(s.DS18B20s[sensor_id].name, name, sizeof s.DS18B20s[0].name); \
+        /* strncpy does not guarantee NULL termination */ \
+        s.DS18B20s[sensor_id].name[sizeof(s.DS18B20s[0].name) - 1] = '\0'; \
+        parse_onewire_address(s.DS18B20s[sensor_id].address, address); \
     }
 
-    String_conf(OTAname)
-    String_conf(OTApassword)
-    Bool_conf(shell_telnet)
-    Bool_conf(report_raw)
+#define X_SCAN(scanner, type, arr, name, default) \
+    scanconf_##scanner(name, type)
+
+    CONF_ITEMS(X_SCAN)
 
     else
     {

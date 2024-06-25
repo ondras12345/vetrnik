@@ -59,23 +59,34 @@ typedef struct {
     char name[16];
 } settings_DS18B20_t;
 
+typedef uint8_t settings_MAC_t[6];
+
+
+#define COMMA ,
+// X(printer_name, data_type, array_len?, name, default_value)
+// array_len: [array_length] || : number_of_bits
+// cppcheck-suppress preprocessorErrorDirective
+#define CONF_ITEMS(X) \
+    X(MAC,  uint8_t,  [6],    ETH_MAC, { 0xDE COMMA 0xAD COMMA 0xBE COMMA 0xEF COMMA 0xFE COMMA 0xED }) \
+    X(IP,   uint8_t,  [4],    ETH_IP, {0}) /* IPv4 */ \
+    X(IP,   uint8_t,  [4],    MQTTserver, {0}) /* IPv4 */ \
+    X(str,  char,     [16],   MQTTuser, "") \
+    X(str,  char,     [32],   MQTTpassword, "") \
+    X(int,  uint8_t,  ,       DS18B20_sampling, 10) /* seconds, no sampling if 0 */ \
+    X(DS18B20, settings_DS18B20_t, [SENSOR_DS18B20_COUNT], DS18B20s, {0}) /* default: all zeros */ \
+    X(str,  char,     [16],   OTAname, "vetrnik") /* probably for mDNS, untested */ \
+    X(str,  char,     [32],   OTApassword, "pass") \
+    X(bool, bool,     :1,     shell_telnet, false) \
+    X(bool, bool,     :1,     report_raw, false) /* MQTT report of raw datapoints */
+// #undef COMMA - cannot undef, needed during expansion
+
+#define X_STRUCT(printer, type, arr, name, default) type name arr;
 
 typedef struct {
-    uint8_t ETH_MAC[6];
-    uint8_t ETH_IP[4];  // IPv4
-    uint8_t MQTTserver[4];  // IPv4
-    char MQTTuser[16];
-    char MQTTpassword[32];
-    uint8_t DS18B20_sampling;  // seconds, no sampling if 0
-    settings_DS18B20_t DS18B20s[SENSOR_DS18B20_COUNT];
-    char OTAname[16];  // probably for mDNS, untested
-    char OTApassword[32];
-    bool shell_telnet : 1;
-    bool report_raw : 1; /// MQTT report of raw datapoints
-    // remember to adjust stream_print_settings in Print_utils
-    // and cmnd_conf in cli.cpp
-    // and default in settings.cpp
+    CONF_ITEMS(X_STRUCT)
 } settings_t;
+
+#undef X_STRUCT
 
 extern settings_t settings;
 

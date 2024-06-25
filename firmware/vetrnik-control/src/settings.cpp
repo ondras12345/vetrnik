@@ -9,19 +9,11 @@
 
 settings_t settings;
 
+#define X_DEFAULT(printer, type, arr, name, default) default,
 settings_t settings_default = {
-    { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED },
-    { 0, 0, 0, 0},
-    { 0, 0, 0, 0},
-    "",
-    "",
-    10,
-    { 0 },  // all zeros
-    "vetrnik",
-    "pass",
-    false,
-    false
+    CONF_ITEMS(X_DEFAULT)
 };
+#undef X_DEFAULT
 
 
 #define SETTINGS_FILENAME "settings"

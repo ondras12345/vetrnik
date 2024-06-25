@@ -16,46 +16,36 @@ void stream_print_MAC(Print *response, uint8_t MAC[6])
  */
 void stream_print_settings(Print *response, settings_t s)
 {
-    response->print("conf ETH_MAC ");
-    stream_print_MAC(response, s.ETH_MAC);
+#define PRINT_h(name) \
+    response->print("conf " #name " ")
+
+#define PRINT_v(name, v) \
+    PRINT_h(name); \
+    response->println(v);
+#define PRINT_str(name, v) PRINT_v(name, v)
+#define PRINT_int(name, v) PRINT_v(name, v)
+#define PRINT_bool(name, v) PRINT_v(name, v ? '1' : '0')
+#define PRINT_MAC(name, v) \
+    PRINT_h(name); \
+    stream_print_MAC(response, v); \
     response->println();
+#define PRINT_IP(name, v) PRINT_v(name, IPAddress(v))
 
-    response->print("conf ETH_IP ");
-    response->println(IPAddress(s.ETH_IP));
-
-    response->print("conf MQTTserver ");
-    response->println(IPAddress(s.MQTTserver));
-
-    response->print("conf MQTTuser ");
-    response->println(s.MQTTuser);
-
-    response->print("conf MQTTpassword ");
-    response->println(s.MQTTpassword);
-
-    response->print("conf DS18B20_sampling ");
-    response->println(s.DS18B20_sampling);
-
-    for (uint_fast8_t i = 0; i < SENSOR_DS18B20_COUNT; i++)
-    {
-        response->print("conf DS18B20 ");
-        response->print(i);
-        response->print(" ");
-        stream_print_onewire_address(response, s.DS18B20s[i].address);
-        response->print(" ");
-        response->println(s.DS18B20s[i].name);
+#define PRINT_DS18B20(name_unused, v) \
+    for (uint_fast8_t i = 0; i < SENSOR_DS18B20_COUNT; i++) \
+    { \
+        response->print("conf DS18B20 "); \
+        response->print(i); \
+        response->print(" "); \
+        stream_print_onewire_address(response, v[i].address); \
+        response->print(" "); \
+        response->println(v[i].name); \
     }
 
-    response->print("conf OTAname ");
-    response->println(s.OTAname);
+#define X_PRINT(printer, type, arr, name, default) \
+    PRINT_##printer(name, s.name)
 
-    response->print("conf OTApassword ");
-    response->println(s.OTApassword);
-
-    response->print("conf shell_telnet ");
-    response->println(s.shell_telnet ? '1' : '0');
-
-    response->print("conf report_raw ");
-    response->println(s.report_raw ? '1' : '0');
+    CONF_ITEMS(X_PRINT)
 }
 
 
