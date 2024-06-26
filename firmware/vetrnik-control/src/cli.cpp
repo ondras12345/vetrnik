@@ -464,226 +464,215 @@ static void cmnd_lisp_read(char *args, Stream *response)
 }
 
 
-static void cmnd_SPIflash(char *args, Stream *response)
+static void cmnd_flash(char *args, Stream *response)
 {
-    char * subcommand_name = strsep(&args, " ");
-    char * subcommand_args = args;
-    if (subcommand_name == nullptr)
+    response->print("ready: ");
+    response->println(SerialFlash.ready());
+    response->print("ID:");
+    uint8_t id[5] = {0};
+    SerialFlash.readID(id);
+    for (uint8_t i = 0; i < sizeof id; i++)
     {
-        // do nothing, just print out status
-        response->print("ready: ");
-        response->println(SerialFlash.ready());
-        response->print("ID:");
-        uint8_t id[5] = {0};
-        SerialFlash.readID(id);
-        for (uint8_t i = 0; i < sizeof id; i++)
-        {
-            response->printf(" %02x", id[i]);
-        }
-        response->println();
-        // Not supported by this chip (reads all FFs):
-        //response->print("serial NR:");
-        //uint8_t serial[8];
-        //SerialFlash.readSerialNumber(serial);
-        //for (uint8_t i = 0; i < sizeof serial; i++)
-        //{
-        //    response->printf(" %02x", serial[i]);
-        //}
-        //response->println();
-        response->print("capacity: ");
-        response->println(SerialFlash.capacity(id));
-        response->print("block size: ");
-        response->println(SerialFlash.blockSize());
+        response->printf(" %02x", id[i]);
     }
+    response->println();
+    // Not supported by this chip (reads all FFs):
+    //response->print("serial NR:");
+    //uint8_t serial[8];
+    //SerialFlash.readSerialNumber(serial);
+    //for (uint8_t i = 0; i < sizeof serial; i++)
+    //{
+    //    response->printf(" %02x", serial[i]);
+    //}
+    //response->println();
+    response->print("capacity: ");
+    response->println(SerialFlash.capacity(id));
+    response->print("block size: ");
+    response->println(SerialFlash.blockSize());
+}
 
-    // subcommands that need no args
-    else if (strcmp(subcommand_name, "erase_chip") == 0)
-    {
-        SerialFlash.eraseAll();
-        response->println("Erasing");
-    }
-    else if (strcmp(subcommand_name, "ls") == 0)
-    {
-        response->println("Files:");
-        response->println("address (HEX)\tname\tsize (Bytes)");
-        SerialFlash.opendir();
-        char filename[32];
-        uint32_t filesize;
-        uint32_t address = 0;
-        while (SerialFlash.readdir(filename, sizeof filename, filesize))
-        {
-            SerialFlashFile f = SerialFlash.open(filename);
-            if (f)
-            {
-                address = f.getFlashAddress();
-                f.close();
-            }
-            response->printf("%06x\t%s\t%u\r\n", address, filename, filesize);
-        }
-    }
 
-    else if (subcommand_args == nullptr)
+static void cmnd_ls(char * args, Stream *response)
+{
+    response->println("Files:");
+    response->println("address (HEX)\tname\tsize (Bytes)");
+    SerialFlash.opendir();
+    char filename[32];
+    uint32_t filesize;
+    uint32_t address = 0;
+    while (SerialFlash.readdir(filename, sizeof filename, filesize))
     {
-        response->println("Missing subcommand args");
-        goto bad;
-    }
-
-    // subcommands that need subcommand_args
-    else if (strcmp(subcommand_name, "rm") == 0)
-    {
-        response->println("rm does NOT reclaim space, just filename");
-        response->print("success: ");
-        response->println(SerialFlash.remove(subcommand_args));
-    }
-    else if (strcmp(subcommand_name, "create") == 0)
-    {
-        const char * filename = strsep(&subcommand_args, " ");
-        const char * lengthstr = strsep(&subcommand_args, " ");
-        const char * erasablestr = subcommand_args;
-        if (filename == nullptr || lengthstr == nullptr || erasablestr == nullptr)
-        {
-            response->println("Invalid args");
-            goto bad;
-        }
-        unsigned int length = 0;
-        sscanf(lengthstr, "%u", &length);
-        bool erasable = erasablestr[0] == '1';
-        response->printf("Creating %sfile with name \"%s\" length %u\r\n",
-                         erasable ? "erasable " : "", filename, length);
-        response->print("success: ");
-        response->println(
-            erasable ? SerialFlash.createErasable(filename, length)
-            : SerialFlash.create(filename, length)
-        );
-    }
-    else if (strcmp(subcommand_name, "dump") == 0)
-    {
-        const char * filename = strsep(&subcommand_args, " ");
-        const char * startstr = subcommand_args;
-        if (filename == nullptr || startstr == nullptr)
-        {
-            response->println("Invalid args");
-            goto bad;
-        }
-
-        unsigned int start = strtoul(startstr, nullptr, 0);  // should accept hex 0x
         SerialFlashFile f = SerialFlash.open(filename);
-        if (!f)
+        if (f)
         {
-            response->println("Cannot open file");
-            return;
+            address = f.getFlashAddress();
+            f.close();
         }
-        uint8_t buf[256];
-        f.seek(start);
-        stream_hexdump(response, buf, f.read(buf, sizeof buf), start);
-        f.close();
+        response->printf("%06x\t%s\t%u\r\n", address, filename, filesize);
     }
-    else if (strcmp(subcommand_name, "erase") == 0)
-    {
-        SerialFlashFile f = SerialFlash.open(subcommand_args);
-        if (!f)
-        {
-            response->println("Cannot open file");
-            return;
-        }
-        response->println("(only files created as erasable can be erased)");
-        f.erase();
-        f.close();
-    }
-    else if (strcmp(subcommand_name, "ed") == 0)
-    {
-        if (ed_mode)
-        {
-            // could be used by the other CLI
-            response->println("Already in ed mode");
-            return;
-        }
-        const char * filename = strsep(&subcommand_args, " ");
-        const char * startstr = subcommand_args;
-        if (filename == nullptr || startstr == nullptr)
-        {
-            response->println("Invalid args");
-            goto bad;
-        }
+}
 
-        unsigned int start = strtoul(startstr, nullptr, 0);  // should accept hex 0x
-        static SerialFlashFile f;
-        f = SerialFlash.open(filename);
-        if (!f)
-        {
-            response->println("Cannot open file");
-            return;
-        }
-        f.seek(start);
-        ed_mode = true;
-        ed_first = true;
-        ed_file = &f;
-        ed_response = response;
-        ed = CLIeditor(ed_write_response, ed_write_file);
+
+static void cmnd_rm(char * args, Stream *response)
+{
+    response->println("rm does NOT reclaim space, just filename");
+    response->print("success: ");
+    response->println(SerialFlash.remove(args));
+}
+
+
+static void cmnd_mkfile(char * args, Stream *response)
+{
+    const char * filename = strsep(&args, " ");
+    const char * lengthstr = strsep(&args, " ");
+    const char * erasablestr = args;
+    if (filename == nullptr || lengthstr == nullptr || erasablestr == nullptr)
+    {
+        response->println("usage: mkfile name length erasable");
         return;
     }
-    else if (strcmp(subcommand_name, "dumpchip") == 0)
-    {
-        unsigned int start = strtoul(subcommand_args, nullptr, 0);  // should accept hex 0x
-        uint8_t id[5];
-        SerialFlash.readID(id);
-        uint32_t capacity = SerialFlash.capacity(id);
-        uint8_t buf[256];
-        if (start >= capacity)
-        {
-            response->println("Address out of range");
-            return;
-        }
-        uint32_t len = sizeof buf;
-        if (len > capacity - start) len = capacity - start;
-        SerialFlash.read(start, buf, len);
-        stream_hexdump(response, buf, len, start);
-    }
-    else if (strcmp(subcommand_name, "fill") == 0)
-    {
-        const char * filename = strsep(&subcommand_args, " ");
-        const char * startstr = strsep(&subcommand_args, " ");
-        const char * lengthstr = strsep(&subcommand_args, " ");
-        const char * valuestr = subcommand_args;
-        if (filename == nullptr || startstr == nullptr || lengthstr == nullptr || valuestr == nullptr)
-        {
-            response->println("Invalid args");
-            goto bad;
-        }
-
-        unsigned int start = strtoul(startstr, nullptr, 0);  // should accept hex 0x
-        unsigned int length = strtoul(lengthstr, nullptr, 0);  // should accept hex 0x
-        unsigned int value = strtoul(valuestr, nullptr, 0);
-        if (value > 255)
-        {
-            response->println("invalid value");
-            return;
-        }
-        SerialFlashFile f = SerialFlash.open(filename);
-        if (!f)
-        {
-            response->println("Cannot open file");
-            return;
-        }
-        f.seek(start);
-        response->print("filled ");
-        response->print(flash_fill_file(&f, value, length));
-        response->println(" bytes");
-        f.close();
-    }
-    else
-    {
-        response->println("Invalid subcommand");
-        goto bad;
-    }
-
-    return;
-bad:
+    // this should accept HEX values
+    unsigned int length = strtoul(lengthstr, nullptr, 0);
+    bool erasable = erasablestr[0] == '1';
+    response->printf("Creating %sfile with name \"%s\" length %u\r\n",
+                     erasable ? "erasable " : "", filename, length);
+    response->print("success: ");
     response->println(
-"Usage: SPIflash [erase_chip|ls | create name length erasable | rm name\r\n"
-"   | dump name start | dumpchip start | erase filename | ed filename start\r\n"
-"   | fill name start length value]"
+        erasable ? SerialFlash.createErasable(filename, length)
+        : SerialFlash.create(filename, length)
     );
+}
+
+
+static void cmnd_hexdump(char * args, Stream *response)
+{
+    const char * filename = strsep(&args, " ");
+    const char * startstr = args;
+    if (filename == nullptr || startstr == nullptr)
+    {
+        response->println("usage: hexdump name start");
+        return;
+    }
+
+    unsigned int start = strtoul(startstr, nullptr, 0);  // should accept hex 0x
+    SerialFlashFile f = SerialFlash.open(filename);
+    if (!f)
+    {
+        response->println("Cannot open file");
+        return;
+    }
+    uint8_t buf[256];
+    f.seek(start);
+    stream_hexdump(response, buf, f.read(buf, sizeof buf), start);
+    f.close();
+}
+
+
+static void cmnd_erase(char * args, Stream *response)
+{
+    SerialFlashFile f = SerialFlash.open(args);
+    if (!f)
+    {
+        response->println("Cannot open file");
+        return;
+    }
+    response->println("(only files created as erasable can be erased)");
+    f.erase();
+    f.close();
+}
+
+
+static void cmnd_fill(char * args, Stream *response)
+{
+    const char * filename = strsep(&args, " ");
+    const char * startstr = strsep(&args, " ");
+    const char * lengthstr = strsep(&args, " ");
+    const char * valuestr = args;
+    if (filename == nullptr || startstr == nullptr || lengthstr == nullptr || valuestr == nullptr)
+    {
+        response->println("usage: fill name start length value");
+        return;
+    }
+
+    unsigned int start = strtoul(startstr, nullptr, 0);  // should accept hex 0x
+    unsigned int length = strtoul(lengthstr, nullptr, 0);  // should accept hex 0x
+    unsigned int value = strtoul(valuestr, nullptr, 0);
+    if (value > 255)
+    {
+        response->println("invalid value");
+        return;
+    }
+    SerialFlashFile f = SerialFlash.open(filename);
+    if (!f)
+    {
+        response->println("Cannot open file");
+        return;
+    }
+    f.seek(start);
+    response->print("filled ");
+    response->print(flash_fill_file(&f, value, length));
+    response->println(" bytes");
+    f.close();
+}
+
+
+static void cmnd_ed(char * args, Stream *response)
+{
+    if (ed_mode)
+    {
+        // could be used by the other CLI
+        response->println("Already in ed mode");
+        return;
+    }
+    const char * filename = strsep(&args, " ");
+    const char * startstr = args;
+    if (filename == nullptr || startstr == nullptr)
+    {
+        response->println("usage: ed filename start");
+        return;
+    }
+
+    unsigned int start = strtoul(startstr, nullptr, 0);  // should accept hex 0x
+    static SerialFlashFile f;
+    f = SerialFlash.open(filename);
+    if (!f)
+    {
+        response->println("Cannot open file");
+        return;
+    }
+    f.seek(start);
+    ed_mode = true;
+    ed_first = true;
+    ed_file = &f;
+    ed_response = response;
+    ed = CLIeditor(ed_write_response, ed_write_file);
+    return;
+}
+
+
+static void cmnd_flash_erase(char * args, Stream *response)
+{
+    SerialFlash.eraseAll();
+    response->println("Erasing");
+}
+
+
+static void cmnd_flash_dump(char * args, Stream *response)
+{
+    unsigned int start = strtoul(args, nullptr, 0);  // should accept hex 0x
+    uint8_t id[5];
+    SerialFlash.readID(id);
+    uint32_t capacity = SerialFlash.capacity(id);
+    uint8_t buf[256];
+    if (start >= capacity)
+    {
+        response->println("Address out of range");
+        return;
+    }
+    uint32_t len = sizeof buf;
+    if (len > capacity - start) len = capacity - start;
+    SerialFlash.read(start, buf, len);
+    stream_hexdump(response, buf, len, start);
 }
 
 
@@ -960,7 +949,6 @@ static Commander::API_t API_tree[] = {
     apiElement("lisp",          "Process a line of Lisp",                   cmnd_lisp),
     apiElement("lisp_reset",    "Reinit Lisp interpreter",                  cmnd_lisp_reset),
     apiElement("lisp_read",     "Execute Lisp from file",                   cmnd_lisp_read),
-    apiElement("SPIflash",      "Issue commands to SPI flash",              cmnd_SPIflash),
     apiElement("debug",         "Filter debug messages",                    cmnd_debug),
     apiElement("log",           "Print log / postmort",                     cmnd_log),
     apiElement("onewirescan",   "Scan devices on onewire bus",              cmnd_onewirescan),
@@ -972,6 +960,18 @@ static Commander::API_t API_tree[] = {
     apiElement("reset",         "Reset the MCU.",                           cmnd_reset),
     apiElement("ver",           "Print out version info.",                  cmnd_ver),
     apiElement("watch",         "Run command every second.",                cmnd_watch),
+    // SPIflash commands
+    apiElement("flash",         "Get status of SPI flash",                  cmnd_flash),
+    apiElement("flash_erase",   "Erase whole SPI flash chip",               cmnd_flash_erase),
+    apiElement("flash_dump",    "Hexdump SPI flash contents",               cmnd_flash_dump),
+    apiElement("ls",            "List files in SPI flash",                  cmnd_ls),
+    apiElement("rm",            "Remove file in SPI flash",                 cmnd_rm),
+    apiElement("mkfile",        "Create file in SPI flash",                 cmnd_mkfile),
+    apiElement("hexdump",       "Dump file from SPI flash",                 cmnd_hexdump),
+    // TODO cat
+    apiElement("erase",         "Erase contents of file in SPI flash",      cmnd_erase),
+    apiElement("fill",          "Fill file in SPI flash with constant byte",cmnd_fill),
+    apiElement("ed",            "Edit file in SPI flash",                   cmnd_ed),
     // commander pre-made commands
     API_ELEMENT_MILLIS,
     API_ELEMENT_UPTIME,
