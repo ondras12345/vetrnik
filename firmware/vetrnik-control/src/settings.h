@@ -59,8 +59,6 @@ typedef struct {
     char name[16];
 } settings_DS18B20_t;
 
-typedef uint8_t settings_MAC_t[6];
-
 
 #define COMMA ,
 // X(printer_name, data_type, array_len?, name, default_value)
@@ -77,7 +75,9 @@ typedef uint8_t settings_MAC_t[6];
     X(str,  char,     [16],   OTAname, "vetrnik") /* probably for mDNS, untested */ \
     X(str,  char,     [32],   OTApassword, "pass") \
     X(bool, bool,     :1,     shell_telnet, false) \
-    X(bool, bool,     :1,     report_raw, false) /* MQTT report of raw datapoints */
+    X(bool, bool,     :1,     report_raw, false) /* MQTT report of raw datapoints */ \
+    X(int,  uint8_t,  ,       contactor_debounce_min, 15)
+
 // #undef COMMA - cannot undef, needed during expansion
 
 #define X_STRUCT(printer, type, arr, name, default) type name arr;

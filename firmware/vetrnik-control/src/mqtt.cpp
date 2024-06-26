@@ -329,12 +329,26 @@ uint_fast8_t log_id = 0;
                     control_strategies[control_strategy], true);
     }
 
+    // minutes remaining before contactor switches off, 255 ==> contactor is
+    // off
+    static uint8_t prev_control_contactor_min = 0;
+    unsigned long cs = control_contactor_get();
+    uint8_t control_contactor_min = 255;
+    if (cs != (unsigned long)-1) control_contactor_min = cs / 60000UL;
+    if (COND_NEQ(control_contactor_min) || force_report)
+    {
+        prev_control_contactor_min = control_contactor_min;
+        MAKETMP_UINT(control_contactor_min);
+        log_id = 21;
+        PUBLISH_LOG(MQTTtopic_tele_control "contactor", tmp, true);
+    }
+
     static stats_t prev_stats = {0};
     if (COND_NEQ(stats.energy) || force_report)
     {
         prev_stats.energy = stats.energy;
         MAKETMP_DECIMAL(stats.energy, 3);
-        log_id = 21;
+        log_id = 22;
         PUBLISH_LOG(MQTTtopic_tele_stats "energy", tmp, true);
     }
 
@@ -342,7 +356,7 @@ uint_fast8_t log_id = 0;
     {
         prev_stats.energy_Ws = stats.energy_Ws;
         MAKETMP_UINT(stats.energy_Ws);
-        log_id = 22;
+        log_id = 23;
         PUBLISH_LOG(MQTTtopic_tele_stats "energy_Ws", tmp, true);
     }
 
@@ -367,7 +381,7 @@ uint_fast8_t log_id = 0;
         reading = (reading + 5) / 10;
         MAKETMP_DECIMAL(reading, 1);
         // Not ideal, will show up as succeeded if at least one call succeeded.
-        log_id = 23;
+        log_id = 24;
         PUBLISH_LOG(topic, tmp, true);
     }
 
@@ -377,7 +391,7 @@ uint_fast8_t log_id = 0;
     {
         prev_pump = pump;
         MAKETMP_BOOL(pump);
-        log_id = 24;
+        log_id = 25;
         PUBLISH_LOG(MQTTtopic_tele_pump, tmp, true);
     }
 
@@ -388,7 +402,7 @@ uint_fast8_t log_id = 0;
     {
         prev_backlight = backlight;
         MAKETMP_BOOL(backlight);
-        log_id = 25;
+        log_id = 26;
         PUBLISH_LOG(MQTTtopic_tele_display_backlight, tmp, true);
     }
 
@@ -510,6 +524,12 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
                 return;
             }
         }
+        return;
+    }
+
+    if (strcmp(topic, MQTTtopic_cmnd_control "contactor") == 0)
+    {
+        if (payload[0] == '1') control_contactor_set();
         return;
     }
 

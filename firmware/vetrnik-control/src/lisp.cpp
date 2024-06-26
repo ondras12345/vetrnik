@@ -295,6 +295,13 @@ static fe_Object* cfunc_control_get(fe_Context *ctx, fe_Object *arg)
     {
         return fe_string(ctx, control_strategies[control_get_strategy()]);
     }
+    else if (strcmp(name, "contactor") == 0)
+    {
+        unsigned long cs = control_contactor_get();
+        fe_Number r = -1;
+        if (cs != (unsigned long)-1) r = cs;
+        return fe_number(ctx, r);
+    }
     else
     {
         fe_error(ctx, "invalid control param name");
@@ -305,7 +312,7 @@ static fe_Object* cfunc_control_get(fe_Context *ctx, fe_Object *arg)
 
 static fe_Object* cfunc_control_set(fe_Context *ctx, fe_Object *arg)
 {
-    char name[sizeof "strategy"];
+    char name[32];
     fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
     if (strcmp(name, "strategy") == 0)
     {
@@ -316,6 +323,11 @@ static fe_Object* cfunc_control_set(fe_Context *ctx, fe_Object *arg)
             fe_error(ctx, "invalid strategy");
             return nullptr;
         }
+    }
+    if (strcmp(name, "contactor") == 0)
+    {
+        bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
+        if (state) control_contactor_set();
     }
     else
     {

@@ -432,10 +432,23 @@ static void cmnd_control(char *args, Stream *response)
         // do nothing, just print out status
         response->print("strategy: ");
         response->println(control_strategies[control_get_strategy()]);
+        response->print("contactor: ");
+        unsigned long cs = control_contactor_get();
+        if (cs == (unsigned long)-1) response->println('0');
+        else
+        {
+            response->print("1 (");
+            response->print(cs / 60000UL);
+            response->println(" min remaining)");
+        }
     }
 
     // subcommands that need no value
-    // (currently none)
+    else if (strcmp(setting_name, "contactor_on") == 0)
+    {
+        control_contactor_set();
+        response->println("contactor set to on");
+    }
 
     else if (setting_value == nullptr)
     {
@@ -467,7 +480,7 @@ static void cmnd_control(char *args, Stream *response)
     return;
 bad:
     response->println("Missing value");
-    response->println("Usage: control [strategy s]");
+    response->println("Usage: control [strategy s | contactor_on]");
 }
 
 
