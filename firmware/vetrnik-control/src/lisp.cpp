@@ -324,7 +324,7 @@ static fe_Object* cfunc_control_set(fe_Context *ctx, fe_Object *arg)
             return nullptr;
         }
     }
-    if (strcmp(name, "contactor") == 0)
+    else if (strcmp(name, "contactor") == 0)
     {
         bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
         if (state) control_contactor_set();
