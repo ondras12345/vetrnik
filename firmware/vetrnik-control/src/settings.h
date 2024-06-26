@@ -53,6 +53,8 @@
 /// How many retries --> the temperature is read SENSOR_DS18B20_RETRIES+1 times.
 #define SENSOR_DS18B20_RETRIES 2
 
+#define SETTINGS_FILENAME "settings"
+
 // X(const_name, error_message)
 #define SETTINGS_ERRORS(X) \
     X(OK, "OK") \
@@ -114,4 +116,4 @@ settings_parse_error_t settings_parse(char * line, settings_t * s);
 const char * settings_parse_error_message(settings_parse_error_t);
 void settings_init();
 void settings_write(const settings_t & s);
-void settings_print(const settings_t * s, void(print_line)(void*, const char *), void* ctx, bool conf_prefix);
+void settings_print(const settings_t * s, void(print_line)(void*, char *), void* ctx, bool conf_prefix);

@@ -41,6 +41,8 @@ typedef enum
     kControlShortEstop,
     kSettingsReset,
     kSettingsWrite,
+    kSettingsErase,
+    kSettingsInvalid,
     kPowerBoardStatusTimeout,
     kPowerBoardEmergency,
     kOtaEnabled,

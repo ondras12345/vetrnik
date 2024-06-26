@@ -2,8 +2,8 @@
 #include "debug.h"
 #include "log.h"
 #include <parsers.h>
+#include "flash_tools.h"
 #include <Ethernet.h>  // for IPAddress
-#include <SerialFlash.h>
 
 settings_t settings;
 
@@ -31,7 +31,11 @@ const char * settings_parse_error_message(settings_parse_error_t e)
  * Settings file format:
  * - text file, same syntax as conf command but w/o "conf " prefix
  * - 0x00 is skipped, 0xFF means EOF
- * - one option per line, maximum 80 characters per line
+ * - one option per line, maximum 80 printable characters per line
+ * - neither 0x00 nor 0xFF can occur anywhere within valid data
+ * - lines are ended with \n
+ * - parsing errors are ignored
+ * - this should ensure backwards / forwards compatibility when changing CONF_ITEMS
  */
 
 /**
@@ -135,7 +139,7 @@ settings_parse_error_t settings_parse(char * line, settings_t * s)
 
 void settings_print(
     const settings_t * s,
-    void(print_line)(void*, const char *), void* ctx,
+    void(print_line)(void*, char *), void* ctx,
     bool conf_prefix
 )
 {
@@ -197,73 +201,113 @@ void settings_print(
 }
 
 
-#define SETTINGS_FILENAME "settings"
-#define MAGIC_LENGTH 4
-static const uint8_t magic[MAGIC_LENGTH] = { 0x00, 0x55, 0xAA, 0xFF };
-
-
-static void settings_reset()
+/***
+ * Find first / last byte equal to v using binary search
+ *
+ * @param last toggle between returning address of first match and last match
+ * @return address of first/last match. -1 if no match is found.
+ */
+static uint32_t find_byte(SerialFlashFile * f, const uint8_t v, const bool last)
 {
-    log_add_event_and_println(kSettingsReset, INFO);
-    settings = settings_default;
-    // Size doesn't matter, will be 64k since I need an erasable file
-    if (!SerialFlash.exists("settings"))
+    uint32_t left = 0;
+    uint32_t right = f->size()-1;
+    uint32_t first_match = -1;
+    uint32_t last_match = -1;
+    while (left <= right)
     {
-        bool retry = false;
-tryagain:
-        if (!SerialFlash.createErasable("settings", 1024))
+        uint32_t mid = (left + right) / 2;
+        f->seek(mid);
+        char c;
+        f->read(&c, 1);
+        if (c == v)
         {
-            INFO->println("Cannot create file for settings, erasing chip");
-            if (!retry)
-            {
-                SerialFlash.eraseAll();
-                while (!SerialFlash.ready())
-                {
-                    // TODO reset WDT ??
-                }
-                retry = true;
-                goto tryagain;
-            }
-            INFO->println("Failed to create file for settings, even after erase");
+            if (mid > last_match || last_match == (uint32_t)-1) last_match = mid;
+            if (mid < first_match) first_match = mid;
+        }
+
+        if ((c == v) == last)
+            left = mid+1;
+        else
+        {
+            if (mid == 0) break;  // prevent infinite loop caused by right=-1 overflow
+            right = mid-1;
         }
     }
-    settings_write(settings);
+    return last ? last_match : first_match;
 }
 
 
 void settings_init()
 {
+    settings = settings_default;
+
     INFO->println("reading settings");
     SerialFlashFile f = SerialFlash.open(SETTINGS_FILENAME);
     if (!f)
     {
-        settings_reset();
+        if (!SerialFlash.createErasable("settings", 64*1024))
+        {
+            INFO->println("Could not create file for settings");
+            log_add_event_and_println(kSettingsReset, INFO);
+            return;
+        }
+
         f = SerialFlash.open(SETTINGS_FILENAME);
         if (!f)
         {
             INFO->println("Settings error: could not open");
+            log_add_event_and_println(kSettingsReset, INFO);
             return;
         }
     }
 
-    uint8_t buf[sizeof(settings_t) + sizeof(magic)];
-    f.read(buf, sizeof buf);
-    if (memcmp(buf + sizeof(settings_t), magic, sizeof magic) != 0)
+    // find start: skip all 0x00 (binary search)
+    uint32_t offset = find_byte(&f, 0x00, true);
+    // if no 0x00 is found, offset = -1 and data starts at beginning of file
+    // else, data starts at offset+1
+    offset++;
+
+    for(;;)
     {
-        INFO->println("Settings: invalid magic");
-        f.close();
-        settings_reset();
-        f = SerialFlash.open(SETTINGS_FILENAME);
-        if (!f)
+        char buf[81];
+        f.seek(offset);
+
+        // read, fill rest with 0xFF if at the end of file
+        uint32_t i = f.read(buf, sizeof buf);
+        for (; i < sizeof buf; buf[i] = 0xFF);
+
+        if (buf[0] == 0xFF)
         {
-            INFO->println("Settings error: could not open");
+            // end of file
             return;
         }
-        f.read(buf, sizeof buf);
-        // magic must be right, because we just wrote it
+
+        for (i = 0; i < sizeof(buf) && buf[i] != '\n' && buf[i] != 0xFF; i++);
+        // replace newline with '\0'
+        buf[i] = '\0';
+        // ignore parsing errors
+        if (settings_parse(buf, &settings) != SETTINGS_E_OK)
+        {
+            // just a warning, continue parsing
+            log_add_event_and_println(kSettingsInvalid, INFO);
+        }
+
+        offset += i+1;  // move past newline
     }
-    f.close();
-    memcpy(&settings, buf, sizeof settings);
+
+    // SerialFlash files do not need to be close()d
+}
+
+
+static bool out_of_space;
+static void save_line(void * ctx, char * line)
+{
+    SerialFlashFile * f = (SerialFlashFile*)ctx;
+    uint8_t i;
+    for (i = 0; line[i] != '\0'; i++);
+    line[i] = '\n';
+    i++;  // length is i+1
+    if (f->write(line, i) != i) out_of_space = true;
 }
 
 
@@ -276,10 +320,44 @@ void settings_write(const settings_t & s)
         INFO->println("Could not open file during settings_write");
         return;
     }
-    f.erase();  // TODO write all the way to the end of the file, erase less often
-    uint8_t buf[sizeof(settings_t) + sizeof(magic)];
-    memcpy(buf, &s, sizeof s);
-    memcpy(buf+sizeof s, magic, sizeof magic);
-    f.write(buf, sizeof buf);
-    f.close();
+
+    uint8_t c;
+    f.read(&c, 1);
+    if (c == 0xFF)
+    {
+        // empty file
+        f.seek(0);
+    }
+    else
+    {
+        uint32_t fill_start = find_byte(&f, 0x00, true) + 1;
+        uint32_t fill_end = find_byte(&f, 0xFF, false);
+        if (fill_end == (uint32_t)-1)
+        {
+            // no FFs left, need to erase file
+            log_add_event_and_println(kSettingsErase, INFO);
+            f.erase();
+            f.seek(0);
+        }
+        else
+        {
+            fill_end--;
+
+            INFO->printf("Filling 0x00 from %04x to %04x\r\n", fill_start, fill_end);
+            f.seek(fill_start);
+            flash_fill_file(&f, 0x00, fill_end-fill_start+1);
+        }
+    }
+
+    out_of_space = false;
+
+    settings_print(&s, save_line, &f, false);
+
+    if (out_of_space)
+    {
+        log_add_event_and_println(kSettingsErase, INFO);
+        f.erase();
+        f.seek(0);
+        settings_print(&s, save_line, &f, false);
+    }
 }

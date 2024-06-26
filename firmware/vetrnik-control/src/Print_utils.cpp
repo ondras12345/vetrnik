@@ -10,7 +10,7 @@ void stream_print_MAC(Print *response, uint8_t MAC[6])
 }
 
 
-static void print_line(void * ctx, const char * line)
+static void print_line(void * ctx, char * line)
 {
     Print * response = (Print*)ctx;
     response->println(line);

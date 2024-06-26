@@ -116,6 +116,7 @@ static void cmnd_conf(char *args, Stream *response)
     if (strcmp(args, "-s") == 0)
     {
         settings_write(s);
+        return;
     }
 
     switch (err)

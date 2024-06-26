@@ -99,6 +99,12 @@ const char * get_event_string(log_event_t event)
         case kSettingsWrite:
             return "Settings write";
 
+        case kSettingsErase:
+            return "Settings erase";
+
+        case kSettingsInvalid:
+            return "Settings invalid";
+
         case kPowerBoardStatusTimeout:
             return "power_board_status timeout";
 
