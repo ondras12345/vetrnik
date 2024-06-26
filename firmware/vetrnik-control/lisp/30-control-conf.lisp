@@ -1,5 +1,6 @@
 ; configuration
 (= SA 5) ; step authority
+(= RLC 40) ; minimum RPM to switch contactor
 (= RL 80) ; RPM low
 (= RH 1000) ; RPM high, TODO
 (= T0M 85) ; max t0

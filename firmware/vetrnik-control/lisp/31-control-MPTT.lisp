@@ -55,6 +55,7 @@
   (let v (pwrg "voltage"))
   (let i (pwrg "current"))
   (let r (pwrg "RPM"))
+  (ctrls "contactor" (< RLC r))
   (let p (* v i)) ; power
   (= s
     (if
