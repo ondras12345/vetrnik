@@ -7,8 +7,8 @@
 #include "settings.h"
 #include "sensor_DS18B20.h"
 #include "pump.h"
+#include "flash_tools.h"
 #include <Arduino.h>
-#include <SerialFlash.h>
 
 extern "C" {
 #include <fe.h>
@@ -556,7 +556,7 @@ bool lisp_run_blind(const char * code)
  * null-terminated -- 0xFF suffices as a terminator.
  *
  * @param filename file to read the code from
- * @param offset offset to seek to
+ * @param offset offset to seek to; first non-zero byte if offset=-1
  * @return true on success, false if error occurred.
  */
 bool lisp_run_blind_file(const char * filename, uint32_t offset)
@@ -565,6 +565,8 @@ bool lisp_run_blind_file(const char * filename, uint32_t offset)
     error_print = INFO;
     SerialFlashFile f = SerialFlash.open(filename);
     if (!f) return false;
+    if (offset == (uint32_t)-1) offset = flash_find_byte(&f, 0x00, true) + 1;
+
     f.seek(offset);
     lisp_read_file(nullptr, nullptr);
     while (lisp_execute(lisp_read_file, &f) != nullptr);

@@ -201,42 +201,6 @@ void settings_print(
 }
 
 
-/***
- * Find first / last byte equal to v using binary search
- *
- * @param last toggle between returning address of first match and last match
- * @return address of first/last match. -1 if no match is found.
- */
-static uint32_t find_byte(SerialFlashFile * f, const uint8_t v, const bool last)
-{
-    uint32_t left = 0;
-    uint32_t right = f->size()-1;
-    uint32_t first_match = -1;
-    uint32_t last_match = -1;
-    while (left <= right)
-    {
-        uint32_t mid = (left + right) / 2;
-        f->seek(mid);
-        char c;
-        f->read(&c, 1);
-        if (c == v)
-        {
-            if (mid > last_match || last_match == (uint32_t)-1) last_match = mid;
-            if (mid < first_match) first_match = mid;
-        }
-
-        if ((c == v) == last)
-            left = mid+1;
-        else
-        {
-            if (mid == 0) break;  // prevent infinite loop caused by right=-1 overflow
-            right = mid-1;
-        }
-    }
-    return last ? last_match : first_match;
-}
-
-
 void settings_init()
 {
     settings = settings_default;
@@ -262,7 +226,7 @@ void settings_init()
     }
 
     // find start: skip all 0x00 (binary search)
-    uint32_t offset = find_byte(&f, 0x00, true);
+    uint32_t offset = flash_find_byte(&f, 0x00, true);
     // if no 0x00 is found, offset = -1 and data starts at beginning of file
     // else, data starts at offset+1
     offset++;
@@ -330,8 +294,8 @@ void settings_write(const settings_t & s)
     }
     else
     {
-        uint32_t fill_start = find_byte(&f, 0x00, true) + 1;
-        uint32_t fill_end = find_byte(&f, 0xFF, false);
+        uint32_t fill_start = flash_find_byte(&f, 0x00, true) + 1;
+        uint32_t fill_end = flash_find_byte(&f, 0xFF, false);
         if (fill_end == (uint32_t)-1)
         {
             // no FFs left, need to erase file

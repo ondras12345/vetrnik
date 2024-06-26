@@ -86,7 +86,7 @@ void setup()
     CLI_init();
     display_init();
     display_init_lisp();
-    lisp_run_blind_file(LISP_INIT_FILENAME);
+    lisp_run_blind_file(LISP_INIT_FILENAME, -1);
 
     digitalWrite(PIN_BUZZER, LOW);
 }
