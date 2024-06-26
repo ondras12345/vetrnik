@@ -147,7 +147,7 @@ void settings_print(
     wptr = buf; \
     if (conf_prefix) { \
         strcpy(buf, "conf "); \
-        wptr = buf + sizeof "conf "; \
+        wptr = buf + sizeof("conf ") - 1; \
     }
 
 #define PRINT_str(name, v) \
