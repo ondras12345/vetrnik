@@ -136,7 +136,7 @@ static void cmnd_conf(char *args, Stream *response)
 
         default:
             response->println(settings_parse_error_message(err));
-            break;
+            return;
     }
 
     response->println();
