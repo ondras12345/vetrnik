@@ -74,7 +74,7 @@ typedef struct {
     X(DS18B20, settings_DS18B20_t, [SENSOR_DS18B20_COUNT], DS18B20s, {0}) /* default: all zeros */ \
     X(str,  char,     [16],   OTAname, "vetrnik") /* probably for mDNS, untested */ \
     X(str,  char,     [32],   OTApassword, "pass") \
-    X(bool, bool,     :1,     shell_telnet, false) \
+    X(bool, bool,     :1,     shell_telnet, true) /* important: default true to prevent lockout */ \
     X(bool, bool,     :1,     report_raw, false) /* MQTT report of raw datapoints */ \
     X(int,  uint8_t,  ,       contactor_debounce_min, 15)
 
