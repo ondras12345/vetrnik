@@ -23,8 +23,8 @@
 #include "pump.h"
 #include "version.h"
 #include "log.h"
+#include "flash_tools.h"
 #include <CLIeditor.h>
-#include <SerialFlash.h>
 #include <malloc.h>
 
 #ifdef SHELL_TELNET
@@ -639,6 +639,38 @@ static void cmnd_SPIflash(char *args, Stream *response)
         SerialFlash.read(start, buf, len);
         stream_hexdump(response, buf, len, start);
     }
+    else if (strcmp(subcommand_name, "fill") == 0)
+    {
+        const char * filename = strsep(&subcommand_args, " ");
+        const char * startstr = strsep(&subcommand_args, " ");
+        const char * lengthstr = strsep(&subcommand_args, " ");
+        const char * valuestr = subcommand_args;
+        if (filename == nullptr || startstr == nullptr || lengthstr == nullptr || valuestr == nullptr)
+        {
+            response->println("Invalid args");
+            goto bad;
+        }
+
+        unsigned int start = strtoul(startstr, nullptr, 0);  // should accept hex 0x
+        unsigned int length = strtoul(lengthstr, nullptr, 0);  // should accept hex 0x
+        unsigned int value = strtoul(valuestr, nullptr, 0);
+        if (value > 255)
+        {
+            response->println("invalid value");
+            return;
+        }
+        SerialFlashFile f = SerialFlash.open(filename);
+        if (!f)
+        {
+            response->println("Cannot open file");
+            return;
+        }
+        f.seek(start);
+        response->print("filled ");
+        response->print(flash_fill_file(&f, value, length));
+        response->println(" bytes");
+        f.close();
+    }
     else
     {
         response->println("Invalid subcommand");
@@ -649,7 +681,8 @@ static void cmnd_SPIflash(char *args, Stream *response)
 bad:
     response->println(
 "Usage: SPIflash [erase_chip|ls | create name length erasable | rm name\r\n"
-"   | dump name start | dumpchip start | erase filename | ed filename start]"
+"   | dump name start | dumpchip start | erase filename | ed filename start\r\n"
+"   | fill name start length value]"
     );
 }
 
