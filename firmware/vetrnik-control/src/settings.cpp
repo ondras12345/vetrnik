@@ -8,7 +8,7 @@
 settings_t settings;
 
 #define X_DEFAULT(printer, type, arr, name, default) default,
-settings_t settings_default = {
+const settings_t settings_default = {
     CONF_ITEMS(X_DEFAULT)
 };
 #undef X_DEFAULT

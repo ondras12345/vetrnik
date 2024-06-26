@@ -107,7 +107,8 @@ static void cmnd_conf(char *args, Stream *response)
     static settings_t s = settings;
 
     response->println("Usage: conf [name value]");
-    response->println("conf -s  -- save to EEPROM");
+    response->println("conf -s -- save to FLASH");
+    response->println("conf -d -- load defaults");
     response->println("Configuration changes are only applied after a reset.");
     response->println();
 
@@ -116,6 +117,13 @@ static void cmnd_conf(char *args, Stream *response)
     if (strcmp(args, "-s") == 0)
     {
         settings_write(s);
+        return;
+    }
+
+    if (strcmp(args, "-d") == 0)
+    {
+        s = settings_default;
+        response->println("restored default conf");
         return;
     }
 

@@ -110,6 +110,7 @@ typedef struct {
 #undef X_STRUCT
 
 extern settings_t settings;
+extern const settings_t settings_default;
 
 
 settings_parse_error_t settings_parse(char * line, settings_t * s);
