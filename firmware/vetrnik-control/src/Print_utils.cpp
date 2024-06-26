@@ -10,42 +10,20 @@ void stream_print_MAC(Print *response, uint8_t MAC[6])
 }
 
 
+static void print_line(void * ctx, const char * line)
+{
+    Print * response = (Print*)ctx;
+    response->println(line);
+}
+
+
 /**
  * Print settings_t in a format that allows it to be imported by pasting the
  * output to the cli (conf command).
  */
 void stream_print_settings(Print *response, settings_t s)
 {
-#define PRINT_h(name) \
-    response->print("conf " #name " ")
-
-#define PRINT_v(name, v) \
-    PRINT_h(name); \
-    response->println(v);
-#define PRINT_str(name, v) PRINT_v(name, v)
-#define PRINT_int(name, v) PRINT_v(name, v)
-#define PRINT_bool(name, v) PRINT_v(name, v ? '1' : '0')
-#define PRINT_MAC(name, v) \
-    PRINT_h(name); \
-    stream_print_MAC(response, v); \
-    response->println();
-#define PRINT_IP(name, v) PRINT_v(name, IPAddress(v))
-
-#define PRINT_DS18B20(name_unused, v) \
-    for (uint_fast8_t i = 0; i < SENSOR_DS18B20_COUNT; i++) \
-    { \
-        response->print("conf DS18B20 "); \
-        response->print(i); \
-        response->print(" "); \
-        stream_print_onewire_address(response, v[i].address); \
-        response->print(" "); \
-        response->println(v[i].name); \
-    }
-
-#define X_PRINT(printer, type, arr, name, default) \
-    PRINT_##printer(name, s.name)
-
-    CONF_ITEMS(X_PRINT)
+    settings_print(&s, &print_line, response, true);
 }
 
 

@@ -24,7 +24,6 @@
 #include "version.h"
 #include "log.h"
 #include <CLIeditor.h>
-#include <parsers.h>
 #include <SerialFlash.h>
 #include <malloc.h>
 
@@ -112,112 +111,25 @@ static void cmnd_conf(char *args, Stream *response)
     response->println("Configuration changes are only applied after a reset.");
     response->println();
 
-    char * setting_name = strsep(&args, " ");
-    char * setting_value = args;
-    if (setting_name == nullptr)
-    {
-        // this is ok, just print out config
-    }
-    else if (strcmp(setting_name, "-s") == 0)
+    settings_parse_error_t err = settings_parse(args, &s);
+
+    if (strcmp(args, "-s") == 0)
     {
         settings_write(s);
     }
-    else if (setting_value == nullptr)
+
+    switch (err)
     {
-        response->println("Missing value");
+        case SETTINGS_E_OK:
+        case SETTINGS_E_MISSING_OPTION:
+            // this is ok, just print out config
+            break;
+
+        default:
+            response->println(settings_parse_error_message(err));
+            break;
     }
 
-#define scanconf_IP(name, type) \
-    else if (strcmp(setting_name, #name) == 0) \
-    { \
-        IPAddress addr; \
-        if (addr.fromString(setting_value)) \
-        { \
-            for (uint8_t i = 0; i < sizeof s.name; i++) \
-                s.name[i] = addr[i]; \
-        } \
-        else \
-        { \
-            response->println("Invalid format, expected x.x.x.x"); \
-        } \
-    }
-
-#define scanconf_str(name, type) \
-    else if (strcmp(setting_name, #name) == 0) \
-    { \
-        if (strlen(setting_value) < sizeof s.name) \
-        { \
-            /* fill the rest of the memory with zeros */ \
-            strncpy(s.name, setting_value, sizeof s.name); \
-        } \
-        else \
-            response->println("String too long"); \
-    }
-
-#define scanconf_int(name, type) scanconf_##type(name)
-
-#define scanconf_uint8_t(name) \
-    else if (strcmp(setting_name, #name) == 0) \
-    { \
-        unsigned int tmp; \
-        sscanf(setting_value, "%u", &tmp); \
-        if (tmp > 255) \
-        { \
-            response->println("Value not in range 0-255"); \
-            goto bad; \
-        } \
-        s.name = (uint8_t)tmp; \
-    }
-
-#define scanconf_bool(name, type) \
-    else if (strcmp(setting_name, #name) == 0) \
-    { \
-        s.name = (setting_value[0] == '1'); \
-    }
-
-#define scanconf_MAC(name, type) \
-    else if (strcmp(setting_name, #name) == 0) \
-    { \
-        if (!parse_MAC(s.name, setting_value)) \
-            response->println("Invalid format, expected xx:xx:xx:xx:xx:xx"); \
-    }
-
-#define scanconf_DS18B20(name_unused, type_unused) \
-    else if (strcmp(setting_name, "DS18B20") == 0) \
-    { \
-        const char * const id = strsep(&setting_value, " "); \
-        const char * const address = strsep(&setting_value, " "); \
-        const char * const name = strsep(&setting_value, " "); \
-        unsigned int sensor_id = 0; \
-        if (setting_value[0] != '\0') \
-        { \
-            response->println("bad format"); \
-            goto bad; \
-        } \
-        sscanf(id, "%u", &sensor_id); \
-        if (sensor_id >= SENSOR_DS18B20_COUNT) \
-        { \
-            response->println("bad id"); \
-            goto bad; \
-        } \
-        strncpy(s.DS18B20s[sensor_id].name, name, sizeof s.DS18B20s[0].name); \
-        /* strncpy does not guarantee NULL termination */ \
-        s.DS18B20s[sensor_id].name[sizeof(s.DS18B20s[0].name) - 1] = '\0'; \
-        parse_onewire_address(s.DS18B20s[sensor_id].address, address); \
-    }
-
-#define X_SCAN(scanner, type, arr, name, default) \
-    scanconf_##scanner(name, type)
-
-    CONF_ITEMS(X_SCAN)
-
-    else
-    {
-        response->print("Invalid config option: ");
-        response->println(setting_name);
-    }
-
-bad:
     response->println();
     response->println("Current configuration:");
     stream_print_settings(response, settings);

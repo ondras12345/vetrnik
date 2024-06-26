@@ -53,6 +53,25 @@
 /// How many retries --> the temperature is read SENSOR_DS18B20_RETRIES+1 times.
 #define SENSOR_DS18B20_RETRIES 2
 
+// X(const_name, error_message)
+#define SETTINGS_ERRORS(X) \
+    X(OK, "OK") \
+    X(MISSING_OPTION, "Missing option") \
+    X(INVALID_OPTION, "Invalid conf option") \
+    X(MISSING_VALUE, "Missing value") \
+    X(INVALID_IP, "Invalid format, expected d.d.d.d") \
+    X(INVALID_MAC, "Invalid format, expected xx:xx:xx:xx:xx:xx") \
+    X(STR_TOO_LONG, "String too long") \
+    X(INVALID_UINT8, "Value not in range 0-255") \
+    X(INVALID_DS18B20, "Bad format") \
+    X(INVALID_DS18B20_ID, "Bad id")
+
+#define X_ENUM(const_name, error_message) SETTINGS_E_##const_name,
+typedef enum {
+    SETTINGS_ERRORS(X_ENUM)
+} settings_parse_error_t;
+#undef X_ENUM
+
 
 typedef struct {
     uint8_t address[8];
@@ -91,5 +110,8 @@ typedef struct {
 extern settings_t settings;
 
 
+settings_parse_error_t settings_parse(char * line, settings_t * s);
+const char * settings_parse_error_message(settings_parse_error_t);
 void settings_init();
 void settings_write(const settings_t & s);
+void settings_print(const settings_t * s, void(print_line)(void*, const char *), void* ctx, bool conf_prefix);

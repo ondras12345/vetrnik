@@ -1,11 +1,9 @@
 #include "settings.h"
 #include "debug.h"
 #include "log.h"
+#include <parsers.h>
+#include <Ethernet.h>  // for IPAddress
 #include <SerialFlash.h>
-
-/*
- * https://github.com/stm32duino/wiki/wiki/API#EEPROM-Emulation
- */
 
 settings_t settings;
 
@@ -14,6 +12,189 @@ settings_t settings_default = {
     CONF_ITEMS(X_DEFAULT)
 };
 #undef X_DEFAULT
+
+
+/// Get error message corresponding to an error
+const char * settings_parse_error_message(settings_parse_error_t e)
+{
+#define X_CASE(const_name, error_message) case SETTINGS_E_##const_name: return error_message;
+    switch (e)
+    {
+        SETTINGS_ERRORS(X_CASE)
+    }
+    return "UNKNOWN";
+#undef X_CASE
+}
+
+
+/*
+ * Settings file format:
+ * - text file, same syntax as conf command but w/o "conf " prefix
+ * - 0x00 is skipped, 0xFF means EOF
+ * - one option per line, maximum 80 characters per line
+ */
+
+/**
+ * Parse one line of settings file.
+ *
+ * @param line line read from settings file, w/o \n or \r. Modified in place by
+ *             strsep.
+ * @param s settings structure to write the result to
+ * @return error
+ */
+settings_parse_error_t settings_parse(char * line, settings_t * s)
+{
+
+    const char * setting_name = strsep(&line, " ");
+    char * setting_value = line;
+    if (setting_name == nullptr)
+    {
+        return SETTINGS_E_MISSING_OPTION;
+    }
+    else if (setting_value == nullptr)
+    {
+        return SETTINGS_E_MISSING_VALUE;
+    }
+
+#define scanconf_IP(name, type) \
+    else if (strcmp(setting_name, #name) == 0) \
+    { \
+        IPAddress addr; \
+        if (addr.fromString(setting_value)) \
+        { \
+            for (uint8_t i = 0; i < sizeof s->name; i++) \
+                s->name[i] = addr[i]; \
+        } \
+        else return SETTINGS_E_INVALID_IP; \
+    }
+
+#define scanconf_str(name, type) \
+    else if (strcmp(setting_name, #name) == 0) \
+    { \
+        if (strlen(setting_value) < sizeof s->name) \
+        { \
+            /* fill the rest of the memory with zeros */ \
+            strncpy(s->name, setting_value, sizeof s->name); \
+        } \
+        else return SETTINGS_E_STR_TOO_LONG; \
+    }
+
+#define scanconf_int(name, type) scanconf_##type(name)
+
+#define scanconf_uint8_t(name) \
+    else if (strcmp(setting_name, #name) == 0) \
+    { \
+        unsigned int tmp; \
+        sscanf(setting_value, "%u", &tmp); \
+        if (tmp > 255) return SETTINGS_E_INVALID_UINT8; \
+        s->name = (uint8_t)tmp; \
+    }
+
+#define scanconf_bool(name, type) \
+    else if (strcmp(setting_name, #name) == 0) \
+    { \
+        s->name = (setting_value[0] == '1'); \
+    }
+
+#define scanconf_MAC(name, type) \
+    else if (strcmp(setting_name, #name) == 0) \
+    { \
+        if (!parse_MAC(s->name, setting_value)) \
+            return SETTINGS_E_INVALID_MAC; \
+    }
+
+#define scanconf_DS18B20(name_unused, type_unused) \
+    else if (strcmp(setting_name, "DS18B20") == 0) \
+    { \
+        const char * const id = strsep(&setting_value, " "); \
+        const char * const address = strsep(&setting_value, " "); \
+        const char * const name = strsep(&setting_value, " "); \
+        unsigned int sensor_id = 0; \
+        if (setting_value[0] != '\0') return SETTINGS_E_INVALID_DS18B20; \
+        sscanf(id, "%u", &sensor_id); \
+        if (sensor_id >= SENSOR_DS18B20_COUNT) return SETTINGS_E_INVALID_DS18B20_ID; \
+        strncpy(s->DS18B20s[sensor_id].name, name, sizeof s->DS18B20s[0].name); \
+        /* strncpy does not guarantee NULL termination */ \
+        s->DS18B20s[sensor_id].name[sizeof(s->DS18B20s[0].name) - 1] = '\0'; \
+        parse_onewire_address(s->DS18B20s[sensor_id].address, address); \
+    }
+
+#define X_SCAN(scanner, type, arr, name, default) \
+    scanconf_##scanner(name, type)
+    CONF_ITEMS(X_SCAN)
+#undef X_SCAN
+
+    else
+    {
+        return SETTINGS_E_INVALID_OPTION;
+    }
+
+    return SETTINGS_E_OK;
+}
+
+
+void settings_print(
+    const settings_t * s,
+    void(print_line)(void*, const char *), void* ctx,
+    bool conf_prefix
+)
+{
+#define LINE_LEN 80
+    char buf[LINE_LEN + sizeof "conf "];
+    char * wptr;
+
+#define PREP_WPTR \
+    wptr = buf; \
+    if (conf_prefix) { \
+        strcpy(buf, "conf "); \
+        wptr = buf + sizeof "conf "; \
+    }
+
+#define PRINT_str(name, v) \
+    PREP_WPTR \
+    snprintf(wptr, LINE_LEN+1, "%s %s", #name, v); \
+    print_line(ctx, buf);
+
+#define PRINT_bool(name, v) \
+    PREP_WPTR \
+    snprintf(wptr, LINE_LEN+1, "%s %c", #name, v ? '1' : '0'); \
+    print_line(ctx, buf);
+
+#define PRINT_int(name, v) \
+    PREP_WPTR \
+    snprintf(wptr, LINE_LEN+1, "%s %d", #name, v); \
+    print_line(ctx, buf);
+
+#define PRINT_MAC(name, v) \
+    PREP_WPTR \
+    snprintf(wptr, LINE_LEN+1, "%s %02x:%02x:%02x:%02x:%02x:%02x", \
+             #name, v[0], v[1], v[2], v[3], v[4], v[5]); \
+    print_line(ctx, buf);
+
+#define PRINT_IP(name, v) \
+    PREP_WPTR \
+    snprintf(wptr, LINE_LEN+1, "%s %u.%u.%u.%u", #name, v[0], v[1], v[2], v[3]); \
+    print_line(ctx, buf);
+
+#define PRINT_DS18B20(name_unused, v) \
+    for (uint_fast8_t i = 0; i < SENSOR_DS18B20_COUNT; i++) \
+    { \
+        PREP_WPTR \
+        const uint8_t * addr = v[i].address; \
+        snprintf(wptr, LINE_LEN+1, \
+                 "DS18B20 %u %02X%02X%02X%02X%02X%02X%02X%02X %s", \
+                 i, addr[0], addr[1], addr[2], addr[3], addr[4], addr[5], addr[6], addr[7], \
+                 v[i].name); \
+        print_line(ctx, buf); \
+    }
+
+#define X_PRINT(printer, type, arr, name, default) \
+    PRINT_##printer(name, s->name)
+
+    CONF_ITEMS(X_PRINT)
+#undef X_PRINT
+#undef PREP_WPTR
+}
 
 
 #define SETTINGS_FILENAME "settings"
