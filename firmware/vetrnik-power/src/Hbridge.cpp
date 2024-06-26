@@ -89,6 +89,7 @@ void Hbridge_OCP()
     const uint16_t OCP_H = (OCPH_settings > OCP_H_MAX) ? OCP_H_MAX : OCPH_settings;
 
     uint8_t prev = OCP_max_duty;
+    // cppcheck-suppress knownConditionTrueFalse ; false positive
     if (current >= OCP_H) OCP_max_duty /= 2;
     else if (current < OCP_L) {
         OCP_max_duty += 5;
