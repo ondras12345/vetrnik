@@ -153,7 +153,7 @@ static void cmnd_fan(uint8_t value)
 
 
 static datapoint_t datapoints[] = {
-    {'d', cmnd_duty, 2100},  // duty
+    {'d', cmnd_duty, 5100},  // duty
     {'m', cmnd_mode},  // mode
     {'E', cmnd_errors},      // clear errors
     // The following commands allow settings to be read ($index, wait for next
