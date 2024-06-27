@@ -118,7 +118,7 @@ void control_loop()
         );
 
     // the contactor is slow
-    if (prev_short_emergency && now - short_emergency_millis >= 100UL)
+    if (prev_short_emergency && now - short_emergency_millis >= 500UL)
     {
         log_add_event_and_println(kControlShortEstop, INFO);
         control_set_strategy(control_shorted);
