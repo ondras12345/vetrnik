@@ -226,6 +226,7 @@ uint_fast8_t log_id = 0;
 
     if (power_text_message_complete)
     {
+        // TODO only printed if MQTT connected
         INFO->print("Raw text message: ");
         INFO->println(power_text_message);
         log_id = 1;
