@@ -332,7 +332,7 @@ void uart_loop()
     }
 
     static unsigned long last_report = 0;
-    if (now - last_report >= 500UL)
+    if (now - last_report >= settings[kReportRate].value*10UL)
     {
         last_report = now;
         report();

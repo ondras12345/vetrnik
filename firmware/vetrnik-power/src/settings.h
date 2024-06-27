@@ -55,6 +55,7 @@ typedef enum {
     kRPMfilter = 7,
     kMinDuty = 8,
     kStoppingRPM = 9,
+    kReportRate = 10,
     kSettingsEnd,
 } setting_index_t;
 

@@ -25,6 +25,7 @@ setting_t settings[kSettingsEnd] = {
     {30},  // kRPMfilter - see RPM.cpp ; was 4 - too low, try 30
     {4},  // kMinDuty
     {10}, // kStoppingRPM
+    {50}, // kReportRate, *10ms
 };
 
 
