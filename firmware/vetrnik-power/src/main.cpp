@@ -97,8 +97,14 @@ void setup()
 {
     errm_create_callback = error_create_callback;
 
-    gpio_conf(pin_FAN, OUTPUT, 1);
     gpio_conf(pin_SHORT, OUTPUT, 0);
+
+    // set up fan PWM
+    gpio_conf(pin_FAN, OUTPUT, 1);
+    // phase correct PWM, clk / 32
+    TCCR2 = (1<<COM21) | (1<<WGM20) | (1<<CS21) | (1<<CS20);
+    // start with max duty
+    OCR2 = 0xFF;
 
     // We don't use Arduino's yield, so _delay_ms should be OK (less flash space)
     _delay_ms(10);  // Vcc should be stable before EEPROM is written to.
@@ -111,6 +117,7 @@ void setup()
     gpio_conf(pin_REL3, OUTPUT, 0);
     gpio_conf(pin_REL4, OUTPUT, 0);
 
+    //gpio_conf(pin_FAN_extra, INPUT, NOPULLUP);
     //gpio_conf(pin_VSENSE, INPUT, NOPULLUP);
     //gpio_conf(pin_ACS712, INPUT, NOPULLUP);
     //gpio_conf(pin_ACS712_2, INPUT, NOPULLUP);

@@ -13,6 +13,7 @@ uint16_t current = 0;
 uint16_t temperature_heatsink = 0;
 uint16_t temperature_rectifier = 0;
 uint8_t fan = 0;
+uint8_t fan_manual = 0;
 
 mode_t mode = shorted;
 

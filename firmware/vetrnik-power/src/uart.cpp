@@ -146,6 +146,12 @@ static void cmnd_enable(uint8_t value)
 }
 
 
+static void cmnd_fan(uint8_t value)
+{
+    fan_manual = value;
+}
+
+
 static datapoint_t datapoints[] = {
     {'d', cmnd_duty, 2100},  // duty
     {'m', cmnd_mode},  // mode
@@ -157,6 +163,7 @@ static datapoint_t datapoints[] = {
     {'C', cmnd_command},
     {'R', cmnd_REL},
     {'e', cmnd_enable},
+    {'f', cmnd_fan},
 };
 
 #define FOR_EACH_DP for (uint8_t i = 0; i < sizeof datapoints / sizeof datapoints[0]; i++)

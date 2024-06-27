@@ -16,7 +16,9 @@
 #define pin_REL2        C, 5, 5 // PC5
 #define pin_REL3        C, 4, 4 // PC4
 #define pin_REL4        B, 5, 5 // PB5
-#define pin_FAN         D, 5, 5 // PD5, cannot do PWM on ATmega8
+// PD5 & PB3 are connected together
+#define pin_FAN_extra   D, 5, 5 // PD5, cannot do PWM on ATmega8
+#define pin_FAN         B, 3, 3 // PB3, can do PWM
 #define pin_SHORT       D, 6, 6 // PD6, inverted
 
 // See Hbridge.h

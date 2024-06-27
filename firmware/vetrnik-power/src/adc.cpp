@@ -164,19 +164,14 @@ void ADC_loop()
                 errm_add(errm_create(&etemplate_temperature, ((temperature_rectifier/10) & 0xFF)));
             }
             uint8_t fan_hs;
-            //if (temperature_heatsink < fan_temperature_off) fan_hs = fan_power_min;
-            //else if (temperature_heatsink > fan_temperature_full) fan_hs = 255;
-            //fan_hs = map_uint16(temperature_heatsink, fan_temperature_off, fan_temperature_full, fan_power_min, 255);
-            fan_hs = (temperature_heatsink > (FAN_TEMPERATURE_OFF + (fan ? 0 : 10))) ? 255 : 0;
+            if (temperature_heatsink < FAN_TEMPERATURE_OFF) fan_hs = 0;
+            else if (temperature_heatsink > FAN_TEMPERATURE_FULL) fan_hs = 255;
+            else fan_hs = map_uint16(temperature_heatsink, FAN_TEMPERATURE_OFF, FAN_TEMPERATURE_FULL, 0, 255);
             uint8_t fan_rect = (temperature_rectifier > (FAN_TEMPERATURE_RECTIFIER_THRESHOLD + (fan ? -5 : 5))) ? 255 : 0;
-
+            // pick max
             fan = (fan_hs > fan_rect) ? fan_hs : fan_rect;
-
-            // TODO PD5 cannot do PWM on ATmega8...
-            if (fan < 128)
-                gpio_clr(pin_FAN);
-            else
-                gpio_set(pin_FAN);
+            fan = (fan_manual > fan) ? fan_manual : fan;
+            OCR2 = fan; // set fan PWM duty
         }
     }
 }
