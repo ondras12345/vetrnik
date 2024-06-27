@@ -24,6 +24,7 @@ setting_t settings[kSettingsEnd] = {
     {210},  // kOCPH, 42 A / 0.2 A = 210
     {30},  // kRPMfilter - see RPM.cpp ; was 4 - too low, try 30
     {4},  // kMinDuty
+    {10}, // kStoppingRPM
 };
 
 

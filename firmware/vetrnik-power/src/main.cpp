@@ -173,7 +173,8 @@ void loop()
         case stopping:
             if (millis() - mode_prev_millis >= stopping_time)
             {
-                if (RPM >= stopping_RPM)
+                // TODO do this based on energy instead??
+                if (RPM >= settings[kStoppingRPM].value)
                 {
                     gpio_clr(pin_SHORT);
                     // Failsafe - do not boil water in case the contactor is
