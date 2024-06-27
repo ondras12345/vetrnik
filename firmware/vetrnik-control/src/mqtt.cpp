@@ -63,7 +63,7 @@ uint8_t MQTT_init()
         if (settings.ETH_IP[i] != 0) DHCP_mode = false;
     uint8_t result = 1;
     if (DHCP_mode)
-        result = Ethernet.begin(settings.ETH_MAC);
+        result = Ethernet.begin(settings.ETH_MAC, settings.DHCP_timeout_s * 1000UL);
     else
         Ethernet.begin(settings.ETH_MAC, settings.ETH_IP);
     // Default timeout is 15 seconds.

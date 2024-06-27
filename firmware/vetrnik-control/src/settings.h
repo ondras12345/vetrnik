@@ -97,7 +97,9 @@ typedef struct {
     X(str,  char,     [32],   OTApassword, "pass") \
     X(bool, bool,     :1,     shell_telnet, true) /* important: default true to prevent lockout */ \
     X(bool, bool,     :1,     report_raw, false) /* MQTT report of raw datapoints */ \
-    X(int,  uint8_t,  ,       contactor_debounce_min, 15)
+    X(int,  uint8_t,  ,       contactor_debounce_min, 15) \
+    X(int,  uint8_t,  ,       DHCP_timeout_s, 14) /* default timeout in Ethernet.h is 60 s ; needs to be lower than WATCHDOG_TIME */
+
 
 // #undef COMMA - cannot undef, needed during expansion
 
