@@ -144,7 +144,10 @@ void setup()
 
     wdt_enable(WDTO_1S);
     wdt_reset();
-    serial_puts_p(PSTR(">boot\r\n"));
+    // always report reset reason
+    serial_puts_p(PSTR(">boot MCUSR: "));
+    serial_putuint(mcusr_mirror);
+    serial_puts_p(PSTR("\r\n"));
     serial_flush();
 }
 
