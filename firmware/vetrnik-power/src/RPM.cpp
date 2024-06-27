@@ -69,7 +69,7 @@ void RPM_init()
 
     integrator_max = settings[kRPMfilter].value;
 
-    TCCR2 = (1<<CS21);  // prescaler 8, every 0.128 ms
+    // TCCR2 is set up in main
     // Enable interrupt on timer2 overflow
     TIMSK |= (1<<TOIE2);
 }

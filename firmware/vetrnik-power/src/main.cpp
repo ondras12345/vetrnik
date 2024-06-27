@@ -101,10 +101,19 @@ void setup()
 
     // set up fan PWM
     gpio_conf(pin_FAN, OUTPUT, 1);
-    // phase correct PWM, clk / 32
-    TCCR2 = (1<<COM21) | (1<<WGM20) | (1<<CS21) | (1<<CS20);
-    // start with max duty
-    OCR2 = 0xFF;
+    // start with 50 % duty
+    OCR2 = 128;
+    // timer2 is also used by RPM.cpp
+    // fast PWM, non-inverting (cannot use phase correct PWM because RPM.cpp
+    // requires interrupt every 0.128 ms)
+    TCCR2 = (1<<COM21) | (1<<WGM21) | (1<<WGM20);
+    // clk / 8, every 0.128 ms (necessary for RPM.cpp)
+    TCCR2 |= (1<<CS21);
+
+    // Problems with fan PWM:
+    // - OCR2=0 results in extremely short pulses, but the optocoupler eats them
+    // - R2 on power board would need to be changed from 1M to 3k3
+    // - fan starts @ OCR2=40, need to set minimum to 45
 
     // We don't use Arduino's yield, so _delay_ms should be OK (less flash space)
     _delay_ms(10);  // Vcc should be stable before EEPROM is written to.

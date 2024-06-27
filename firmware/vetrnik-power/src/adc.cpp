@@ -171,6 +171,8 @@ void ADC_loop()
             // pick max
             fan = (fan_hs > fan_rect) ? fan_hs : fan_rect;
             fan = (fan_manual > fan) ? fan_manual : fan;
+            // fan does not start below duty=40
+            if (fan > 0 && fan < 45) fan = 45;
             OCR2 = fan; // set fan PWM duty
         }
     }
