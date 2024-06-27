@@ -544,6 +544,74 @@ static void cmnd_mkfile(char * args, Stream *response)
 }
 
 
+static void cmnd_cat(char * args, Stream *response)
+{
+    SerialFlashFile f = SerialFlash.open(args);
+    if (!f)
+    {
+        response->println("Cannot open file");
+        return;
+    }
+    // seek to first non-0x00 byte
+    uint32_t start = flash_find_byte(&f, 0x00, true) + 1;
+    response->printf("Text starting @ 0x%08x:\r\n", start);
+    f.seek(start);
+    // we cannot assume anything about line length, it can be much more than 80
+    // characters
+    for (;;)
+    {
+        uint8_t buf[256];
+        uint32_t rdlen = f.read(buf, sizeof buf);
+        if (rdlen == 0) break; // EOF
+        // find end of text
+        uint32_t wrlen = rdlen;
+        for (uint32_t i = 0; i < rdlen; i++)
+        {
+            if (buf[i] == 0x00 || buf[i] == 0xFF)
+            {
+                wrlen = i;
+                break;
+            }
+        }
+        if (wrlen == 0) break; // no printable characters
+        // translate \n to \r\n
+        // not writing char by char to hopefully improve telnet performance
+        uint32_t wrstart = 0;
+        while (wrlen > 0)
+        {
+            // find \n
+            uint32_t wrlen_till_eol = wrlen;
+            bool found = false;
+            for (uint32_t i = 0; i < wrlen; i++)
+            {
+                if (buf[wrstart+i] == '\n')
+                {
+                    wrlen_till_eol = i;
+                    found = true;
+                    break;
+                }
+            }
+            // write everything till EOL
+            if (found)
+            {
+                response->write(buf + wrstart, wrlen_till_eol);
+                response->write('\r');
+                response->write('\n');
+                wrlen_till_eol++;  // skip \n
+                wrlen -= wrlen_till_eol;
+                wrstart += wrlen_till_eol;
+            }
+            else
+            {
+                wrlen = 0;
+                response->write(buf + wrstart, wrlen);
+            }
+        }
+    }
+    f.close();
+}
+
+
 static void cmnd_hexdump(char * args, Stream *response)
 {
     const char * filename = strsep(&args, " ");
@@ -968,7 +1036,7 @@ static Commander::API_t API_tree[] = {
     apiElement("rm",            "Remove file in SPI flash",                 cmnd_rm),
     apiElement("mkfile",        "Create file in SPI flash",                 cmnd_mkfile),
     apiElement("hexdump",       "Dump file from SPI flash",                 cmnd_hexdump),
-    // TODO cat
+    apiElement("cat",           "Print text file from SPI flash",           cmnd_cat),
     apiElement("erase",         "Erase contents of file in SPI flash",      cmnd_erase),
     apiElement("fill",          "Fill file in SPI flash with constant byte",cmnd_fill),
     apiElement("ed",            "Edit file in SPI flash",                   cmnd_ed),
