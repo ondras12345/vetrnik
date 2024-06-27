@@ -112,9 +112,10 @@ settings_parse_error_t settings_parse(char * line, settings_t * s)
     { \
         const char * const id = strsep(&setting_value, " "); \
         const char * const address = strsep(&setting_value, " "); \
-        const char * const name = strsep(&setting_value, " "); \
+        const char * name = strsep(&setting_value, " "); \
         unsigned int sensor_id = 0; \
-        if (setting_value[0] != '\0') return SETTINGS_E_INVALID_DS18B20; \
+        if (id == nullptr || address == nullptr || (setting_value != nullptr && setting_value[0] != '\0')) return SETTINGS_E_INVALID_DS18B20; \
+        if (name == nullptr) name = ""; \
         sscanf(id, "%u", &sensor_id); \
         if (sensor_id >= SENSOR_DS18B20_COUNT) return SETTINGS_E_INVALID_DS18B20_ID; \
         strncpy(s->DS18B20s[sensor_id].name, name, sizeof s->DS18B20s[0].name); \
@@ -250,10 +251,11 @@ void settings_init()
         // replace newline with '\0'
         buf[i] = '\0';
         // ignore parsing errors
-        if (settings_parse(buf, &settings) != SETTINGS_E_OK)
+        settings_parse_error_t err = settings_parse(buf, &settings);
+        if (err != SETTINGS_E_OK)
         {
             // just a warning, continue parsing
-            log_add_event_and_println(kSettingsInvalid, INFO);
+            log_add_record_settings_parse_error(err);
         }
 
         offset += i+1;  // move past newline

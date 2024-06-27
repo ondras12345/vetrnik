@@ -46,6 +46,8 @@ typedef struct
             uint32_t duration;
             uint32_t mid_duration;
         } slow_loop_info;
+
+        settings_parse_error_t settings_parse_error;
     };
 } log_record_t;
 
@@ -101,9 +103,6 @@ const char * get_event_string(log_event_t event)
 
         case kSettingsErase:
             return "Settings erase";
-
-        case kSettingsInvalid:
-            return "Settings invalid";
 
         case kPowerBoardStatusTimeout:
             return "power_board_status timeout";
@@ -267,6 +266,16 @@ void log_add_record_slow_loop(uint32_t duration, uint32_t mid_duration)
 }
 
 
+void log_add_record_settings_parse_error(settings_parse_error_t err)
+{
+    log_record_t record;
+    record.time = millis();
+    record.type = kSettingsParseError;
+    record.settings_parse_error = err;
+    log_add_record(record);
+}
+
+
 static void print_record(log_record_t record, Print * response)
 {
     char timestamp[7 + 1 + sizeof "[.]"];
@@ -350,6 +359,15 @@ static void print_record(log_record_t record, Print * response)
                 timestamp,
                 record.slow_loop_info.duration,
                 record.slow_loop_info.mid_duration
+            );
+            break;
+
+        case kSettingsParseError:
+            snprintf(
+                print_buffer, sizeof print_buffer,
+                "%s settings parse error: %s\r\n",
+                timestamp,
+                settings_parse_error_message(record.settings_parse_error)
             );
             break;
 
