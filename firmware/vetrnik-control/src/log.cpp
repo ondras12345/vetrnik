@@ -69,71 +69,12 @@ static char print_buffer[80 + sizeof("\r\n")];
 
 const char * get_event_string(log_event_t event)
 {
+#define X_CASE(const_name, message) case const_name: return message;
     switch (event)
     {
-        case kEthernetBegin:
-            return "Eth begin";
-
-        case kEthernetIP:
-            return "Eth got IP";
-
-        case kEthernetStuck:
-            return "Eth stuck, rst";
-
-        case kMqttConnected:
-            return "MQTT connected";
-
-        case kMqttReinitTime:
-            return "MQTT reinit (time)"
-
-        case kControlNotShorted:
-            return "control_shorted, but mode != shorted";
-
-        case kControlMqttTimeout:
-            return "MQTT control timeout";
-
-        case kControlLispError:
-            return "error in control_lisp";
-
-        case kControlShortEstop:
-            return "SHORT e-stop";
-
-        case kSettingsReset:
-            return "Settings reset";
-
-        case kSettingsWrite:
-            return "Settings write";
-
-        case kSettingsErase:
-            return "Settings erase";
-
-        case kPowerBoardStatusTimeout:
-            return "power_board_status timeout";
-
-        case kPowerBoardEmergency:
-            return "power_board emergency";
-
-        case kOtaEnabled:
-            return "OTA enabled";
-
-        case kLogReinit:
-            return "log reinit";
-
-        case kPumpOn:
-            return "pump on";
-
-        case kPumpOff:
-            return "pump off";
-
-        case kDS18B20Error:
-            return "DS18B20 error";
-
-        case kSoftwareReset:
-            return "software reset";
-
-        case kMillisRollover:
-            return "millis rollover";
+        LOG_EVENTS(X_CASE)
     }
+#undef X_CASE
 
     return "?";
 }

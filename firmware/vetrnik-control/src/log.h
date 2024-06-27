@@ -28,32 +28,40 @@ typedef enum
 } log_record_type_t;
 
 
+// X(const_name, message)
+#define LOG_EVENTS(X) \
+    X(kEthernetBegin, "Eth begin") \
+    /* this may happen later than begin due to DHCP */ \
+    X(kEthernetIP, "Eth got IP") \
+    X(kEthernetStuck, "Eth stuck, rst") \
+    X(kMqttConnected, "MQTT connected") \
+    X(kMqttReinitTime, "MQTT reinit (time)") \
+    X(kControlNotShorted, "control_shorted, but mode != shorted") \
+    X(kControlMqttTimeout, "MQTT control timeout") \
+    X(kControlLispError, "error in control_lisp") \
+    X(kControlShortEstop, "SHORT e-stop") \
+    X(kSettingsReset, "Settings reset") \
+    X(kSettingsWrite, "Settings write") \
+    X(kSettingsErase, "Settings erase") \
+    X(kPowerBoardStatusTimeout, "power_board_status timeout") \
+    X(kPowerBoardEmergency, "power_board emergency") \
+    X(kOtaEnabled, "OTA enabled") \
+    X(kLogReinit, "log reinit") \
+    X(kPumpOn, "pump on") \
+    X(kPumpOff, "pump off") \
+    X(kDS18B20Error, "DS18B20 error") \
+    X(kSoftwareReset, "software reset") \
+    X(kMillisRollover, "millis rollover")
+
+
 /**
  * Events without context
  */
 typedef enum
 {
-    kEthernetBegin = 0,
-    kEthernetIP,  // this may happen later than begin due to DHCP
-    kEthernetStuck,
-    kMqttConnected,
-    kMqttReinitTime,
-    kControlNotShorted,
-    kControlMqttTimeout,
-    kControlLispError,
-    kControlShortEstop,
-    kSettingsReset,
-    kSettingsWrite,
-    kSettingsErase,
-    kPowerBoardStatusTimeout,
-    kPowerBoardEmergency,
-    kOtaEnabled,
-    kLogReinit,
-    kPumpOn,
-    kPumpOff,
-    kDS18B20Error,
-    kSoftwareReset,
-    kMillisRollover,
+#define X_ENUM(const_name, message) const_name,
+    LOG_EVENTS(X_ENUM)
+#undef X_ENUM
 } log_event_t;
 
 #define LOG_RECORD_COUNT 1024
