@@ -21,6 +21,7 @@ void Hbridge_set_duty(uint8_t duty_cycle)
     duty_cycle = (duty_cycle > OCP_max_duty) ? OCP_max_duty : duty_cycle;
 
     if (duty_cycle > Hbridge_duty_max) duty_cycle = Hbridge_duty_max;
+    if (duty_cycle < settings[kMinDuty].value) duty_cycle = 0;
     uint16_t a = (uint32_t)(duty_conversion) * duty_cycle / 10;
     uint16_t b = top_value - a;
 

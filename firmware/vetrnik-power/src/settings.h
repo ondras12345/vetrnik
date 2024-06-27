@@ -54,6 +54,7 @@ typedef enum {
     kOCPL = 5,
     kOCPH = 6,
     kRPMfilter = 7,
+    kMinDuty = 8,
     kSettingsEnd,
 } setting_index_t;
 
