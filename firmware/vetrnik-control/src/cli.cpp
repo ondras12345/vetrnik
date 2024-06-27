@@ -603,8 +603,8 @@ static void cmnd_cat(char * args, Stream *response)
             }
             else
             {
-                wrlen = 0;
                 response->write(buf + wrstart, wrlen);
+                wrlen = 0;
             }
         }
     }
