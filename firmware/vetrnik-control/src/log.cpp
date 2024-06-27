@@ -83,6 +83,9 @@ const char * get_event_string(log_event_t event)
         case kMqttConnected:
             return "MQTT connected";
 
+        case kMqttReinitTime:
+            return "MQTT reinit (time)"
+
         case kControlNotShorted:
             return "control_shorted, but mode != shorted";
 

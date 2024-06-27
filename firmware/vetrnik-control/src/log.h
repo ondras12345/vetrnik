@@ -37,6 +37,7 @@ typedef enum
     kEthernetIP,  // this may happen later than begin due to DHCP
     kEthernetStuck,
     kMqttConnected,
+    kMqttReinitTime,
     kControlNotShorted,
     kControlMqttTimeout,
     kControlLispError,

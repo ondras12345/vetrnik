@@ -15,6 +15,9 @@
 #include "cli.h"
 #include "log.h"
 #include <MQTT_helpers.h>
+#ifdef WATCHDOG_TIME
+#include <IWatchdog.h>
+#endif
 
 static EthernetClient ethClient;
 static void MQTTcallback(char* topic, byte* payload, unsigned int length);
@@ -41,6 +44,9 @@ void ETH_reset()
 
 uint8_t MQTT_reinit()
 {
+#ifdef WATCHDOG_TIME
+    IWatchdog.reload();
+#endif
     ETH_reset();
     return MQTT_init();
 }
@@ -126,6 +132,7 @@ void MQTT_loop()
 
     if (now - MQTT_last_full_loop >= MQTTWaitBeforeEthernetReset)
     {
+        log_add_event_and_println(kMqttReinitTime, INFO);
         MQTT_last_full_loop = now;
         MQTT_reinit();
     }
