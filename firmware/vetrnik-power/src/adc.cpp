@@ -164,9 +164,11 @@ void ADC_loop()
                 errm_add(errm_create(&etemplate_temperature, ((temperature_rectifier/10) & 0xFF)));
             }
             uint8_t fan_hs;
-            if (temperature_heatsink < FAN_TEMPERATURE_OFF) fan_hs = 0;
-            else if (temperature_heatsink > FAN_TEMPERATURE_FULL) fan_hs = 255;
-            else fan_hs = map_uint16(temperature_heatsink, FAN_TEMPERATURE_OFF, FAN_TEMPERATURE_FULL, 0, 255);
+            const uint16_t temp_full = settings[kFanTempFull].value * 5;
+            const uint16_t temp_off = settings[kFanTempOff].value * 5;
+            if (temperature_heatsink < temp_off) fan_hs = 0;
+            else if (temperature_heatsink > temp_full) fan_hs = 255;
+            else fan_hs = map_uint16(temperature_heatsink, temp_off, temp_full, 0, 255);
             uint8_t fan_rect = (temperature_rectifier > (FAN_TEMPERATURE_RECTIFIER_THRESHOLD + (fan ? -5 : 5))) ? 255 : 0;
             // pick max
             fan = (fan_hs > fan_rect) ? fan_hs : fan_rect;

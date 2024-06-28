@@ -3,30 +3,11 @@
 #include <avr/io.h>
 #include <avr/eeprom.h>
 
+#define X_STRUCT(id, name, default_value) {default_value},
 setting_t settings[kSettingsEnd] = {
-    // 0 ... 50Hz ; 1 ... 400 Hz
-    {1},  // kHBridgeFrequency
-
-    {10},  // kRPMConversion
-
-    // ACS712-20A: 5000 mV / 1024 / 100 mV/A * 1000 mA/A = 48
-    // ACS770LCB-50U: 5000 mV / 1024 / 80 mV/A * 1000 mA/A = 61
-    // ACS770LCB-50U with opamp: 5000 mV / 1024 / (80 mV/A * 1.5) * 1000 mA/A = 41
-    {41},  // KCurrentConversion
-
-    // 500 mV .. 102; seems to want 104
-    // for opamp board with Vref set to 440mV: 21
-    // L, H - low byte, high byte
-    {21},  // kCurrentOffsetL
-    {0},  // kCurrentOffsetH
-    // L, H - lower limit, upper limit:
-    {200},  // kOCPL, 40 A / 0.2 A = 200
-    {210},  // kOCPH, 42 A / 0.2 A = 210
-    {30},  // kRPMfilter - see RPM.cpp ; was 4 - too low, try 30
-    {4},  // kMinDuty
-    {10}, // kStoppingRPM
-    {50}, // kReportRate, *10ms
+    SETTINGS_ITEMS(X_STRUCT)
 };
+#undef X_STRUCT
 
 
 #define EEPROM_update(address, data) eeprom_update_byte((uint8_t*)(address), data)

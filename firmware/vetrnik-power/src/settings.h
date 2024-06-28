@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 
 // OVP
 #define voltage_protection_start 500  // 50V
@@ -31,9 +32,6 @@
 #define DEBUG false
 
 
-#define FAN_TEMPERATURE_FULL 320  // need to keep heatsink cooler than 35'C at 30W / mosfet. Should be better for H-bridge, about 50'C
-#define FAN_TEMPERATURE_OFF 300  // probably should be higher than normal room temperature
-#define FAN_POWER_MIN 0
 #define HEATSINK_TEMPERATURE_MAX 400
 // see rectifier datasheet (SKBPC5004) - Io-Tc derating curve
 #define FAN_TEMPERATURE_RECTIFIER_THRESHOLD 450
@@ -42,22 +40,42 @@
 #define EEPROM_RESET_ADDRESS ((uint8_t *)511)
 #define EEPROM_RESET_VALUE 0x5A
 
-#include <stdint.h>
 
+// X(id, name, default_value)
+#define SETTINGS_ITEMS(X) \
+    /* 0 ... 50Hz ; 1 ... 400 Hz */ \
+    X(0, kHBridgeFrequency, 1) \
+    X(1, kRPMConversion, 10) \
+    /* ACS712-20A: 5000 mV / 1024 / 100 mV/A * 1000 mA/A = 48 */ \
+    /* ACS770LCB-50U: 5000 mV / 1024 / 80 mV/A * 1000 mA/A = 61 */ \
+    /* ACS770LCB-50U with opamp: 5000 mV / 1024 / (80 mV/A * 1.5) * 1000 mA/A = 41 */ \
+    X(2, KCurrentConversion, 41) \
+    /* 500 mV .. 102; seems to want 104 */ \
+    /* for opamp board with Vref set to 440mV: 21 */ \
+    /* L, H - low byte, high byte */ \
+    X(3, kCurrentOffsetL, 21) \
+    X(4, kCurrentOffsetH, 0) \
+    /* L, H - lower limit 40 A / 0.2 A = 200; upper limit 42 A / 0.2 A = 210 */ \
+    X(5, kOCPL, 200) \
+    X(6, kOCPH, 210) \
+    /* kRPMfilter - see RPM.cpp ; was 4 - too low, try 30 */ \
+    X(7, kRPMfilter, 30) \
+    X(8, kMinDuty, 4) \
+    X(9, kStoppingRPM, 10) \
+    /* stored /10 ms */ \
+    X(10, kReportRate, 50) \
+    /* fan temperatures, stored *2 'C */ \
+    /* need to keep heatsink cooler than 35'C at 30W / mosfet */ \
+    X(11, kFanTempFull, 64) \
+    /* should be higher than normal room temperature */ \
+    X(12, kFanTempOff, 60)
+
+#define X_ENUM(id, name, default_value) name = id,
 typedef enum {
-    kHBridgeFrequency = 0,
-    kRPMConversion = 1,
-    KCurrentConversion = 2,
-    kCurrentOffsetL = 3,
-    kCurrentOffsetH = 4,
-    kOCPL = 5,
-    kOCPH = 6,
-    kRPMfilter = 7,
-    kMinDuty = 8,
-    kStoppingRPM = 9,
-    kReportRate = 10,
+    SETTINGS_ITEMS(X_ENUM)
     kSettingsEnd,
 } setting_index_t;
+#undef X_ENUM
 
 
 typedef struct {
