@@ -59,6 +59,7 @@
     X(5, kOCPL, 200) \
     X(6, kOCPH, 210) \
     /* kRPMfilter - see RPM.cpp ; was 4 - too low, try 30 */ \
+    /* 30 ends @ 1200 RPM, 20 ends @ 1800 RPM */ \
     X(7, kRPMfilter, 30) \
     X(8, kMinDuty, 4) \
     X(9, kStoppingRPM, 10) \
