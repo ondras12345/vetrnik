@@ -75,7 +75,8 @@
 
   ; don't get stuck at 0
   (if (is d 0) (= s 1))
-  ; TODO don't get stuck at 255 ??
+  ; don't get stuck at 255
+  (if (is d 255) (= s -1))
 
   (= pp p)
 
