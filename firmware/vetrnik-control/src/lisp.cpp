@@ -7,6 +7,7 @@
 #include "settings.h"
 #include "sensor_DS18B20.h"
 #include "pump.h"
+#include "mqtt.h"
 #include "flash_tools.h"
 #include <Arduino.h>
 
@@ -441,6 +442,12 @@ static fe_Object* cfunc_pump_set(fe_Context *ctx, fe_Object *arg)
 }
 
 
+static fe_Object* cfunc_ethrst(fe_Context *ctx, fe_Object *arg)
+{
+    return fe_number(ctx, MQTT_reinit());
+}
+
+
 static int gc;
 static fe_Context *ctx;
 
@@ -473,6 +480,7 @@ void lisp_init()
     fe_set(ctx, fe_symbol(ctx, "ds18"), fe_cfunc(ctx, cfunc_DS18B20));
     fe_set(ctx, fe_symbol(ctx, "pumpg"), fe_cfunc(ctx, cfunc_pump_get));
     fe_set(ctx, fe_symbol(ctx, "pumps"), fe_cfunc(ctx, cfunc_pump_set));
+    fe_set(ctx, fe_symbol(ctx, "ethrst"), fe_cfunc(ctx, cfunc_ethrst));
 
     // Add variables for power modes
     for (size_t i = 0; power_board_modes[i] != nullptr; i++)
