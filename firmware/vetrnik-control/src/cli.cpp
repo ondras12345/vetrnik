@@ -638,13 +638,13 @@ static void cmnd_hexdump(char * args, Stream *response)
 
 static void cmnd_erase(char * args, Stream *response)
 {
+    response->println("(only files created as erasable can be erased)");
     SerialFlashFile f = SerialFlash.open(args);
     if (!f)
     {
         response->println("Cannot open file");
         return;
     }
-    response->println("(only files created as erasable can be erased)");
     f.erase();
     f.close();
 }
@@ -680,6 +680,31 @@ static void cmnd_fill(char * args, Stream *response)
     response->print("filled ");
     response->print(flash_fill_file(&f, value, length));
     response->println(" bytes");
+    f.close();
+}
+
+
+static void cmnd_filltext(char * args, Stream *response)
+{
+    SerialFlashFile f = SerialFlash.open(args);
+    if (!f)
+    {
+        response->println("Cannot open file");
+        return;
+    }
+    // find first non-0x00 byte
+    uint32_t fill_start = flash_find_byte(&f, 0x00, true) + 1;
+    // find last non-0xFF byte
+    uint32_t fill_end = flash_find_byte(&f, 0xFF, false);
+    if (fill_end == (uint32_t)-1)
+    {
+        response->println("No 0xFF left");
+        return;
+    }
+    else fill_end--;
+    response->printf("Filling 0x00 from %04x to %04x; length (bytes): ", fill_start, fill_end);
+    f.seek(fill_start);
+    response->println(flash_fill_file(&f, 0x00, fill_end-fill_start+1));
     f.close();
 }
 
@@ -1039,6 +1064,7 @@ static Commander::API_t API_tree[] = {
     apiElement("cat",           "Print text file from SPI flash",           cmnd_cat),
     apiElement("erase",         "Erase contents of file in SPI flash",      cmnd_erase),
     apiElement("fill",          "Fill file in SPI flash with constant byte",cmnd_fill),
+    apiElement("filltext",      "Fill replace text in file with 0x00",      cmnd_filltext),
     apiElement("ed",            "Edit file in SPI flash",                   cmnd_ed),
     // commander pre-made commands
     API_ELEMENT_MILLIS,

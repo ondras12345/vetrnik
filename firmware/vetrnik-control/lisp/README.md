@@ -19,12 +19,9 @@ reset
 
 Advanced:
 ```
-cat init.lisp
-# will print "Text starting @ " - note address
-hexdump init.lisp $addr
-# find end - note length
-fill init.lisp $addr $len 0
-ed init.lisp $addr+$len
+filltext init.lisp
+# will print end address
+ed init.lisp $end_addr+1
 # paste out.lisp
 .
 reset
