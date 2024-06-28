@@ -6,12 +6,27 @@ flash.
 
 
 ## Uploading
+Simple:
 ```
 # connect via telnet (do not use that nc trick, it does not work)
-SPIflash erase init.lisp
-SPIflash dump init.lisp 0
-SPIflash ed init.lisp 0
+erase init.lisp
+hexdump init.lisp 0
+ed init.lisp 0
 # paste out.lisp
 .
 reset
+```
+
+Advanced:
+```
+cat init.lisp
+# will print "Text starting @ " - note address
+hexdump init.lisp $addr
+# find end - note length
+fill init.lisp $addr $len 0
+ed init.lisp $addr+$len
+# paste out.lisp
+.
+reset
+# (or lisp_reset & lisp_read with addr)
 ```

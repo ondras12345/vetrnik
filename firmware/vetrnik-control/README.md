@@ -205,9 +205,7 @@ On STM (8*1024 bytes): a = 329
 
 Patch for testing in lab without DS18B20 sensors:
 ```lisp
-(= ds18 (fn ()
-  23.4
-))
+(= ds18 (fn () 23.4))
 ```
 
 
