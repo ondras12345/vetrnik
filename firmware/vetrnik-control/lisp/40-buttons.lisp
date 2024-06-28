@@ -23,3 +23,8 @@
 (= btn2_short (fn ()
   (lcdb (not (lcdb)))
 ))
+
+
+(= btn2_long (fn ()
+  (ethrst)
+))
