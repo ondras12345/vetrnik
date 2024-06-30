@@ -18,6 +18,7 @@ extern bool eth_skip;
 extern bool MQTT_skip;
 extern bool DHCP_mode;
 extern unsigned long MQTT_last_command_ms;
+extern uint_fast8_t MQTT_reconnect_count;
 
 void ETH_reset();
 uint8_t MQTT_reinit();

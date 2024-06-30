@@ -95,10 +95,19 @@ static void cmnd_ifconfig(char *args, Stream *response)
 
 static void cmnd_mqtt(char *args, Stream *response)
 {
+    if (strcmp(args, "-r") == 0)
+    {
+        response->println("Resetting reconnect count");
+        MQTT_reconnect_count = 0;
+        return;
+    }
+
     response->print("state: ");
     response->println(MQTTClient.state());
     response->print("base topic: ");
     response->println(MQTTtopic_prefix);
+    response->print("reconnect count: ");
+    response->println(MQTT_reconnect_count);
 }
 
 

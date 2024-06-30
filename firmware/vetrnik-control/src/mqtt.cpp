@@ -26,6 +26,7 @@ PubSubClient MQTTClient(ethClient);
 bool eth_skip = false;
 bool MQTT_skip = true;
 bool DHCP_mode = true;
+uint_fast8_t MQTT_reconnect_count = 0;
 
 /**
  * millis() time when last valid MQTT command for power_board or control
@@ -44,6 +45,7 @@ void ETH_reset()
 
 uint8_t MQTT_reinit()
 {
+    MQTT_reconnect_count = 0;
 #ifdef WATCHDOG_TIME
     IWatchdog.reload();
 #endif
@@ -66,15 +68,14 @@ uint8_t MQTT_init()
         result = Ethernet.begin(settings.ETH_MAC, settings.DHCP_timeout_s * 1000UL);
     else
         Ethernet.begin(settings.ETH_MAC, settings.ETH_IP);
-    // Default timeout is 15 seconds.
-    MQTTClient.setSocketTimeout(2);
+    MQTTClient.setSocketTimeout(settings.MQTT_timeout_s);
 
     INFO->println(result);
     log_add_event(kEthernetIP);
     INFO->print(F("Eth IP: "));
     INFO->println(Ethernet.localIP());
 
-    if (result == 0) eth_skip = true;
+    eth_skip = (result == 0);
     // TODO eth_skip if ifconfig reports HW: 0, status: 0
 
     for (uint8_t i = 0; i < sizeof settings.MQTTserver; i++)
@@ -119,12 +120,11 @@ void MQTT_loop()
         INFO->println(MQTT_state_to_str(MQTT_state));
     }
 
-    static uint_fast8_t MQTTReconnectCount = 0;
     static unsigned long MQTTLastReconnect = 0;
     static unsigned long MQTT_last_full_loop = 0;
 
     now = millis();
-    if (MQTTReconnectCount > 6)
+    if (MQTT_reconnect_count > 6)
     {
         if (now - MQTTLastReconnect < MQTTReconnectRate*3)
             return;
@@ -167,16 +167,16 @@ void MQTT_loop()
             }
 
             MQTTLastReconnect = millis();
-            MQTTReconnectCount++;
+            MQTT_reconnect_count++;
             // don't overflow
-            if (MQTTReconnectCount == 0) MQTTReconnectCount--;
+            if (MQTT_reconnect_count == 0) MQTT_reconnect_count--;
         }
     }
     if (!MQTTClient.connected()) return;
 
     // if everything seems good, switch back to normal rate of reconnecting
     if((unsigned long)(millis() - MQTTLastReconnect) >= MQTTReconnectRate*5UL)
-        MQTTReconnectCount = 0;
+        MQTT_reconnect_count = 0;
 
 
     MQTTClient.loop();
