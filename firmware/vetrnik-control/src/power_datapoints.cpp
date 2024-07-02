@@ -57,7 +57,7 @@ void power_datapoints_loop()
         {
             char c = TX_datapoints[i].name;
             uint8_t value = TX_datapoints[i].value;
-            DEBUG_PB->printf("Raw W rfsh: %c%03d\r\n", c, value);
+            //DEBUG_PB->printf("Raw W rfsh: %c%03d\r\n", c, value);
             PSerial.printf("%c%03d", c, value);
             TX_datapoints[i].last_refresh = now;
         }
