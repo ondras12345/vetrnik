@@ -1,13 +1,8 @@
 #pragma once
 #include <stdint.h>
 
-// OVP
-#define voltage_protection_start 500  // 50V
-#define voltage_protection_stop 1000  // 100V
-// voltage_protection_short should be significantly higher than
-// voltage_protection_stop. We do not want to short the turbine while it is
-// spinning.
-#define voltage_protection_short 1600  // 160V
+// OVP - over voltage protection
+#define OVP_DISCONNECT 900  // 90V
 
 // OCP
 #define OCP_L_MAX 40000U  // 40 A
@@ -69,7 +64,12 @@
     /* need to keep heatsink cooler than 35'C at 30W / mosfet */ \
     X(11, kFanTempFull, 64) \
     /* should be higher than normal room temperature */ \
-    X(12, kFanTempOff, 60)
+    X(12, kFanTempOff, 60) \
+    /* OVP start / stop voltages in volts. */ \
+    /* Disconnect voltage is a compile-time constant */ \
+    X(13, kOVPStart, 50) \
+    X(14, kOVPStop, 75)
+
 
 #define X_ENUM(id, name, default_value) name = id,
 typedef enum {

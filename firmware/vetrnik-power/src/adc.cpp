@@ -88,14 +88,14 @@ uint16_t map_uint16(uint16_t x,
 
 static void OVP() {
     static mode_t OVP_mode;
-    if (voltage <= voltage_protection_start && OVP_stop)
+    if (voltage <= settings[kOVPStart].value * 10U && OVP_stop)
     {
         OVP_stop = false;
         // Restore mode from before OVP kicked in
         set_mode(OVP_mode);
     }
 
-    if (voltage >= voltage_protection_stop && !OVP_stop && !emergency)
+    if (voltage >= settings[kOVPStop].value * 10U && !OVP_stop && !emergency)
     {
         OVP_stop = true;
         OVP_mode = mode;
@@ -103,7 +103,7 @@ static void OVP() {
         errm_add(errm_create(&etemplate_OVP_stop));
     }
 
-    if (voltage >= voltage_protection_short && !emergency)
+    if (voltage >= OVP_DISCONNECT && !emergency)
     {
         // Error with weight 10 will call emergency_stop automatically
         errm_add(errm_create(&etemplate_OVP_short));
