@@ -99,7 +99,7 @@ typedef struct {
     X(bool, bool,     :1,     report_raw, false) /* MQTT report of raw datapoints */ \
     X(int,  uint8_t,  ,       contactor_debounce_min, 15) \
     X(int,  uint8_t,  ,       DHCP_timeout_s, 14) /* default timeout in Ethernet.h is 60 s ; needs to be lower than WATCHDOG_TIME */ \
-    X(int,  uint8_t,  ,       MQTT_timeout_s, 4) /* default timeout is 15 s */
+    X(int,  uint8_t,  ,       MQTT_timeout_s, 4) /* default timeout is 15 s, should be lower than power board uart timeout (5.1s) */
 
 
 // #undef COMMA - cannot undef, needed during expansion
