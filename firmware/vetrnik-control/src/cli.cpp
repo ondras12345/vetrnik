@@ -419,9 +419,8 @@ static void cmnd_stats(char *args, Stream *response)
     response->println("stats:");
     response->printf("energy: %u.%03u kWh\r\n",
                      stats.energy / 1000U, stats.energy % 1000U);
-    response->print("energy_Ws: ");
-    response->print(stats.energy_Ws);
-    response->println(" Ws");
+    response->printf("energy_Ws: %u.%u Ws\r\n",
+                     stats.energy_Ws10 / 10U, stats.energy_Ws10 % 10U);
 }
 
 

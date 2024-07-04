@@ -18,19 +18,19 @@ void stats_new_state()
     if (power_board_status.valid && prev_valid)
     {
         static uint16_t power = 0;
-        stats.energy_Ws += power * (unsigned long)(now - last_ms) / 1000UL / 10;
+        stats.energy_Ws10 += power * (unsigned long)(now - last_ms) / 1000UL;
 
-        // W * 10
+        // remember W * 10
         if (power_board_status.duty == 0) power = 0;
-        else power = ((uint32_t)(power_board_status.voltage) * power_board_status.current)/1000;
+        else power = ((uint32_t)(power_board_status.voltage) * power_board_status.current) / 1000;
     }
 
     prev_valid = power_board_status.valid;
     last_ms = now;
 
-    while (stats.energy_Ws >= 3600)
+    while (stats.energy_Ws10 >= 36000)
     {
-        stats.energy_Ws -= 3600;
+        stats.energy_Ws10 -= 36000;
         stats.energy++;
     }
 }

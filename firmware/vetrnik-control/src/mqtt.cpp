@@ -360,10 +360,10 @@ uint_fast8_t log_id = 0;
         PUBLISH_LOG(MQTTtopic_tele_stats "energy", tmp, true);
     }
 
-    if (COND_NEQ(stats.energy_Ws) || force_report)
+    if (COND_NEQ(stats.energy_Ws10) || force_report)
     {
-        prev_stats.energy_Ws = stats.energy_Ws;
-        MAKETMP_UINT(stats.energy_Ws);
+        prev_stats.energy_Ws10 = stats.energy_Ws10;
+        MAKETMP_DECIMAL(stats.energy_Ws10, 1);
         log_id = 23;
         PUBLISH_LOG(MQTTtopic_tele_stats "energy_Ws", tmp, true);
     }
