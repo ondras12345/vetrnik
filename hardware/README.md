@@ -1,13 +1,14 @@
 # Vetrnik hardware
 Block diagram:
 ```
-+---------+ 3 phase   +-----------+ DC +--------+ +-----------+ 1-phase +---------+
-| Turbine +-+--+------+ rectifier +-+--+ ACS770 +-+ H-bridge  +---------+ heater  +
-+---------+ |  |      +-----------+ |  +----+---+ +-----------+ AC      +---------+
-            |   \ contactor         |       |          ^
-            |  |  (shorts    voltage|       |          |
-            |     phases            |       | current  | duty
-            |  ^  together)         v       |          |
+            3 phase
++---------+ contactor +-----------+ DC +--------+ +-----------+ 1-phase +---------+
+| Turbine +-+__/ __---+ rectifier +-+--+ ACS770 +-+ H-bridge  +---------+ heater  +
++---------+ |  ^      +-----------+ |  +----+---+ +-----------+ AC      +---------+
+            |  |                    |       |          ^
+            |  |             voltage|       |          |
+            |  |                    |       | current  | duty
+            |  |                    v       |          |
   frequency |  |      +-------------+-+     |          |
   (RPM)     |  +------+ vetrnik-power +<----+          |
             +-------->+               +----------------+
@@ -51,8 +52,8 @@ are single-sided and designed to be milled out on a CNC.
     The 3.3V voltage regulator is switch mode, 5V regulator is linear.
 - vetrnik-relays
   - This is just a simple board with 3 relays that can be used to switch 230V
-    devices like the coil of the contactor used to short the wind turbine output,
-    and a circulator pump.
+    devices like the coil of the contactor used to disconnect the wind turbine
+    output, and a circulator pump.
 
 
 ## Wind turbine
