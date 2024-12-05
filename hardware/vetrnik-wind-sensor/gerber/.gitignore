@@ -1,0 +1,4 @@
+# pcb2gcode
+*.ngc
+*.svg
+*pcb2gcode.log
