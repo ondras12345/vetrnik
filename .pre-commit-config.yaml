@@ -10,10 +10,17 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
+        args: ["--markdown-linebreak-ext=md,jinja"]
       - id: end-of-file-fixer
       - id: check-case-conflict
       - id: check-yaml
       - id: check-added-large-files
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-merge-conflict
+      - id: check-illegal-windows-names
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
 
   - repo: local
     hooks:
