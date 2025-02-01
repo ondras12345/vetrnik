@@ -5,6 +5,7 @@ for more information about the language and built-in functions.
 # Types
 - number: a floating-point number
 - string: a sequence of characters
+- nil: always `nil`
 - bool: either `nil` (false), or any other value (true)
 - any: placeholder used in this document to indicate values of
   more than one type are acceptable.
