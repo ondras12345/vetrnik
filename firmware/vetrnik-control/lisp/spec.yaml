@@ -1,0 +1,375 @@
+# vim: tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+
+# This file contains the specification for custom LISP / fe functions.
+# It is edited manually and used to generate documentation (and in the future,
+# hopefully also tests).
+
+categories:
+  LCD: functions that control the display
+  callbacks: functions to be implemented by the user to respond to various events
+
+functions:
+
+  - name: rem
+    description: |-
+      Remainder function.
+
+      Performs the operation truncate on number and divisor and returns the
+      remainder of the truncate operation.
+
+      https://stackoverflow.com/questions/5706398/how-to-get-the-modulus-in-lisp
+    example: |-
+      (rem 3 2) ; 1
+      (rem -3 2) ; -1
+    nargs: 2
+    args:
+      - name: x
+        type: number
+      - name: y
+        type: number
+    return:
+      type: number
+      description: '`(int)x % (int)y`'
+    tests:
+      - '(is (rem 3 2) 1)'
+      - '(is (rem -3 2) -1)'
+
+  - name: round
+    description: >-
+      Return the closest integer to x,
+      rounding to even when x is halfway between two integers.
+    example: |-
+      (round 0.4999) ; 0
+      (round 0.5) ; 0
+      (round 0.5001) ; 1
+
+      (round 1.4999) ; 1
+      (round 1.5) ; 2
+      (round 1.5001) ; 2
+    nargs: 1
+    args:
+      - name: x
+        type: number
+        description: number to round
+    return:
+      type: number
+    tests:
+      - '(is (round 0.4999) 0)'
+      - '(is (round 0.5) 0)'
+      - '(is (round 0.5001) 1)'
+      - '(is (round 1.4999) 1)'
+      - '(is (round 1.5) 2)'
+      - '(is (round 1.6001) 2)'
+
+  - name: map
+    description: |-
+      [Arduino-like
+      map](https://docs.arduino.cc/language-reference/en/functions/math/map/)
+      function, but isn't as broken (uses floating point
+      arithmetic).
+
+      This could be easily implemented in Lisp, but a cfunc takes up less memory.
+      Equivalent lisp implementation:
+      ```lisp
+      (= map (fn (v fl fh tl th)
+        (+ tl
+          (/ (* (- v fl) (- th tl)) (- fh fl))
+        )
+      ))
+      ```
+    example: |-
+      (map 10 0 100 0 1) ; 0.1
+      (map 10 0 100 -1 0) ; -0.9
+    nargs: 5
+    args:
+      - name: value
+        type: number
+        description: the number to map
+      - name: from_low
+        type: number
+        description: lower bound of `value`'s current range
+      - name: from_high
+        type: number
+        description: upper bound of `value`'s current range
+      - name: to_low
+        type: number
+        description: lower bound of `value`'s target range
+      - name: to_high
+        type: number
+        description: upper bound of `value`'s target range
+    return:
+      type: number
+      description: '`value` remapped to the target range'
+    tests:
+      - '(is (map 10 0 100 -1 0) -0.9)'
+      - '(is (map 10 0 100 0 1) 0.1)'
+      - '(is (map 10 0 1 -2 0) -20)'
+
+  - name: pwrg
+    description: >-
+      Get a value from the power board state object.
+      Numerical values (in SI units without metric prefix) are returned.
+    nargs: 1
+    args:
+      - name: name
+        type: string
+        values:
+          - '"valid"'
+          - '"time"'
+          - '"mode"'
+          - '"duty"'
+          - '"OCP_max_duty"'
+          - '"RPM"'
+          - '"voltage"'
+          - '"current"'
+          - '"hw_enable"'
+          - '"sw_enable"'
+          - '"enabled"'
+          - '"emergency"'
+    return:
+      type: any
+    tests:
+      # all values are returned and aren't pairs
+      - template: >-
+          (and
+          {% for v in this.args[0].values %}
+            (atom (pwrg {{v}}))
+          {% endfor %}
+
+  - name: pwrs
+    description: >-
+      Set parameters on the power board.
+      Variables are added for the constants from `power_board_mode_t` enum.
+      They are prefixed with `pwr_`, e.g. `pwr_start`.
+    nargs:
+      min: 2
+    args:
+      - name: name
+        type: string
+        values:
+          - '"duty"'
+          - '"mode"'
+          - '"REL"'
+          - '"sw_enable"'
+      - name: value
+        description: Desired value (expected type depends on 'name')
+    return: nil
+
+  - name: lcdc
+    description: Set LCD cursor position to specified column.
+    category: LCD
+    nargs: 1
+    args:
+      - name: column
+        type: number
+    return: nil
+
+  - name: lcdw
+    description: Write LCD buffer to specified line (row).
+    category: LCD
+    nargs: 1
+    args:
+      - name: row
+        type: number
+    return: nil
+
+  - name: lcds
+    description: Print a string to the LCD buffer.
+    category: LCD
+    nargs: 1
+    args:
+      - name: str
+        type: string
+    return: nil
+
+  - name: lcdn
+    description: Print a number to the LCD buffer.
+    category: LCD
+    nargs: 3
+    args:
+      - name: number
+        description: number to print
+        type: number
+      - name: align
+        description: (integer) TODO
+        type: number
+      - name: precision
+        description: (integer) number of decimal places (TODO verify)
+    return: nil
+
+
+  - name: lcdb
+    description: Get or set LCD backlight status.
+    category: LCD
+    nargs:
+      max: 1
+    args:
+      - name: state
+        type: bool
+        description: Desired backlight status
+    return:
+      type: bool
+      description: LCD backlight status
+    tests:
+      - '(and (lcdb 1) (lcdb))'
+      - '(and (not (lcdb nil)) (not (lcdb)))'
+
+  - name: stats
+    description: Get a value from the stats struct.
+    nargs: 1
+    args:
+      - name: name
+        type: string
+        values:
+          - '"energy"'
+    return:
+      type: number
+      description: value
+    tests:
+      - '(<= 0 (stats "energy"))'
+
+  - name: ctrlg
+    description: Get a value from the control subsystem.
+    nargs: 1
+    args:
+      - name: name
+        type: string
+        values:
+          - '"strategy"'
+          - '"contactor"'
+    return:
+      type: any
+
+  - name: ctrls
+    description: Set a value in the control subsystem.
+    nargs: 2
+    args:
+      - name: name
+        type: string
+        values:
+          - '"strategy"'
+          - '"contactor"'
+      - name: value
+        description: Desired value (expected type depends on 'name')
+    return: nil
+
+  - name: relg
+    description: Get states of control board relays.
+    nargs: 1
+    args:
+      - name: relay_number
+        type: number
+        values:
+          - 2
+    return:
+      type: bool
+      description: State of queried relay
+
+  - name: rels
+    description: Set states of control board relays.
+    nargs: 2
+    args:
+      - name: relay_number
+        type: number
+        values:
+          - 2
+      - name: state
+        type: bool
+        description: Desired state of the relay
+    return: nil
+
+  - name: ledg
+    description: Get states of control board LEDs.
+    nargs: 1
+    args:
+      - name: LED_number
+        type: number
+        values:
+          - 1
+          - 2
+    return:
+      type: bool
+      description: LED status
+
+  - name: leds
+    description: Set states of control board LEDs.
+    nargs: 2
+    args:
+      - name: LED_number
+        type: number
+        values:
+          - 1
+          - 2
+      - name: state
+        type: bool
+        description: Desired state of the LED
+    return: nil
+
+  - name: ds18
+    description: Read temperature from DS18B20 sensors.
+    nargs: 1
+    args:
+      - name: sensor_number
+        type: number
+    return:
+      type: number
+      description: temperature in degrees C
+
+  - name: pumpg
+    description: Get circulation pump state.
+    nargs: 0
+    args: []
+    return:
+      type: bool
+
+  - name: pumps
+    description: Set circulation pump state.
+    nargs: 1
+    args:
+      - name: state
+        type: bool
+        description: Desired pump state
+    return: nil
+
+  # callbacks
+
+  - name: ctrl
+    category: callbacks
+    description: |-
+      If set up for `LISP` control strategy, the device will call this function
+      each time a new state object is received.
+
+      The `ctrl` function is empty by default, the user is expected to
+      overwrite this function with their own implementation.
+    nargs: 0
+    args: []
+    return: nil
+
+  - name: disp
+    category: callbacks
+    description: |-
+      The `disp` function is executed every 0.5 s. It is meant to be used to
+      control the display.
+
+      The `disp` function is empty by default, the user is expected to
+      overwrite this function with their own implementation.
+    nargs: 0
+    args: []
+    return: nil
+
+  - name: btn1_short
+    <<: &btn_handlers
+      category: callbacks
+      description: >-
+        The functions `btn1_short`, `btn1_long`, `btn2_short`, and `btn2_long`
+        are called when the respective button is short / long pressed. (To be
+        more precise, they are only called once the button is released.)
+      nargs: 0
+      args: []
+      return: nil
+  - name: btn1_long
+    <<: *btn_handlers
+  - name: btn2_short
+    <<: *btn_handlers
+  - name: btn2_long
+    <<: *btn_handlers

@@ -4,6 +4,10 @@ This directory contains the lisp code for vetrnik-control.
 Type `make` to compile `out.lisp`, which is the file to be written to the SPI
 flash.
 
+This directory also contains [documentation for the lisp
+environment](spec.md) (automatically generated from `spec.yaml` by
+`make`).
+
 
 ## Uploading
 Simple:

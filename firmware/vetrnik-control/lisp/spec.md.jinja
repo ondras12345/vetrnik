@@ -1,0 +1,62 @@
+# Language
+See [fe language overview](https://github.com/rxi/fe/blob/master/doc/lang.md)
+for more information about the language and built-in functions.
+
+# Types
+- number: a floating-point number
+- string: a sequence of characters
+- bool: either `nil` (false), or any other value (true)
+- any: placeholder used in this document to indicate values of
+  more than one type are acceptable.
+
+# Categories
+{%- for c in categories %}
+- {{ c }}: {{categories[c]}}
+{%- endfor %}
+
+# Custom functions
+{% for function in functions %}
+{%- set fn = functions[function] -%}
+## `{{ fn.name }}`
+{% if fn.category is not none -%}
+Category: {{ fn.category }}
+
+{% endif -%}
+### Description
+{{ fn.description }}
+
+### Signature
+```lisp
+({{ fn.name }}
+    {%- for arg in fn.args %}
+    {% set opt = loop.index0 >= fn.nargs_min -%}
+    {% if opt %}[{% endif %}{{ arg.name }}{% if opt %}]{% endif %}
+    {%- endfor -%}
+    {%- if fn.args|length < fn.nargs_max or fn.nargs_max < 0 %}
+    ...
+    {%- endif %}
+)
+```
+{# Number of arguments: {{ fn.nargs_min }}..{{ fn.nargs_max }} #}
+
+### Arguments
+{%- for arg in fn.args %}
+- `{{ arg.name }}` \[{{ arg.type.value }}\]{{ ": "+arg.description if arg.description }}
+{%- if arg.values is not none %}
+{#-  Allowed values: #}
+{%- for val in arg.values %}
+    - `{{ val }}`
+{%- endfor -%}
+{% endif %}
+{%- endfor %}
+
+### Return value
+\[{{ fn.return_type.value }}\]{{ ": "+fn.return_description if fn.return_description }}
+{%- if fn.example %}
+
+### Example
+```lisp
+{{ fn.example }}
+```
+{% endif %}
+{% endfor %}
