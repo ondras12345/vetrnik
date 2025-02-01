@@ -78,7 +78,7 @@ fe_Object* cfunc_empty(fe_Context *ctx, fe_Object *arg)
 char fe_read_str(fe_Context *ctx, void *udata)
 {
     (void)ctx;
-    fe_str_t * lstr = static_cast<fe_str_t *>(udata);
+    fe_str_t * lstr = (fe_str_t *)udata;
 
     if (lstr->i >= lstr->length) return '\0';
     return lstr->str[lstr->i++];

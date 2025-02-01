@@ -1,7 +1,9 @@
 #pragma once
+#ifdef __cplusplus
 extern "C" {
+#endif
+
 #include <fe.h>
-}
 
 
 fe_Object* cfunc_rem(fe_Context *ctx, fe_Object *arg);
@@ -28,3 +30,8 @@ typedef struct {
 
 
 char fe_read_str(fe_Context *ctx, void *udata);
+
+
+#ifdef __cplusplus
+}
+#endif
