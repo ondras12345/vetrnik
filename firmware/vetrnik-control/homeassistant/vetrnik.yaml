@@ -249,12 +249,12 @@ automation:
         id: Nouzovy rezim
     condition:
       - or:
-        - not:
-          - condition: trigger
-            id: Zmena strategie rizeni
-        - alias: V predchozim stavu byl alespon 2 minuty (trigger prijde po dalsich 2 minutach)
-          condition: template
-          value_template: '{{ trigger.from_state.last_changed < utcnow() - timedelta(minutes=4) }}'
+          - not:
+              - condition: trigger
+                id: Zmena strategie rizeni
+          - alias: V predchozim stavu byl alespon 2 minuty (trigger prijde po dalsich 2 minutach)
+            condition: template
+            value_template: '{{ trigger.from_state.last_changed < utcnow() - timedelta(minutes=4) }}'
     action:
       - if:
           - condition: trigger

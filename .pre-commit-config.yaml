@@ -27,6 +27,11 @@ repos:
     hooks:
       - id: flake8
 
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+
   - repo: local
     hooks:
       - id: check-power
