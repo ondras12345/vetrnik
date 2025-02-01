@@ -2,12 +2,17 @@
 import yaml
 import logging
 import jinja2
+import pathlib
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 
 
+TESTS_DIR = pathlib.Path("tests")
 _LOGGER = logging.getLogger(__name__)
+
+jinja_env = jinja2.Environment(autoescape=jinja2.select_autoescape(),
+                               loader=jinja2.FileSystemLoader("."))
 
 
 class Type(Enum):
@@ -40,13 +45,12 @@ class Test:
     _code: Optional[str] = None
     _template: Optional[str] = None
 
-    def get_code(self) -> str:
+    def get_code(self, fn: "Function") -> str:
         """Get LISP code for the test."""
-        if _code is not None:
-            return _code
+        if self._code is not None:
+            return self._code
         else:
-            pass
-            # TODO render template
+            return jinja_env.overlay(autoescape=False).from_string(self._template).render(this=fn)
 
     @classmethod
     def from_dict(cls, d):
@@ -54,6 +58,7 @@ class Test:
             return cls(_code=d)
         else:
             return cls(_template=d["template"])
+
 
 @dataclass
 class Function:
@@ -121,13 +126,20 @@ class Spec:
 
 
 def parse_dict(d) -> Spec:
-    return Spec(
+    s = Spec(
         functions={
             (fn := Function.from_dict(f)).name: fn
             for f in d["functions"]
         },
         categories=d.get("categories", {})
     )
+
+    # validity checks
+    for _, f in s.functions.items():
+        if f.category is not None and f.category not in s.categories:
+            raise Exception(f"undefined category '{f.category}' used in function '{f.name}'")
+
+    return s
 
 
 def parse_file(filename: str) -> Spec:
@@ -138,11 +150,25 @@ def parse_file(filename: str) -> Spec:
 
 
 def render_markdown(spec: Spec) -> str:
-    env = jinja2.Environment(autoescape=jinja2.select_autoescape(),
-                             loader=jinja2.FileSystemLoader("."))
-    template = env.get_template("spec.md.jinja")
+    template = jinja_env.get_template("spec.md.jinja")
     return template.render(functions=spec.functions,
                            categories=spec.categories)
+
+
+def generate_tests(spec: Spec) -> None:
+    TESTS_DIR.mkdir(exist_ok=True)
+
+    for _, fn in spec.functions.items():
+        if fn.tests == []:
+            continue
+
+        try:
+            test_code = jinja_env.get_template("test.lisp.jinja").render(fn=fn)
+        except Exception as e:
+            raise Exception(f"error rendering tests for '{fn.name}'") from e
+
+        with open(TESTS_DIR / f"test_{fn.name}.lisp", "w") as f:
+            f.write(test_code)
 
 
 def main():
@@ -151,6 +177,7 @@ def main():
     md = render_markdown(spec)
     with open("spec.md", "w") as f:
         f.write(md)
+    generate_tests(spec)
 
 
 if __name__ == "__main__":

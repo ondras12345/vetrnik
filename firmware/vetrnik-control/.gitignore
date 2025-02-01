@@ -1,4 +1,5 @@
 lisp/out.lisp
+lisp/tests/*.lisp
 include/version.h
 config/
 

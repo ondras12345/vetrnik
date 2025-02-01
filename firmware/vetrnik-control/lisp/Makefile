@@ -11,7 +11,7 @@ out.lisp: ${sources}
 	    echo "" ; \
 	done > $@
 
-spec.md: spec.md.jinja spec.yaml spec.py
+spec.md: spec.md.jinja spec.yaml spec.py test.lisp.jinja
 	./spec.py
 
 .PHONY: clean

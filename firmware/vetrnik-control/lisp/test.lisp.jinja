@@ -1,0 +1,11 @@
+; tests for {{fn.name}}
+{% for t in fn.tests %}
+; {{ loop.index0 }}
+(if
+;
+{{ t.get_code(fn)|indent(2, first=true) }}
+;
+  (print ".")
+  (print "F")
+)
+{% endfor %}

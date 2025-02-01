@@ -129,12 +129,14 @@ functions:
     return:
       type: any
     tests:
-      # all values are returned and aren't pairs
-      - template: >-
-          (and
-          {% for v in this.args[0].values %}
-            (atom (pwrg {{v}}))
-          {% endfor %}
+      - <<: &first-arg-values
+          template: |-
+            ; for all values of first argument, results are returned and aren't pairs
+            (and
+            {%- for v in this.args[0].values %}
+              (atom ({{this.name}} {{v}}))
+            {%- endfor %}
+            )
 
   - name: pwrs
     description: >-
@@ -226,6 +228,7 @@ functions:
       type: number
       description: value
     tests:
+      - *first-arg-values
       - '(<= 0 (stats "energy"))'
 
   - name: ctrlg
@@ -239,6 +242,8 @@ functions:
           - '"contactor"'
     return:
       type: any
+    tests:
+      - *first-arg-values
 
   - name: ctrls
     description: Set a value in the control subsystem.
@@ -264,6 +269,8 @@ functions:
     return:
       type: bool
       description: State of queried relay
+    tests:
+      - *first-arg-values
 
   - name: rels
     description: Set states of control board relays.
@@ -290,6 +297,8 @@ functions:
     return:
       type: bool
       description: LED status
+    tests:
+      - *first-arg-values
 
   - name: leds
     description: Set states of control board LEDs.
@@ -330,8 +339,6 @@ functions:
         type: bool
         description: Desired pump state
     return: nil
-
-  # callbacks
 
   - name: ctrl
     category: callbacks
