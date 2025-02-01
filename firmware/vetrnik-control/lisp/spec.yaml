@@ -156,6 +156,9 @@ functions:
       - name: value
         description: Desired value (expected type depends on 'name')
     return: nil
+    tests:
+      - '(do (pwrs "sw_enable" 1) (pwrg "sw_enable"))'
+      - '(do (pwrs "sw_enable" nil) (not (pwrg "sw_enable")))'
 
   - name: lcdc
     description: Set LCD cursor position to specified column.
@@ -313,6 +316,15 @@ functions:
         type: bool
         description: Desired state of the LED
     return: nil
+    tests:
+      - template: |-
+          ; all LEDs can be toggled
+          (and
+          {%- for l in this.args[0].values %}
+            (do (leds {{l}} 1) (ledg {{l}}))
+            (do (leds {{l}} nil) (not (ledg {{l}})))
+          {%- endfor %}
+          )
 
   - name: ds18
     description: Read temperature from DS18B20 sensors.
@@ -330,6 +342,8 @@ functions:
     args: []
     return:
       type: bool
+    tests:
+      - '(atom (pumpg))'
 
   - name: pumps
     description: Set circulation pump state.
@@ -339,6 +353,9 @@ functions:
         type: bool
         description: Desired pump state
     return: nil
+    tests:
+      - '(do (pumps 1) (pumpg))'
+      - '(do (pumps nil) (not (pumpg)))'
 
   - name: ctrl
     category: callbacks

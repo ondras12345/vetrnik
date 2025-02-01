@@ -160,6 +160,7 @@ def generate_tests(spec: Spec) -> None:
 
     for _, fn in spec.functions.items():
         if fn.tests == []:
+            _LOGGER.warning(f"no tests for {fn.name}")
             continue
 
         try:
