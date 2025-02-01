@@ -13,20 +13,6 @@ static unsigned long contactor_prev_millis = 0;
 static bool contactor_state = false;
 
 
-#define X_STR(name, value) #name,
-/**
- * Array with strings corresponding to control_strategy_t values.
- * Terminated by nullptr.
- *
- * Useful for performing reverse lookup.
- */
-const char * control_strategies[] = {
-    CONTROL_STRATEGIES(X_STR)
-    nullptr
-};
-#undef X_STR
-
-
 void control_init()
 {
     control_set_strategy(control_shorted);
