@@ -16,5 +16,4 @@ spec.md: spec.md.jinja spec.yaml spec.py test.lisp.jinja
 
 .PHONY: clean
 clean:
-	-rm out.lisp
-	-rm spec.md
+	rm -f out.lisp spec.md tests/test_*.lisp

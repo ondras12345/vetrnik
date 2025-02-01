@@ -1,20 +1,14 @@
 #include "lisp.h"
-#include "power_board.h"
 #include "debug.h"
 #include "display.h"
-#include "stats.h"
-#include "control.h"
 #include "settings.h"
 #include "sensor_DS18B20.h"
-#include "pump.h"
 #include "mqtt.h"
 #include "flash_tools.h"
-#include <Arduino.h>
 
-extern "C" {
-#include <fe.h>
-}
+#include "hal.h"
 #include <fe_utils.h>
+#include <wt_lisp.h>
 #include <setjmp.h>
 
 
@@ -96,10 +90,7 @@ static char lisp_read_file(fe_Context *ctx, void *udata)
 static fe_Object* cfunc_lcd_setc(fe_Context *ctx, fe_Object *arg)
 {
     uint8_t col = (uint8_t)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    if (!display_set_cursor(col))
-    {
-        fe_error(ctx, "invalid lcd col");
-    }
+    if (!display_set_cursor(col)) fe_error(ctx, "invalid lcd col");
     return fe_bool(ctx, 0);  // nil
 }
 
@@ -110,10 +101,7 @@ static fe_Object* cfunc_lcd_setc(fe_Context *ctx, fe_Object *arg)
 static fe_Object* cfunc_lcd_write(fe_Context *ctx, fe_Object *arg)
 {
     uint8_t row = (uint8_t)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    if (!display_commit(row))
-    {
-        fe_error(ctx, "invalid lcd row");
-    }
+    if (!display_commit(row)) fe_error(ctx, "invalid lcd row");
     return fe_bool(ctx, 0);
 }
 
@@ -170,275 +158,14 @@ static fe_Object* cfunc_lcd_backlight(fe_Context *ctx, fe_Object *arg)
 }
 
 
-static fe_Object* cfunc_stats(fe_Context *ctx, fe_Object *arg)
-{
-    char name[32];
-    fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
-    if (strcmp(name, "energy") == 0) return fe_number(ctx, stats.energy * 0.001);
-    else
-    {
-        fe_error(ctx, "invalid stat name");
-        // this should never happen, fe_error either exits or longjmps
-        return fe_bool(ctx, 0);
-    }
-}
-
-
-static fe_Object* cfunc_power_get(fe_Context *ctx, fe_Object *arg)
-{
-    char name[32];
-    fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
-
-    if (strcmp(name, "valid") == 0) return fe_bool(ctx, power_board_status.valid);
-#define pbstateBN(n, var) \
-    else if (strcmp(name, n) == 0) return fe_bool(ctx, power_board_status.var);
-#define pbstateB(n) pbstateBN(#n, n)
-#define pbstateCN(n, var, conv) \
-    else if (strcmp(name, n) == 0) return fe_number(ctx, power_board_status.var * conv);
-#define pbstateC(n, conv) pbstateCN(#n, n, conv)
-#define pbstate(n) pbstateC(n, 1)
-    pbstate(time)
-    pbstate(mode)
-    pbstate(duty)
-    pbstate(OCP_max_duty)
-    pbstate(RPM)
-    pbstateC(voltage, 0.1)
-    pbstateC(current, 0.001)
-    pbstateBN("hw_enable", enabled.hardware)
-    pbstateBN("sw_enable", enabled.software)
-    pbstateBN("enabled", enabled.overall)
-    pbstateB(emergency)
-    pbstateC(temperature_heatsink, 0.1)
-    pbstateC(temperature_rectifier, 0.1)
-    pbstate(fan)
-    pbstate(error_count)
-    pbstateB(last5m)
-#undef pbstate
-#undef pbstateC
-#undef pbstateCN
-#undef pbstateB
-#undef pbstateBN
-    else if (strcmp(name, "REL") == 0)
-    {
-        int pin = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-        uint8_t result = power_board_REL_read(pin);
-        if (result == (uint8_t)-1) fe_error(ctx, "invalid REL pin");
-        return fe_bool(ctx, result);
-    }
-    else
-    {
-        fe_error(ctx, "invalid power state name");
-        // this should never happen, fe_error either exits or longjmps
-        return fe_bool(ctx, 0);
-    }
-}
-
-
-static fe_Object* cfunc_power_set(fe_Context *ctx, fe_Object *arg)
-{
-    char name[10];
-    fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
-
-    if (strcmp(name, "duty") == 0)
-    {
-        int duty = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-        if (duty < 0 || duty > 255)
-        {
-            fe_error(ctx, "duty must be 0-255");
-            return nullptr;
-        }
-        power_board_set_duty(duty);
-    }
-    else if (strcmp(name, "mode") == 0)
-    {
-        int mode = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-
-        size_t mode_max = 0;
-        for (; power_board_modes[mode_max] != nullptr; mode_max++);
-        mode_max--;
-
-        if (mode < 0 || (size_t)mode > mode_max)
-        {
-            fe_error(ctx, "invalid mode");
-            return nullptr;
-        }
-        power_board_set_mode((power_board_mode_t)mode);
-    }
-    else if (strcmp(name, "REL") == 0)
-    {
-        int pin = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-        bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
-
-        if (!power_board_REL_write(pin, state))
-            fe_error(ctx, "invalid REL pin");
-    }
-    else if (strcmp(name, "sw_enable") == 0)
-    {
-        bool value = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
-        power_board_set_software_enable(value);
-    }
-    // there should be no need to clear_errors or execute other commands
-    else
-    {
-        fe_error(ctx, "invalid pwrs command");
-        return fe_bool(ctx, 0); // this should never happen, fe_error either exits or longjmps
-    }
-
-    return fe_bool(ctx, 0);  // nil
-}
-
-
-static fe_Object* cfunc_control_get(fe_Context *ctx, fe_Object *arg)
-{
-    char name[32];
-    fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
-    if (strcmp(name, "strategy") == 0)
-    {
-        return fe_string(ctx, control_strategies[control_get_strategy()]);
-    }
-    else if (strcmp(name, "contactor") == 0)
-    {
-        unsigned long cs = control_contactor_get();
-        fe_Number r = -1;
-        if (cs != (unsigned long)-1) r = cs;
-        return fe_number(ctx, r);
-    }
-    else
-    {
-        fe_error(ctx, "invalid control param name");
-        return fe_bool(ctx, 0); // this should never happen, fe_error either exits or longjmps
-    }
-}
-
-
-static fe_Object* cfunc_control_set(fe_Context *ctx, fe_Object *arg)
-{
-    char name[32];
-    fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
-    if (strcmp(name, "strategy") == 0)
-    {
-        char strategy_name[sizeof("control_shorted")+10];  // should be enough
-        fe_tostring(ctx, fe_nextarg(ctx, &arg), strategy_name, sizeof strategy_name);
-        if (!control_set_strategy(strategy_name))
-        {
-            fe_error(ctx, "invalid strategy");
-            return nullptr;
-        }
-    }
-    else if (strcmp(name, "contactor") == 0)
-    {
-        bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
-        if (state) control_contactor_set();
-    }
-    else
-    {
-        fe_error(ctx, "invalid control param name");
-    }
-    return fe_bool(ctx, 0);
-}
-
-
-static fe_Object* cfunc_relay_get(fe_Context *ctx, fe_Object *arg)
-{
-    int relay_number = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    switch (relay_number)
-    {
-        // REL1 is currently used for pump, disable direct control
-        //case 1:
-        //    return fe_bool(ctx, digitalRead(PIN_REL1));
-        case 2:
-            return fe_bool(ctx, digitalRead(PIN_REL2));
-        default:
-            fe_error(ctx, "invalid relay number");
-            return fe_bool(ctx, 0);
-    }
-}
-
-
-static fe_Object* cfunc_relay_set(fe_Context *ctx, fe_Object *arg)
-{
-    int relay_number = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
-
-    switch (relay_number)
-    {
-        // REL1 is currently used for pump, disable direct control
-        //case 1:
-        //    digitalWrite(PIN_REL1, state);
-        //    break;
-        case 2:
-            digitalWrite(PIN_REL2, state);
-            break;
-        default:
-            fe_error(ctx, "invalid relay number");
-            break;
-    }
-
-    return fe_bool(ctx, 0);
-}
-
-
-static fe_Object* cfunc_LED_get(fe_Context *ctx, fe_Object *arg)
-{
-    int LED_number = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    switch (LED_number)
-    {
-        case 1:
-            return fe_bool(ctx, !digitalRead(LED_BUILTIN));
-        case 2:
-            return fe_bool(ctx, digitalRead(PIN_LED));
-        default:
-            fe_error(ctx, "invalid LED number");
-            return fe_bool(ctx, 0);
-    }
-}
-
-
-static fe_Object* cfunc_LED_set(fe_Context *ctx, fe_Object *arg)
-{
-    int LED_number = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
-    switch (LED_number)
-    {
-        case 1:
-            digitalWrite(LED_BUILTIN, !state);
-            break;
-        case 2:
-            digitalWrite(PIN_LED, state);
-            break;
-        default:
-            fe_error(ctx, "invalid LED number");
-            break;
-    }
-    return fe_bool(ctx, 0);
-}
-
-
 static fe_Object* cfunc_DS18B20(fe_Context *ctx, fe_Object *arg)
 {
     int sensor_number = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
     if (sensor_number >= SENSOR_DS18B20_COUNT || sensor_number < 0)
-    {
         fe_error(ctx, "invalid DS18B20 number");
-        return fe_bool(ctx, 0);
-    }
     uint16_t reading = sensor_DS18B20_readings[sensor_number];
     if (reading == 0) return fe_bool(ctx, 0);
     return fe_number(ctx, reading / 100.0);
-}
-
-
-static fe_Object* cfunc_pump_get(fe_Context *ctx, fe_Object *arg)
-{
-    return fe_bool(ctx, pump_get());
-}
-
-
-static fe_Object* cfunc_pump_set(fe_Context *ctx, fe_Object *arg)
-{
-    bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
-    pump_set(state);
-    return fe_bool(ctx, 0);
 }
 
 
@@ -458,37 +185,17 @@ void lisp_init()
 
     gc = fe_savegc(ctx);
 
-    // TODO combine getters and setters to save LISP RAM
-    // (lcdb already does it)
-    fe_set(ctx, fe_symbol(ctx, "pwrg"), fe_cfunc(ctx, cfunc_power_get));
-    fe_set(ctx, fe_symbol(ctx, "pwrs"), fe_cfunc(ctx, cfunc_power_set));
-    fe_set(ctx, fe_symbol(ctx, "rem"), fe_cfunc(ctx, cfunc_rem));
-    fe_set(ctx, fe_symbol(ctx, "round"), fe_cfunc(ctx, cfunc_round));
-    fe_set(ctx, fe_symbol(ctx, "map"), fe_cfunc(ctx, cfunc_map));
+    fe_utils_init(ctx);
+    wt_lisp_init(ctx, wt_hal);
+
     fe_set(ctx, fe_symbol(ctx, "lcdc"), fe_cfunc(ctx, cfunc_lcd_setc));
     fe_set(ctx, fe_symbol(ctx, "lcdw"), fe_cfunc(ctx, cfunc_lcd_write));
     fe_set(ctx, fe_symbol(ctx, "lcds"), fe_cfunc(ctx, cfunc_lcd_str));
     fe_set(ctx, fe_symbol(ctx, "lcdn"), fe_cfunc(ctx, cfunc_lcd_num));
     fe_set(ctx, fe_symbol(ctx, "lcdb"), fe_cfunc(ctx, cfunc_lcd_backlight));
-    fe_set(ctx, fe_symbol(ctx, "stats"), fe_cfunc(ctx, cfunc_stats));
-    fe_set(ctx, fe_symbol(ctx, "ctrlg"), fe_cfunc(ctx, cfunc_control_get));
-    fe_set(ctx, fe_symbol(ctx, "ctrls"), fe_cfunc(ctx, cfunc_control_set));
-    fe_set(ctx, fe_symbol(ctx, "relg"), fe_cfunc(ctx, cfunc_relay_get));
-    fe_set(ctx, fe_symbol(ctx, "rels"), fe_cfunc(ctx, cfunc_relay_set));
-    fe_set(ctx, fe_symbol(ctx, "ledg"), fe_cfunc(ctx, cfunc_LED_get));
-    fe_set(ctx, fe_symbol(ctx, "leds"), fe_cfunc(ctx, cfunc_LED_set));
-    fe_set(ctx, fe_symbol(ctx, "ds18"), fe_cfunc(ctx, cfunc_DS18B20));
-    fe_set(ctx, fe_symbol(ctx, "pumpg"), fe_cfunc(ctx, cfunc_pump_get));
-    fe_set(ctx, fe_symbol(ctx, "pumps"), fe_cfunc(ctx, cfunc_pump_set));
-    fe_set(ctx, fe_symbol(ctx, "ethrst"), fe_cfunc(ctx, cfunc_ethrst));
 
-    // Add variables for power modes
-    for (size_t i = 0; power_board_modes[i] != nullptr; i++)
-    {
-        char buff[32];
-        snprintf(buff, sizeof buff, "pwr_%s", power_board_modes[i]);
-        fe_set(ctx, fe_symbol(ctx, buff), fe_number(ctx, i));
-    }
+    fe_set(ctx, fe_symbol(ctx, "ethrst"), fe_cfunc(ctx, cfunc_ethrst));
+    fe_set(ctx, fe_symbol(ctx, "ds18"), fe_cfunc(ctx, cfunc_DS18B20));
 
     fe_restoregc(ctx, gc);
 }

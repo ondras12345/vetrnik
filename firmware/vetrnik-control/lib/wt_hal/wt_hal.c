@@ -32,3 +32,9 @@ const char * power_board_modes[] = {
     NULL
 };
 #undef X_STR
+
+
+bool wt_hal_out_validate(int v)
+{
+    return (v > 0 && v < OUT_LAST_);
+}

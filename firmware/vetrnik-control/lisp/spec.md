@@ -330,84 +330,31 @@ Set a value in the control subsystem.
 
 ### Return value
 \[nil\]
-## `relg`
+## `out`
 ### Description
-Get states of control board relays.
+Get or set state of digital outputs (LEDs and relays) on the control board.
+
+Constants `OUT_*` are provided to map output names to numbers.
 
 ### Signature
 ```lisp
-(relg
-    relay_number
+(out
+    out_number
+    [state]
 )
 ```
 
 
 ### Arguments
-- `relay_number` \[number\]
-    - `2`
+- `out_number` \[number\]
+    - `OUT_LED_BLUE`
+    - `OUT_LED_RED`
+    - `OUT_PUMP`
+    - `OUT_REL2`
+- `state` \[bool\]: desired state
 
 ### Return value
-\[bool\]: State of queried relay
-## `rels`
-### Description
-Set states of control board relays.
-
-### Signature
-```lisp
-(rels
-    relay_number
-    state
-)
-```
-
-
-### Arguments
-- `relay_number` \[number\]
-    - `2`
-- `state` \[bool\]: Desired state of the relay
-
-### Return value
-\[nil\]
-## `ledg`
-### Description
-Get states of control board LEDs.
-
-### Signature
-```lisp
-(ledg
-    LED_number
-)
-```
-
-
-### Arguments
-- `LED_number` \[number\]
-    - `1`
-    - `2`
-
-### Return value
-\[bool\]: LED status
-## `leds`
-### Description
-Set states of control board LEDs.
-
-### Signature
-```lisp
-(leds
-    LED_number
-    state
-)
-```
-
-
-### Arguments
-- `LED_number` \[number\]
-    - `1`
-    - `2`
-- `state` \[bool\]: Desired state of the LED
-
-### Return value
-\[nil\]
+\[bool\]: state of the digital output
 ## `ds18`
 ### Description
 Read temperature from DS18B20 sensors.
@@ -425,38 +372,6 @@ Read temperature from DS18B20 sensors.
 
 ### Return value
 \[number\]: temperature in degrees C
-## `pumpg`
-### Description
-Get circulation pump state.
-
-### Signature
-```lisp
-(pumpg
-)
-```
-
-
-### Arguments
-
-### Return value
-\[bool\]
-## `pumps`
-### Description
-Set circulation pump state.
-
-### Signature
-```lisp
-(pumps
-    state
-)
-```
-
-
-### Arguments
-- `state` \[bool\]: Desired pump state
-
-### Return value
-\[nil\]
 ## `ctrl`
 Category: callbacks
 

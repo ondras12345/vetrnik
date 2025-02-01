@@ -261,68 +261,35 @@ functions:
         description: Desired value (expected type depends on 'name')
     return: nil
 
-  - name: relg
-    description: Get states of control board relays.
-    nargs: 1
-    args:
-      - name: relay_number
-        type: number
-        values:
-          - 2
-    return:
-      type: bool
-      description: State of queried relay
-    tests:
-      - *first-arg-values
+  - name: out
+    description: |-
+      Get or set state of digital outputs (LEDs and relays) on the control board.
 
-  - name: rels
-    description: Set states of control board relays.
-    nargs: 2
+      Constants `OUT_*` are provided to map output names to numbers.
+    nargs:
+      min: 1
+      max: 2
     args:
-      - name: relay_number
+      - name: out_number
         type: number
         values:
-          - 2
+          - OUT_LED_BLUE  # LED_BUILTIN
+          - OUT_LED_RED
+          - OUT_PUMP  # REL1: circulation pump
+          - OUT_REL2
       - name: state
         type: bool
-        description: Desired state of the relay
-    return: nil
-
-  - name: ledg
-    description: Get states of control board LEDs.
-    nargs: 1
-    args:
-      - name: LED_number
-        type: number
-        values:
-          - 1
-          - 2
+        description: desired state
     return:
       type: bool
-      description: LED status
-    tests:
-      - *first-arg-values
-
-  - name: leds
-    description: Set states of control board LEDs.
-    nargs: 2
-    args:
-      - name: LED_number
-        type: number
-        values:
-          - 1
-          - 2
-      - name: state
-        type: bool
-        description: Desired state of the LED
-    return: nil
+      description: state of the digital output
     tests:
       - template: |-
-          ; all LEDs can be toggled
+          ; all outputs can be toggled
           (and
-          {%- for l in this.args[0].values %}
-            (do (leds {{l}} 1) (ledg {{l}}))
-            (do (leds {{l}} nil) (not (ledg {{l}})))
+          {%- for o in this.args[0].values %}
+            (and ({{this.name}} {{o}} 1) ({{this.name}} {{o}}))
+            (and (not ({{this.name}} {{o}} nil)) (not ({{this.name}} {{o}})))
           {%- endfor %}
           )
 
@@ -335,27 +302,6 @@ functions:
     return:
       type: number
       description: temperature in degrees C
-
-  - name: pumpg
-    description: Get circulation pump state.
-    nargs: 0
-    args: []
-    return:
-      type: bool
-    tests:
-      - '(atom (pumpg))'
-
-  - name: pumps
-    description: Set circulation pump state.
-    nargs: 1
-    args:
-      - name: state
-        type: bool
-        description: Desired pump state
-    return: nil
-    tests:
-      - '(do (pumps 1) (pumpg))'
-      - '(do (pumps nil) (not (pumpg)))'
 
   - name: ctrl
     category: callbacks

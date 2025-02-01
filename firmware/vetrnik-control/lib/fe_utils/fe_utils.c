@@ -83,3 +83,14 @@ char fe_read_str(fe_Context *ctx, void *udata)
     if (lstr->i >= lstr->length) return '\0';
     return lstr->str[lstr->i++];
 }
+
+
+/**
+ * \brief Add all fe_utils functions to a fe_Context.
+ */
+void fe_utils_init(fe_Context *ctx)
+{
+    fe_set(ctx, fe_symbol(ctx, "rem"), fe_cfunc(ctx, cfunc_rem));
+    fe_set(ctx, fe_symbol(ctx, "round"), fe_cfunc(ctx, cfunc_round));
+    fe_set(ctx, fe_symbol(ctx, "map"), fe_cfunc(ctx, cfunc_map));
+}

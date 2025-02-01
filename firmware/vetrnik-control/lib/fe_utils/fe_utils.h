@@ -31,6 +31,8 @@ typedef struct {
 
 char fe_read_str(fe_Context *ctx, void *udata);
 
+void fe_utils_init(fe_Context *ctx);
+
 
 #ifdef __cplusplus
 }

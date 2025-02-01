@@ -6,6 +6,8 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 
+#define X_ENUM(name, value) name = value,
+
 
 // mode numbers must start from 0 and be consecutive
 #define CONTROL_STRATEGIES(X) \
@@ -18,11 +20,9 @@ extern "C" {
     /** Control function written in lisp. */ \
     X(control_lisp, 3)
 
-#define X_ENUM(name, value) name = value,
 typedef enum {
     CONTROL_STRATEGIES(X_ENUM)
 } control_strategy_t;
-#undef X_ENUM
 
 extern const char * control_strategies[];
 
@@ -68,11 +68,9 @@ typedef struct {
     /** Start from shorted state to const_duty. */ \
     X(start, 3)
 
-#define X_ENUM(name, value) name = value,
 typedef enum {
     POWER_BOARD_MODES(X_ENUM)
 } power_board_mode_t;
-#undef X_ENUM
 
 extern const char * power_board_modes[];
 
@@ -85,6 +83,18 @@ typedef struct {
     uint16_t energy_Ws10;
 } stats_t;
 
+
+// output numbers must start from 0 and be consecutive
+#define OUT_NAMES(X) \
+    X(OUT_LED_BLUE, 0) \
+    X(OUT_LED_RED, 1) \
+    X(OUT_PUMP, 2) \
+    X(OUT_REL2, 3)
+
+typedef enum {
+    OUT_NAMES(X_ENUM)
+    OUT_LAST_
+} digital_output_t;
 
 /**
  * Wind turbine HAL.
@@ -166,8 +176,22 @@ typedef struct
 
     /// Get wind turbine statistics.
     stats_t (*stats_get)();
+
+    /// Set state of a digital output
+    void (*out_set)(digital_output_t out, bool s);
+    /// Get state of a digital output
+    bool (*out_get)(digital_output_t out);
+    /// Verify if provided value is a valid digital_output_t
+    /// \return true if valid
+    bool (*out_validate)(int v);
 } wt_hal_t;
 
+
+// common implementations
+bool wt_hal_out_validate(int v);
+
+
+#undef X_ENUM
 
 #ifdef __cplusplus
 }

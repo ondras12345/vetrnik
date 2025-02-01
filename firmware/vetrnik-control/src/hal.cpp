@@ -1,8 +1,10 @@
 #include "hal.h"
+#include "settings.h"
 #include "power_board.h"
 #include "control.h"
 #include "pump.h"
 #include "stats.h"
+#include <Arduino.h>
 
 
 static power_board_status_t pwr_get_status()
@@ -29,6 +31,52 @@ static stats_t stats_get()
 }
 
 
+static int out_get_pin(digital_output_t out)
+{
+    switch (out)
+    {
+        case OUT_LED_BLUE:
+            return LED_BUILTIN;
+        case OUT_LED_RED:
+            return PIN_LED;
+        case OUT_REL2:
+            return PIN_REL2;
+        default:
+            return -1;
+    }
+}
+
+
+static void out_set(digital_output_t out, bool s)
+{
+    switch (out)
+    {
+        case OUT_PUMP:
+            pump_set(s);
+            break;
+        default:
+            int pin = out_get_pin(out);
+            if (pin < 0) return;
+            digitalWrite(pin, s);
+            break;
+    }
+}
+
+
+static bool out_get(digital_output_t out)
+{
+    switch (out)
+    {
+        case OUT_PUMP:
+            return pump_get();
+        default:
+            int pin = out_get_pin(out);
+            if (pin < 0) return false;
+            return digitalRead(pin);
+    }
+}
+
+
 wt_hal_t wt_hal = {
     .pwr_get_status     = pwr_get_status,
     .pwr_set_duty       = power_board_set_duty,
@@ -41,7 +89,7 @@ wt_hal_t wt_hal = {
     .pwr_REL_read       = power_board_REL_read,
 
     .ctrl_set_strategy  = control_set_strategy,
-    .ctrl_set_strategy_str = control_set_strategy,  // TODO general
+    .ctrl_set_strategy_str = control_set_strategy,  // TODO common implementation in wt_hal
     .ctrl_get_strategy  = control_get_strategy,
     .ctrl_contactor_set = control_contactor_set,
     .ctrl_contactor_get = control_contactor_get,
@@ -50,4 +98,8 @@ wt_hal_t wt_hal = {
     .pump_get = pump_get,
 
     .stats_get = stats_get,
+
+    .out_set = out_set,
+    .out_get = out_get,
+    .out_validate = wt_hal_out_validate,
 };
