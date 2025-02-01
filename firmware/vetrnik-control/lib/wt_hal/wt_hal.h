@@ -169,8 +169,6 @@ typedef struct
 } wt_hal_t;
 
 
-
-
 #ifdef __cplusplus
 }
 #endif

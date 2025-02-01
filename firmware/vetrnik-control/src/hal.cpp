@@ -1,0 +1,53 @@
+#include "hal.h"
+#include "power_board.h"
+#include "control.h"
+#include "pump.h"
+#include "stats.h"
+
+
+static power_board_status_t pwr_get_status()
+{
+    return power_board_status;
+}
+
+
+static void pwr_reset()
+{
+    power_board_command(PCOMMAND_RESET);
+}
+
+
+static void pwr_test_WDT()
+{
+    power_board_command(PCOMMAND_WDT_TEST);
+}
+
+
+static stats_t stats_get()
+{
+    return stats;
+}
+
+
+wt_hal_t wt_hal = {
+    .pwr_get_status     = pwr_get_status,
+    .pwr_set_duty       = power_board_set_duty,
+    .pwr_set_mode       = power_board_set_mode,
+    .pwr_set_sw_enable  = power_board_set_software_enable,
+    .pwr_clear_errors   = power_board_clear_errors,
+    .pwr_reset          = pwr_reset,
+    .pwr_test_WDT       = pwr_test_WDT,
+    .pwr_REL_write      = power_board_REL_write,
+    .pwr_REL_read       = power_board_REL_read,
+
+    .ctrl_set_strategy  = control_set_strategy,
+    .ctrl_set_strategy_str = control_set_strategy,  // TODO general
+    .ctrl_get_strategy  = control_get_strategy,
+    .ctrl_contactor_set = control_contactor_set,
+    .ctrl_contactor_get = control_contactor_get,
+
+    .pump_set = pump_set,
+    .pump_get = pump_get,
+
+    .stats_get = stats_get,
+};
