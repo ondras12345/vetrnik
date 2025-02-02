@@ -36,5 +36,5 @@ const char * power_board_modes[] = {
 
 bool wt_hal_out_validate(int v)
 {
-    return (v > 0 && v < OUT_LAST_);
+    return (v >= 0 && v < OUT_LAST_);
 }
