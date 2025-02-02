@@ -48,3 +48,29 @@ void wt_sil_repl(wt_sil_state_t * state)
         printf("\n");
     }
 }
+
+
+/// Execute lisp code from a file
+/// \return 0 on success, nonzero on failure
+int wt_sil_run_file(wt_sil_state_t * state, const char * filename)
+{
+    FILE * f = fopen(filename, "r");
+    if (!f)
+    {
+        fprintf(stderr, "failed to open file %s\n", filename);
+        return 1;
+    }
+
+    int gc;
+    fe_Object *obj;
+    fe_Context * ctx = state->fe_ctx;
+    for (;;)
+    {
+        fe_restoregc(ctx, gc);
+        if (!(obj = fe_readfp(ctx, f))) break;
+        fe_eval(ctx, obj);
+    }
+
+    fclose(f);
+    return 0;
+}
