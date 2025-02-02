@@ -103,7 +103,7 @@ functions:
     tests:
       - '(is (map 10 0 100 -1 0) -0.9)'
       - '(is (map 10 0 100 0 1) 0.1)'
-      - '(is (map 10 0 1 -2 0) -20)'
+      - '(is (map 10 0 1 0 -2) -20)'
 
   - name: pwrg
     description: >-
