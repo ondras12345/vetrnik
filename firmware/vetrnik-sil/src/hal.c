@@ -98,7 +98,7 @@ static bool out_get(digital_output_t out)
 }
 
 
-static void clear_buf()
+static void display_clear_buf()
 {
     memset(sil_state->lcd_buf, ' ', LCD_COLS);
     sil_state->lcd_buf[LCD_COLS] = '\0';
@@ -110,7 +110,7 @@ static bool display_commit(uint8_t row)
 {
     if (row >= LCD_ROWS) return false;
     memcpy(sil_state->lcd[row], sil_state->lcd_buf, sizeof sil_state->lcd[row]);
-    clear_buf();
+    display_clear_buf();
     return true;
 }
 
@@ -203,4 +203,5 @@ lcd_hal_t lcd_hal = {
 void sil_hal_init(wt_sil_state_t * s)
 {
     sil_state = s;
+    display_clear_buf();
 }
