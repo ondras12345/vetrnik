@@ -74,3 +74,23 @@ int wt_sil_run_file(wt_sil_state_t * state, const char * filename)
     fclose(f);
     return 0;
 }
+
+/**
+ * \brief Execute lisp code from a string and discard the result.
+ * \a code can contain multiple top-level statements. In that case, they will be
+ * executed in sequence.
+ * \param code code to execute
+ */
+void wt_sil_run_str(wt_sil_state_t * state, const char * code)
+{
+    fe_str_t fstr = { code, -1, 0 };
+    int gc;
+    fe_Context * ctx = state->fe_ctx;
+    for (;;)
+    {
+        fe_restoregc(ctx, gc);
+        fe_Object *obj;
+        if (!(obj = fe_read(ctx, fe_read_str, &fstr))) break;
+        fe_eval(ctx, obj);
+    }
+}
