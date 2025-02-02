@@ -14,3 +14,5 @@ void display_print(const char * str);
 bool display_set_cursor(uint8_t col);
 void display_backlight_set(bool state);
 bool display_backlight_get();
+uint8_t display_get_cols();
+uint8_t display_get_rows();

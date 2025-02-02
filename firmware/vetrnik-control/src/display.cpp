@@ -87,3 +87,15 @@ bool display_backlight_get()
 {
     return backlight;
 }
+
+
+uint8_t display_get_cols()
+{
+    return DISPLAY_COLS;
+}
+
+
+uint8_t display_get_rows()
+{
+    return DISPLAY_ROWS;
+}

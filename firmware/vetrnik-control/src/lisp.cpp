@@ -1,6 +1,5 @@
 #include "lisp.h"
 #include "debug.h"
-#include "display.h"
 #include "settings.h"
 #include "sensor_DS18B20.h"
 #include "mqtt.h"
@@ -9,6 +8,7 @@
 #include "hal.h"
 #include <fe_utils.h>
 #include <wt_lisp.h>
+#include <lcd_lisp.h>
 #include <setjmp.h>
 
 
@@ -84,80 +84,6 @@ static char lisp_read_file(fe_Context *ctx, void *udata)
 }
 
 
-/**
- * Set LCD cursor position to specified column
- */
-static fe_Object* cfunc_lcd_setc(fe_Context *ctx, fe_Object *arg)
-{
-    uint8_t col = (uint8_t)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    if (!display_set_cursor(col)) fe_error(ctx, "invalid lcd col");
-    return fe_bool(ctx, 0);  // nil
-}
-
-
-/**
- * Write LCD buffer to specified line.
- */
-static fe_Object* cfunc_lcd_write(fe_Context *ctx, fe_Object *arg)
-{
-    uint8_t row = (uint8_t)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    if (!display_commit(row)) fe_error(ctx, "invalid lcd row");
-    return fe_bool(ctx, 0);
-}
-
-
-/**
- * Print string to lcd buffer
- */
-static fe_Object* cfunc_lcd_str(fe_Context *ctx, fe_Object *arg)
-{
-    char buf[DISPLAY_COLS+1];
-    fe_tostring(ctx, fe_nextarg(ctx, &arg), buf, sizeof buf);
-    display_print(buf);
-    return fe_bool(ctx, 0);
-}
-
-
-/**
- * Print number to lcd buffer
- * (lcd_num number align precision)
- */
-static fe_Object* cfunc_lcd_num(fe_Context *ctx, fe_Object *arg)
-{
-    float num = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    uint8_t align = (uint8_t)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    uint8_t precision = (uint8_t)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    if (precision > 5) fe_error(ctx, "invalid precision");
-    if (align > 5) fe_error(ctx, "invalid align");
-    char form[
-        1 /* % */ + 1 /* align */ + 1 /* . */ + 1 /* precision */ + 1 /* f */
-        + 1 /* '\0' */
-    ];
-    snprintf(form, sizeof form, "%%%u.%uf",
-             align+precision + ((precision > 0) ? 1U : 0U),
-             precision);
-    char buf[10];
-    snprintf(buf, sizeof buf, form, num);
-    display_print(buf);
-    return fe_bool(ctx, 0);
-}
-
-
-static fe_Object* cfunc_lcd_backlight(fe_Context *ctx, fe_Object *arg)
-{
-    if (fe_isnil(ctx, arg))
-    {
-        // called with no argument --> getter
-        return fe_bool(ctx, display_backlight_get());
-    }
-
-    // called with an argument --> setter
-    bool state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
-    display_backlight_set(state);
-    return fe_bool(ctx, state);
-}
-
-
 static fe_Object* cfunc_DS18B20(fe_Context *ctx, fe_Object *arg)
 {
     int sensor_number = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
@@ -187,12 +113,7 @@ void lisp_init()
 
     fe_utils_init(ctx);
     wt_lisp_init(ctx, wt_hal);
-
-    fe_set(ctx, fe_symbol(ctx, "lcdc"), fe_cfunc(ctx, cfunc_lcd_setc));
-    fe_set(ctx, fe_symbol(ctx, "lcdw"), fe_cfunc(ctx, cfunc_lcd_write));
-    fe_set(ctx, fe_symbol(ctx, "lcds"), fe_cfunc(ctx, cfunc_lcd_str));
-    fe_set(ctx, fe_symbol(ctx, "lcdn"), fe_cfunc(ctx, cfunc_lcd_num));
-    fe_set(ctx, fe_symbol(ctx, "lcdb"), fe_cfunc(ctx, cfunc_lcd_backlight));
+    lcd_lisp_init(ctx, lcd_hal);
 
     fe_set(ctx, fe_symbol(ctx, "ethrst"), fe_cfunc(ctx, cfunc_ethrst));
     fe_set(ctx, fe_symbol(ctx, "ds18"), fe_cfunc(ctx, cfunc_DS18B20));

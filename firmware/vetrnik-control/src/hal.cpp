@@ -4,6 +4,7 @@
 #include "control.h"
 #include "pump.h"
 #include "stats.h"
+#include "display.h"
 #include <Arduino.h>
 
 
@@ -102,4 +103,15 @@ wt_hal_t wt_hal = {
     .out_set = out_set,
     .out_get = out_get,
     .out_validate = wt_hal_out_validate,
+};
+
+
+lcd_hal_t lcd_hal = {
+    .commit         = display_commit,
+    .print          = display_print,
+    .set_cursor     = display_set_cursor,
+    .backlight_set  = display_backlight_set,
+    .backlight_get  = display_backlight_get,
+    .get_cols       = display_get_cols,
+    .get_rows       = display_get_rows,
 };

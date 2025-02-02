@@ -188,7 +188,7 @@ static fe_Object* cfunc_out(fe_Context *ctx, fe_Object *arg)
  * \a wt is copied to a global variable, so only one wt_hal
  * implementation per program is allowed.
  * \param ctx context to add the symbols to
- * \param wt wind turbine hal implementation.
+ * \param hal wind turbine hal implementation.
  */
 void wt_lisp_init(fe_Context *ctx, wt_hal_t hal)
 {
