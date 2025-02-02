@@ -157,7 +157,7 @@ functions:
         description: Desired value (expected type depends on 'name')
     return: nil
     tests:
-      - '(do (pwrs "sw_enable" 1) (pwrg "sw_enable"))'
+      - '(do (pwrs "sw_enable" t) (pwrg "sw_enable"))'
       - '(do (pwrs "sw_enable" nil) (not (pwrg "sw_enable")))'
 
   - name: lcdc
@@ -216,7 +216,7 @@ functions:
       type: bool
       description: LCD backlight status
     tests:
-      - '(and (lcdb 1) (lcdb))'
+      - '(and (lcdb t) (lcdb))'
       - '(and (not (lcdb nil)) (not (lcdb)))'
 
   - name: stats
@@ -288,7 +288,7 @@ functions:
           ; all outputs can be toggled
           (and
           {%- for o in this.args[0].values %}
-            (and ({{this.name}} {{o}} 1) ({{this.name}} {{o}}))
+            (and ({{this.name}} {{o}} t) ({{this.name}} {{o}}))
             (and (not ({{this.name}} {{o}} nil)) (not ({{this.name}} {{o}})))
           {%- endfor %}
           )
