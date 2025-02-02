@@ -30,12 +30,18 @@ typedef struct
     bool pump;
     void * fe_ctx;
     // fe requires the buffer to be 32-bit aligned.
-    uint8_t fe_buf[16*1024] __attribute__((aligned(4)));
+    uint8_t fe_buf[16*1024]
+// cffi python lib does not like __attribute__
+#ifndef CFFI_HEADER
+        __attribute__((aligned(4)))
+#endif
+        ;
 } wt_sil_state_t;
 
 void wt_sil_init(wt_sil_state_t * state);
 void wt_sil_close(wt_sil_state_t * state);
 void wt_sil_repl(wt_sil_state_t * state);
+int wt_sil_run_file(wt_sil_state_t * state, const char * filename);
 
 
 #ifdef __cplusplus

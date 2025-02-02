@@ -1,6 +1,7 @@
 *.so
 *.so.*
 .cache
+wt_sil_preprocessed.h
 
 ## CMake
 # https://github.com/github/gitignore/blob/main/CMake.gitignore

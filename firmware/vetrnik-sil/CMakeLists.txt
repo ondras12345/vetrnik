@@ -35,9 +35,19 @@ target_include_directories(vetrniksil PRIVATE ../vetrnik-control/lib/lcd_hal)
 target_include_directories(vetrniksil PRIVATE ../vetrnik-control/lib/lcd_lisp)
 target_include_directories(vetrniksil PRIVATE ../vetrnik-control/lib/fe_utils)
 
+# generate preprocessed header for python cffi
+add_custom_command(
+    OUTPUT wt_sil_preprocessed.h
+    DEPENDS include/wt_sil.h ../vetrnik-control/lib/wt_hal/wt_hal.h
+    COMMAND gcc -E include/wt_sil.h -o wt_sil_preprocessed.h -I../vetrnik-control/lib/wt_hal -DCFFI_HEADER
+    VERBATIM
+)
+add_custom_target(generate_preprocessed_header ALL
+    DEPENDS wt_sil_preprocessed.h
+)
+
 # test - repl program
 #add_executable(test src/test.c)
-#link_directories(.)
 #target_link_libraries(test "-L./libvetrniksil.so" vetrniksil)
 #target_include_directories(test PRIVATE include)
 #target_include_directories(test PRIVATE ../vetrnik-control/lib/wt_hal)

@@ -4,7 +4,7 @@ import sys
 import pathlib
 from cffi import FFI
 
-header = pathlib.Path("include/wt_sil_simple.h")
+header = pathlib.Path("wt_sil_preprocessed.h")
 
 
 def main():
