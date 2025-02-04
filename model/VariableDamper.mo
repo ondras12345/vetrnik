@@ -1,4 +1,4 @@
-model VariableDamper"Linear 1D rotational damper"
+model VariableDamper "Linear 1D rotational damper"
   extends
     Modelica.Mechanics.Rotational.Interfaces.PartialCompliantWithRelativeStates;
   extends
