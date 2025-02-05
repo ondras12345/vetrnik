@@ -5,7 +5,7 @@ model test3
     Placement(transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Electrical.Machines.BasicMachines.SynchronousMachines.SM_PermanentMagnet smpm(p = 6, fsNominal = 50, Jr = .001, VsOpenCircuit = 48) annotation(
     Placement(transformation(origin = {-10, 0}, extent = {{10, -10}, {-10, 10}})));
-  PolyphaseRectifier polyphaseRectifier annotation(
+  PolyphaseRectifier polyphaseRectifier(Vknee = .7, Ron = .05)  annotation(
     Placement(transformation(origin = {22, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Electrical.Analog.Basic.Ground groundDC annotation(
     Placement(transformation(origin = {50, -50}, extent = {{-10, -10}, {10, 10}})));
@@ -17,7 +17,7 @@ model test3
     Placement(transformation(origin = {80, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   Modelica.Electrical.Polyphase.Basic.Star star annotation(
     Placement(transformation(origin = {10, -20}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Electrical.Analog.Basic.Resistor Rrect(R = 2) annotation(
+  Modelica.Electrical.Analog.Basic.Resistor Rrect(R = 1) annotation(
     Placement(transformation(origin = {46, 20}, extent = {{-10, -10}, {10, 10}})));
 equation
   connect(windTurbine.flange, smpm.flange) annotation(
