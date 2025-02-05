@@ -1,12 +1,26 @@
 within Vetrnik;
 model PolyphaseRectifier "m-phase rectifier"
+  parameter Integer m(min=1) = 3 "Number of phases" annotation(Evaluate=true);
+  parameter Modelica.Units.SI.Resistance Ron(final min=0, start=1e-5) "Closed diode resistance";
+  parameter Modelica.Units.SI.Conductance Goff(final min=0, start=1e-5) "Opened diode conductance";
+  parameter Modelica.Units.SI.Voltage Vknee(final min=0, start=0) "Threshold voltage";
   Modelica.Electrical.Polyphase.Basic.Star star1 annotation(
     Placement(transformation(origin = {0, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Modelica.Electrical.Polyphase.Basic.Star star2 annotation(
     Placement(transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  Modelica.Electrical.Polyphase.Ideal.IdealDiode diode1 annotation(
+  Modelica.Electrical.Polyphase.Ideal.IdealDiode diode1(
+    final m=m,
+    final Ron=fill(Ron, m),
+    final Goff=fill(Goff, m),
+    final Vknee=fill(Vknee, m)
+  ) annotation(
     Placement(transformation(origin = {0, 20}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Modelica.Electrical.Polyphase.Ideal.IdealDiode diode2 annotation(
+  Modelica.Electrical.Polyphase.Ideal.IdealDiode diode2(
+    final m=m,
+    final Ron=fill(Ron, m),
+    final Goff=fill(Goff, m),
+    final Vknee=fill(Vknee, m)
+  ) annotation(
     Placement(transformation(origin = {0, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Modelica.Electrical.Polyphase.Interfaces.PositivePlug positivePlug annotation(
     Placement(transformation(origin = {-80, 0}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {-80, 0}, extent = {{-10, -10}, {10, 10}})));
@@ -14,8 +28,6 @@ model PolyphaseRectifier "m-phase rectifier"
     Placement(transformation(origin = {80, 60}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {80, 60}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Electrical.Analog.Interfaces.NegativePin pin_n annotation(
     Placement(transformation(origin = {80, -60}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {80, -60}, extent = {{-10, -10}, {10, 10}})));
-  parameter Integer m(min=1) = 3 "Number of phases" annotation(Evaluate=true);
-  // TODO parameters for real-world diodes
 equation
   connect(diode2.plug_n, diode1.plug_p) annotation(
     Line(points = {{0, -10}, {0, 10}}, color = {0, 0, 255}));
