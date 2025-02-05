@@ -17,8 +17,6 @@ model test3
     Placement(transformation(origin = {80, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   Modelica.Electrical.Polyphase.Basic.Star star annotation(
     Placement(transformation(origin = {10, -20}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Electrical.Analog.Basic.Resistor Rrect(R = 1) annotation(
-    Placement(transformation(origin = {46, 20}, extent = {{-10, -10}, {10, 10}})));
 equation
   connect(windTurbine.flange, smpm.flange) annotation(
     Line(points = {{-40, 0}, {-20, 0}}));
@@ -36,10 +34,8 @@ equation
     Line(points = {{80, -10}, {80, -20}, {60, -20}, {60, -10}}, color = {0, 0, 255}));
   connect(star.plug_p, smpm.plug_sn) annotation(
     Line(points = {{0, -20}, {0, 10}, {-4, 10}}, color = {0, 0, 255}));
-  connect(Rrect.n, capacitor.p) annotation(
-    Line(points = {{56, 20}, {60, 20}, {60, 10}}, color = {0, 0, 255}));
-  connect(polyphaseRectifier.pin_p, Rrect.p) annotation(
-    Line(points = {{30, 6}, {36, 6}, {36, 20}}, color = {0, 0, 255}));
+  connect(polyphaseRectifier.pin_p, capacitor.p) annotation(
+    Line(points = {{30, 6}, {40, 6}, {40, 20}, {60, 20}, {60, 10}}, color = {0, 0, 255}));
   annotation(
     uses(Modelica(version = "4.0.0")),
     experiment(StartTime = 0, StopTime = 10, Tolerance = 1e-06, Interval = 0.002));
