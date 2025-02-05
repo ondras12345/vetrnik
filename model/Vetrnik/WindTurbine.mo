@@ -1,3 +1,4 @@
+within Vetrnik;
 model WindTurbine "model of a wind turbine"
   extends Modelica.Mechanics.Rotational.Interfaces.PartialTorque;
   Modelica.Blocks.Interfaces.RealInput vwind(unit="m/s")  "wind velocity" annotation(
@@ -26,5 +27,6 @@ equation
   Pw = 0.5*rho*S*vwind^3;
   P = -flange.tau * omega;
 annotation(
-    uses(Modelica(version = "4.0.0")));
+    uses(Modelica(version = "4.0.0")),
+  Icon(graphics = {Line(origin = {0, -7}, points = {{0, -51}, {0, 51}}, thickness = 0.5), Line(origin = {-19.94, 24.65}, points = {{-20, -20}, {20, 20}}, thickness = 0.75), Line(origin = {20.06, 24.65}, points = {{-20, 20}, {20, -20}}, thickness = 0.75), Line(origin = {0.06, 66.65}, points = {{0, -22}, {0, 22}}, thickness = 0.75), Ellipse(origin = {0, 44}, fillPattern = FillPattern.Solid, extent = {{-4, -4}, {4, 4}})}));
 end WindTurbine;

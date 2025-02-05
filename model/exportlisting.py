@@ -9,16 +9,16 @@ from OMPython import OMCSessionZMQ
 
 def strip_annots(omc, model_name: str) -> str:
     omc.sendExpression('loadModel(Modelica)')
-    omc.sendExpression(f'loadFile("{model_name}.mo")')
+    omc.sendExpression(f'loadFile("Vetrnik/package.mo")')
     with tempfile.TemporaryDirectory() as tmp:
         tmpfile = pathlib.Path(tmp) / "listing.mo"
         print("tmpfile =", tmpfile, file=sys.stderr)
-        if not omc.sendExpression(f'saveTotalModel("{tmpfile}", {model_name})'):
+        if not omc.sendExpression(f'saveTotalModel("{tmpfile}", Vetrnik.{model_name})'):
             raise Exception("saveTotalModel failed")
         omc.sendExpression('clear()')
         if not omc.sendExpression(f'loadFile("{tmpfile}")'):
             raise Exception("loadFile failed")
-    out = omc.sendExpression(f'list({model_name})')
+    out = omc.sendExpression(f'list(Vetrnik.{model_name})')
     if not out:
         raise Exception("list() failed")
     return out

@@ -1,3 +1,4 @@
+within Vetrnik;
 model test1
   WindTurbine windturbine annotation(
     Placement(transformation(origin = {-20, 0}, extent = {{-10, -10}, {10, 10}})));

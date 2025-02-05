@@ -7,14 +7,15 @@ from OMPython import OMCSessionZMQ
 omc = OMCSessionZMQ()
 
 omc.sendExpression('loadModel(Modelica)')
-omc.sendExpression('loadFile("windCp.mo")')
+omc.sendExpression('setModelicaPath(".")')
+omc.sendExpression('loadModel(Vetrnik.windCp)')
 beta = np.deg2rad(np.linspace(0, 20, 5))
 lambdas = len(beta)*[x[0] for x in omc.sendExpression("lambda := [0.01:.01:20]")]
 Cp = []
 betas = []
 for b in beta:
     print("beta=", b)
-    c = [x[0] for x in omc.sendExpression(f"windCp(lambda, {b})")]
+    c = [x[0] for x in omc.sendExpression(f"Vetrnik.windCp(lambda, {b})")]
     Cp.extend(c)
     betas.extend([b] * len(c))
 

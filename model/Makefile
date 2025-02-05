@@ -1,13 +1,14 @@
 .PHONY: all
 all: listings windCp.csv
 
+LISTINGS=windCp WindTurbine VariableDamper
 .PHONY: listings
-listings: $(patsubst %.mo,listings/%.listing,$(wildcard *.mo))
+listings: $(patsubst %,listings/%.listing, $(LISTINGS))
 
-listings/%.listing: %.mo
-	./exportlisting.py -o $@ $(basename $<)
+listings/%.listing: Vetrnik/%.mo
+	./exportlisting.py -o $@ $(patsubst Vetrnik/%.mo, %, $<)
 
-windCp.csv: windCp.mo windCp.py
+windCp.csv: Vetrnik/windCp.mo windCp.py
 	./windCp.py
 
 .PHONY: clean

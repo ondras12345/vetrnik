@@ -1,3 +1,4 @@
+within Vetrnik;
 model PolyphaseRectifier "m-phase rectifier"
   Modelica.Electrical.Polyphase.Basic.Star star1 annotation(
     Placement(transformation(origin = {0, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
@@ -14,6 +15,7 @@ model PolyphaseRectifier "m-phase rectifier"
   Modelica.Electrical.Analog.Interfaces.NegativePin pin_n annotation(
     Placement(transformation(origin = {80, -60}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {80, -60}, extent = {{-10, -10}, {10, 10}})));
   parameter Integer m(min=1) = 3 "Number of phases" annotation(Evaluate=true);
+  // TODO parameters for real-world diodes
 equation
   connect(diode2.plug_n, diode1.plug_p) annotation(
     Line(points = {{0, -10}, {0, 10}}, color = {0, 0, 255}));

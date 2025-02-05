@@ -1,3 +1,4 @@
+within Vetrnik;
 function windCp "calculate wind turbine power coefficient"
 input Real lambda "tip speed ratio";
 input Modelica.Units.SI.Angle beta "blade pitch angle";
