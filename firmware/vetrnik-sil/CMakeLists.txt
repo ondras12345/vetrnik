@@ -19,6 +19,7 @@ add_library(vetrniksil SHARED
     ../vetrnik-control/lib/wt_hal/wt_hal.c
     "${fe_SOURCE_DIR}/src/fe.c"
 )
+target_compile_options(vetrniksil PRIVATE -Wall -Werror=implicit-function-declaration)
 target_link_libraries(vetrniksil m)
 set_target_properties(vetrniksil PROPERTIES
     VERSION ${PROJECT_VERSION}
@@ -39,7 +40,7 @@ target_include_directories(vetrniksil PRIVATE ../vetrnik-control/lib/fe_utils)
 add_custom_command(
     OUTPUT wt_sil_preprocessed.h
     DEPENDS include/wt_sil.h ../vetrnik-control/lib/wt_hal/wt_hal.h
-    COMMAND gcc -E include/wt_sil.h -o wt_sil_preprocessed.h -I../vetrnik-control/lib/wt_hal -DCFFI_HEADER
+    COMMAND "${CMAKE_C_COMPILER}" -E include/wt_sil.h -o wt_sil_preprocessed.h -I../vetrnik-control/lib/wt_hal -DCFFI_HEADER
     VERBATIM
 )
 add_custom_target(generate_preprocessed_header ALL

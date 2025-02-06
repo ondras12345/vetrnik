@@ -52,6 +52,7 @@ static void ctrl_set_strategy(control_strategy_t s)
 static bool ctrl_set_strategy_str(const char * str)
 {
     // TODO common
+    return false;
 }
 
 static control_strategy_t ctrl_get_strategy()
