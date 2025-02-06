@@ -369,7 +369,7 @@ Read temperature from DS18B20 sensors.
 - `sensor_number` \[number\]
 
 ### Return value
-\[number\]: temperature in degrees C
+\[number\]: temperature in degrees C. nil is returned if sensor is broken.
 ## `ctrl`
 Category: callbacks
 

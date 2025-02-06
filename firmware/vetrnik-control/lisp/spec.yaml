@@ -300,7 +300,7 @@ functions:
         type: number
     return:
       type: number
-      description: temperature in degrees C
+      description: temperature in degrees C. nil is returned if sensor is broken.
 
   - name: ctrl
     category: callbacks

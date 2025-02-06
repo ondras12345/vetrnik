@@ -29,7 +29,7 @@ void wt_sil_init(wt_sil_state_t * state)
     fe_utils_init(ctx);
     wt_lisp_init(ctx, wt_hal);
     lcd_lisp_init(ctx, lcd_hal);
-    //fe_set(ctx, fe_symbol(ctx, "ds18"), fe_cfunc(ctx, cfunc_DS18B20));  // TODO
+    fe_set(ctx, fe_symbol(ctx, "ds18"), fe_cfunc(ctx, cfunc_empty));  // TODO unimplemented for now - nil return should be interpreted as broken sensor
 
     fe_restoregc(ctx, gc);
 }
