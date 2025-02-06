@@ -44,6 +44,8 @@ void wt_sil_close(wt_sil_state_t * state)
 /// Start a LISP read-eval-print-loop on stdin/stdout
 void wt_sil_repl(wt_sil_state_t * state)
 {
+    sil_hal_init(state);
+
     int gc;
     fe_Object *obj;
     fe_Context * ctx = state->fe_ctx;
@@ -65,6 +67,8 @@ void wt_sil_repl(wt_sil_state_t * state)
 /// \return 0 on success, nonzero on failure
 int wt_sil_run_file(wt_sil_state_t * state, const char * filename)
 {
+    sil_hal_init(state);
+
     FILE * f = fopen(filename, "r");
     if (!f)
     {
@@ -95,6 +99,8 @@ int wt_sil_run_file(wt_sil_state_t * state, const char * filename)
  */
 void wt_sil_run_str(wt_sil_state_t * state, const char * code)
 {
+    sil_hal_init(state);
+
     fe_str_t fstr = { code, -1, 0 };
     fe_Context * ctx = state->fe_ctx;
     int gc = fe_savegc(ctx);
@@ -112,16 +118,18 @@ void wt_sil_run_str(wt_sil_state_t * state, const char * code)
  * \brief Simple controller function for use in Modelica SIL.
  * Uses static variables.
  * \param filename path to lisp file that should be sourced during first call
+ * \param time simulation time
  * \param RPM turbine revolutions per minute
  * \param voltage DC voltage in volts
  * \param current DC current in amps
  * \param vwind velocity of the wind in meters per second
  * \return duty cycle 0...1
  */
-double wt_sil_controller(const char * filename, double RPM, double voltage, double current, double vwind)
+double wt_sil_controller(const char * filename, double time, double RPM, double voltage, double current, double vwind)
 {
     static wt_sil_state_t state;
     static bool initialized = false;
+    static double last_time = 0;
     if (!initialized)
     {
         initialized = true;
@@ -133,15 +141,24 @@ double wt_sil_controller(const char * filename, double RPM, double voltage, doub
     assert(voltage >= 0);
     assert(current >= 0);
 
-    state.pwr_status.RPM = (RPM > UINT16_MAX) ? UINT16_MAX : RPM;
-    voltage *= 10;
-    state.pwr_status.voltage = (voltage > UINT16_MAX) ? UINT16_MAX : voltage;
-    current *= 1e3;
-    state.pwr_status.current = (current > UINT16_MAX) ? UINT16_MAX : current;
+    // The OpenModelica solver can (and does) call this function multiple times
+    // as it tries to find a solution for a given sample.
+    // I'm not particularly happy with this workaround, but it seems to work
+    // reasonably well.
+    if (time != last_time)
+    {
+        last_time = time;
 
-    state.pwr_status.time += 1;
+        state.pwr_status.RPM = (RPM > UINT16_MAX) ? UINT16_MAX : RPM;
+        voltage *= 10;
+        state.pwr_status.voltage = (voltage > UINT16_MAX) ? UINT16_MAX : voltage;
+        current *= 1e3;
+        state.pwr_status.current = (current > UINT16_MAX) ? UINT16_MAX : current;
 
-    wt_sil_run_str(&state, "(ctrl)");
+        state.pwr_status.time += 1;
+
+        wt_sil_run_str(&state, "(ctrl)");
+    }
 
     uint8_t duty = state.pwr_status.duty;
     // vetrnik-power has a limited range of duty cycles

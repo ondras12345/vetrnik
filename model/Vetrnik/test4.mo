@@ -16,7 +16,7 @@ model test4
     Placement(transformation(origin = {10, -20}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Electrical.Analog.Basic.VariableResistor Rl annotation(
     Placement(transformation(origin = {80, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  parameter Modelica.Units.SI.Resistance Rload = 2.89875 "load resistance";
+  parameter Modelica.Units.SI.Resistance Rload = 100 "load resistance";  // 2.89875 is the real-world value
   parameter Modelica.Units.SI.Time Ts = 0.5 "controller sampling time";
   Real duty "duty cycle";
 equation
@@ -40,11 +40,12 @@ equation
     Line(points = {{80, -10}, {80, -20}, {60, -20}, {60, -10}}, color = {0, 0, 255}));
   
   when sample(0, 0.5) then
-    duty = vetrnikController(windTurbine.omega / (2*Modelica.Constants.pi) * 60, capacitor.v, Rl.i, windTurbine.vwind);
+    // max(0, ...) is needed to prevent failing assert in C due to floating point errors.
+    duty = vetrnikController(time, windTurbine.omega / (2*Modelica.Constants.pi) * 60, capacitor.v, max(0, Rl.i), windTurbine.vwind);
   end when;
   
   Rl.R = Rload / max(duty, 1e-12);
   annotation(
     uses(Modelica(version = "4.0.0")),
-    experiment(StartTime = 0, StopTime = 10, Tolerance = 1e-06, Interval = 0.002));
+    experiment(StartTime = 0, StopTime = 50, Tolerance = 1e-06, Interval = 0.01));
 end test4;
