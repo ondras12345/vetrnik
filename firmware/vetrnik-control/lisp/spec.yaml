@@ -105,6 +105,39 @@ functions:
       - '(is (map 10 0 100 0 1) 0.1)'
       - '(is (map 10 0 1 0 -2) -20)'
 
+  - name: lim
+    description: |-
+      Limit a number to a range.
+
+      Equivalent lisp implementation:
+      ```lisp
+      (= lim (fn (x l h)
+        (if
+          (< x l) l
+          (< h x) h
+          x
+        )
+      ))
+      ```
+    nargs: 3
+    args:
+      - name: x
+        type: number
+        description: value to be processed
+      - name: low
+        type: number
+        description: lower bound for the value's range
+      - name: high
+        type: number
+        description: upper bound for the value's range
+    return:
+      type: number
+    tests:
+      - '(is (lim 10 0 10) 10)'
+      - '(is (lim -10 0 10) 0)'
+      - '(is (lim 11 0 10) 10)'
+      - '(is (lim 2 -10 10) 2)'
+
   - name: pwrg
     description: >-
       Get a value from the power board state object.

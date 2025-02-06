@@ -120,6 +120,38 @@ Equivalent lisp implementation:
 (map 10 0 100 -1 0) ; -0.9
 ```
 
+## `lim`
+### Description
+Limit a number to a range.
+
+Equivalent lisp implementation:
+```lisp
+(= lim (fn (x l h)
+  (if
+    (< x l) l
+    (< h x) h
+    x
+  )
+))
+```
+
+### Signature
+```lisp
+(lim
+    x
+    low
+    high
+)
+```
+
+
+### Arguments
+- `x` \[number\]: value to be processed
+- `low` \[number\]: lower bound for the value's range
+- `high` \[number\]: upper bound for the value's range
+
+### Return value
+\[number\]
 ## `pwrg`
 ### Description
 Get a value from the power board state object. Numerical values (in SI units without metric prefix) are returned.

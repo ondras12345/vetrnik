@@ -63,6 +63,28 @@ fe_Object* cfunc_round(fe_Context *ctx, fe_Object *arg)
 
 
 /**
+ * C implementation of:
+ *
+ * (= lim (fn (x l h)
+ *   (if
+ *     (< x l) l
+ *     (< h x) h
+ *     x
+ *   )
+ * ))
+ */
+fe_Object* cfunc_lim(fe_Context *ctx, fe_Object *arg)
+{
+    fe_Number x = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    fe_Number l = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    fe_Number h = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    if (x < l) return fe_number(ctx, l);
+    if (x > h) return fe_number(ctx, h);
+    return fe_number(ctx, x);
+}
+
+
+/**
  * Always returns nil.
  * Useful as a default for callback functions.
  */
@@ -93,4 +115,5 @@ void fe_utils_init(fe_Context *ctx)
     fe_set(ctx, fe_symbol(ctx, "rem"), fe_cfunc(ctx, cfunc_rem));
     fe_set(ctx, fe_symbol(ctx, "round"), fe_cfunc(ctx, cfunc_round));
     fe_set(ctx, fe_symbol(ctx, "map"), fe_cfunc(ctx, cfunc_map));
+    fe_set(ctx, fe_symbol(ctx, "lim"), fe_cfunc(ctx, cfunc_lim));
 }

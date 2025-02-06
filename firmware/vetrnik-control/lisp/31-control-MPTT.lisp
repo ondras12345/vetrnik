@@ -14,15 +14,6 @@
 
 ; configuration parameters (uppercase vars) are in 30-control-conf.lisp
 
-(= lim (fn (x l h)
-  (if
-    (< x l) l
-    (< h x) h
-    x
-  )
-))
-
-
 (= pump (fn ()
   (out "PUMP"
     (if
