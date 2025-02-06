@@ -162,7 +162,20 @@ static fe_Object* cfunc_ctrls(fe_Context *ctx, fe_Object *arg)
 
 static fe_Object* cfunc_out(fe_Context *ctx, fe_Object *arg)
 {
-    int out_number = (int)fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    char name[16];
+    fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
+
+    int out_number = -1;
+
+    for (size_t i = 0; digital_output_names[i] != NULL; i++)
+    {
+        if (strcmp(name, digital_output_names[i]) == 0)
+        {
+            out_number = i;
+            break;
+        }
+    }
+    if (!wt.out_validate(out_number)) fe_error(ctx, "invalid out name");
 
     bool state;
     bool setter = false;
@@ -173,8 +186,6 @@ static fe_Object* cfunc_out(fe_Context *ctx, fe_Object *arg)
         setter = true;
         state = !fe_isnil(ctx, fe_nextarg(ctx, &arg));
     }
-
-    if (!wt.out_validate(out_number)) fe_error(ctx, "invalid out_number");
 
     if (setter) wt.out_set(out_number, state);
     else state = wt.out_get(out_number);
@@ -208,10 +219,4 @@ void wt_lisp_init(fe_Context *ctx, wt_hal_t hal)
         snprintf(buf, sizeof buf, "pwr_%s", power_board_modes[i]);
         fe_set(ctx, fe_symbol(ctx, buf), fe_number(ctx, i));
     }
-
-    // Add OUT_* variables
-#define X_VAR(n, v) fe_set(ctx, fe_symbol(ctx, #n), fe_number(ctx, n));
-    OUT_NAMES(X_VAR)
-#undef X_VAR
-    // TODO
 }

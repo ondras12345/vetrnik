@@ -34,6 +34,20 @@ const char * power_board_modes[] = {
 #undef X_STR
 
 
+#define X_STR(name, value) #name,
+/**
+ * Array with strings corresponding to digital_output_t values.
+ * Terminated by NULL.
+ *
+ * Useful for performing reverse lookup.
+ */
+const char * digital_output_names[] = {
+    OUT_NAMES(X_STR)
+    NULL
+};
+#undef X_STR
+
+
 bool wt_hal_out_validate(int v)
 {
     return (v >= 0 && v < OUT_LAST_);

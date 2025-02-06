@@ -70,6 +70,7 @@ typedef struct {
 
 typedef enum {
     POWER_BOARD_MODES(X_ENUM)
+    POWER_MODE_LAST_
 } power_board_mode_t;
 
 extern const char * power_board_modes[];
@@ -86,15 +87,19 @@ typedef struct {
 
 // output numbers must start from 0 and be consecutive
 #define OUT_NAMES(X) \
-    X(OUT_LED_BLUE, 0) \
-    X(OUT_LED_RED, 1) \
-    X(OUT_PUMP, 2) \
-    X(OUT_REL2, 3)
+    X(LED_BLUE, 0) \
+    X(LED_RED, 1) \
+    X(PUMP, 2) \
+    X(REL2, 3)
 
+#define X_ENUM_OUT(name, value) OUT_##name = value,
 typedef enum {
-    OUT_NAMES(X_ENUM)
+    OUT_NAMES(X_ENUM_OUT)
     OUT_LAST_
 } digital_output_t;
+#undef X_EUM_OUT
+
+extern const char * digital_output_names[];
 
 /**
  * Wind turbine HAL.

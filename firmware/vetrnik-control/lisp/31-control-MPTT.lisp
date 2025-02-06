@@ -24,12 +24,12 @@
 
 
 (= pump (fn ()
-  (out OUT_PUMP
+  (out "PUMP"
     (if
       (pwrg "last5m") (if
           (not t0) t  ; t0 is nil - broken sensor
           (and
-            (not (out OUT_PUMP))  ; do not switch relay off if temperature falls
+            (not (out "PUMP"))  ; do not switch relay off if temperature falls
             (< t0 PS)
           ) nil
           t

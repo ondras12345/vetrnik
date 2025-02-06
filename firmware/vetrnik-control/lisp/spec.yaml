@@ -159,6 +159,7 @@ functions:
     tests:
       - '(do (pwrs "sw_enable" t) (pwrg "sw_enable"))'
       - '(do (pwrs "sw_enable" nil) (not (pwrg "sw_enable")))'
+      - '(do (pwrs "mode" pwr_shorted) t)'
 
   - name: lcdc
     description: Set LCD cursor position to specified column.
@@ -264,19 +265,17 @@ functions:
   - name: out
     description: |-
       Get or set state of digital outputs (LEDs and relays) on the control board.
-
-      Constants `OUT_*` are provided to map output names to numbers.
     nargs:
       min: 1
       max: 2
     args:
       - name: out_number
-        type: number
+        type: string
         values:
-          - OUT_LED_BLUE  # LED_BUILTIN
-          - OUT_LED_RED
-          - OUT_PUMP  # REL1: circulation pump
-          - OUT_REL2
+          - '"LED_BLUE"'  # LED_BUILTIN
+          - '"LED_RED"'
+          - '"PUMP"'  # REL1: circulation pump
+          - '"REL2"'
       - name: state
         type: bool
         description: desired state

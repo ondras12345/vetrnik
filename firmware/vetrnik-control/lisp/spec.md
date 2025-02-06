@@ -334,8 +334,6 @@ Set a value in the control subsystem.
 ### Description
 Get or set state of digital outputs (LEDs and relays) on the control board.
 
-Constants `OUT_*` are provided to map output names to numbers.
-
 ### Signature
 ```lisp
 (out
@@ -346,11 +344,11 @@ Constants `OUT_*` are provided to map output names to numbers.
 
 
 ### Arguments
-- `out_number` \[number\]
-    - `OUT_LED_BLUE`
-    - `OUT_LED_RED`
-    - `OUT_PUMP`
-    - `OUT_REL2`
+- `out_number` \[string\]
+    - `"LED_BLUE"`
+    - `"LED_RED"`
+    - `"PUMP"`
+    - `"REL2"`
 - `state` \[bool\]: desired state
 
 ### Return value
