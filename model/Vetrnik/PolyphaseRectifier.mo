@@ -4,9 +4,9 @@ model PolyphaseRectifier "m-phase rectifier"
   parameter Modelica.Units.SI.Resistance Ron(final min=0, start=1e-5) "Closed diode resistance";
   parameter Modelica.Units.SI.Conductance Goff(final min=0, start=1e-5) "Opened diode conductance";
   parameter Modelica.Units.SI.Voltage Vknee(final min=0, start=0) "Threshold voltage";
-  Modelica.Electrical.Polyphase.Basic.Star star1 annotation(
+  Modelica.Electrical.Polyphase.Basic.Star star1(m=m) annotation(
     Placement(transformation(origin = {0, 50}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Modelica.Electrical.Polyphase.Basic.Star star2 annotation(
+  Modelica.Electrical.Polyphase.Basic.Star star2(m=m) annotation(
     Placement(transformation(origin = {0, -50}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   Modelica.Electrical.Polyphase.Ideal.IdealDiode diode1(
     final m=m,
