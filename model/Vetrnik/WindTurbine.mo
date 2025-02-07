@@ -1,19 +1,20 @@
 within Vetrnik;
 model WindTurbine "model of a wind turbine"
   extends Modelica.Mechanics.Rotational.Interfaces.PartialTorque;
+  import Modelica.Units.SI;
   Modelica.Blocks.Interfaces.RealInput vwind(unit="m/s")  "wind velocity" annotation(
     Placement(transformation(origin = {-106, 2}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {-106, 2}, extent = {{-20, -20}, {20, 20}})));
-  parameter Modelica.Units.SI.Radius R = 0.5 "rotor radius";
-  parameter Modelica.Units.SI.Angle beta = 0 "rotor blade pitch angle";
-  parameter Modelica.Units.SI.Density rho = 1.28 "air density";
+  parameter SI.Radius R = 0.5 "rotor radius";
+  parameter SI.Angle beta = 0 "rotor blade pitch angle";
+  parameter SI.Density rho = 1.28 "air density";
   Real lambda "tip speed ratio";
-  Modelica.Units.SI.Area S "area swept by rotor";
-  Modelica.Units.SI.AngularVelocity omega "rotor angular velocity";
-  Modelica.Units.SI.Velocity vtip "rotor tip velocity";
+  SI.Area S "area swept by rotor";
+  SI.AngularVelocity omega "rotor angular velocity";
+  SI.Velocity vtip "rotor tip velocity";
   Real Cp "power coefficient";
   Real Ct "torque coefficient";
-  Modelica.Units.SI.Power Pw "ideal power of the wind";
-  Modelica.Units.SI.Power P "power of the turbine";
+  SI.Power Pw "ideal power of the wind";
+  SI.Power P "power of the turbine";
 equation
   S = Modelica.Constants.pi * R^2;
   omega = der(phi);
