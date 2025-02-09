@@ -1,7 +1,7 @@
 .PHONY: all
 all: listings windCp.csv diagrams
 
-LISTINGS=windCp WindTurbine VariableDamper
+LISTINGS=windCp WindTurbine VariableDamper vetrnikController
 .PHONY: listings
 listings: $(patsubst %,listings/%.listing, $(LISTINGS))
 

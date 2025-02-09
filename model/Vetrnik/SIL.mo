@@ -1,14 +1,14 @@
 within Vetrnik;
-model test4
-  WindTurbine windTurbine annotation(
+model SIL "software-in-the-loop simulation of the whole 'vetrnik' system with lisp control"
+  WindTurbine windTurbine(R = 1.1, beta = 0.08726646259971647)  annotation(
     Placement(transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Electrical.Machines.BasicMachines.SynchronousMachines.SM_PermanentMagnet smpm(p = 6, fsNominal = 50, Jr = .001, VsOpenCircuit = 48) annotation(
+  Modelica.Electrical.Machines.BasicMachines.SynchronousMachines.SM_PermanentMagnet smpm(p = 6, fsNominal = 100, Jr = 1.2, VsOpenCircuit = 72.3) annotation(
     Placement(transformation(origin = {-10, 0}, extent = {{10, -10}, {-10, 10}})));
-  PolyphaseRectifier polyphaseRectifier(Vknee = .7, Ron = .05)  annotation(
+  PolyphaseRectifier polyphaseRectifier(Vknee = .7, Ron = .18)  annotation(
     Placement(transformation(origin = {30, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Electrical.Analog.Basic.Ground groundDC annotation(
     Placement(transformation(origin = {60, -36}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Electrical.Analog.Basic.Capacitor capacitor(C = 1e-3) annotation(
+  Modelica.Electrical.Analog.Basic.Capacitor capacitor(C (displayUnit = "uF")= 9.4e-4) annotation(
     Placement(transformation(origin = {60, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   Modelica.Blocks.Sources.Constant constVwind(k = 12) annotation(
     Placement(transformation(origin = {-90, 0}, extent = {{-10, -10}, {10, 10}})));
@@ -16,7 +16,7 @@ model test4
     Placement(transformation(origin = {10, -30}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   Modelica.Electrical.Analog.Basic.VariableResistor Rl annotation(
     Placement(transformation(origin = {80, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
-  parameter Modelica.Units.SI.Resistance Rload = 100 "load resistance";  // 2.89875 is the real-world value
+  parameter Modelica.Units.SI.Resistance Rload = 2.90 "load resistance";
   parameter Modelica.Units.SI.Time Ts = 0.5 "controller sampling time";
   Real duty "duty cycle";
 equation
@@ -48,4 +48,4 @@ equation
   annotation(
     uses(Modelica(version = "4.0.0")),
     experiment(StartTime = 0, StopTime = 50, Tolerance = 1e-06, Interval = 0.01));
-end test4;
+end SIL;
