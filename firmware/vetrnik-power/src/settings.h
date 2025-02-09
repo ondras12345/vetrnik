@@ -15,8 +15,6 @@
 // Time after which turbine RPM must reduce to stopping_RPM in stopping mode
 #define stopping_time 10000UL  // ms
 
-#define RPM_conversion 10  // how many RPM per Hz
-
 #define NTC_heatsink_Rdiv 4700
 #define NTC_heatsink_beta 3977
 #define NTC_heatsink_R_nom 10000
