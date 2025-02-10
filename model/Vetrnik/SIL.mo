@@ -4,7 +4,7 @@ model SIL "software-in-the-loop simulation of the whole 'vetrnik' system with li
     Placement(transformation(origin = {-50, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Electrical.Machines.BasicMachines.SynchronousMachines.SM_PermanentMagnet smpm(p = 6, fsNominal = 100, Jr = 1.2, VsOpenCircuit = 72.3) annotation(
     Placement(transformation(origin = {-10, 0}, extent = {{10, -10}, {-10, 10}})));
-  PolyphaseRectifier polyphaseRectifier(Vknee = .7, Ron = .18)  annotation(
+  PolyphaseRectifier polyphaseRectifier(Vknee = .7, Ron = .02)  annotation(
     Placement(transformation(origin = {30, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Electrical.Analog.Basic.Ground groundDC annotation(
     Placement(transformation(origin = {60, -36}, extent = {{-10, -10}, {10, 10}})));
