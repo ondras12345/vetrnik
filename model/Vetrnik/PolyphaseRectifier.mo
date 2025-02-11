@@ -22,7 +22,7 @@ model PolyphaseRectifier "m-phase rectifier"
     final Vknee=fill(Vknee, m)
   ) annotation(
     Placement(transformation(origin = {0, -20}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
-  Modelica.Electrical.Polyphase.Interfaces.PositivePlug positivePlug annotation(
+  Modelica.Electrical.Polyphase.Interfaces.PositivePlug positivePlug(m = m)  annotation(
     Placement(transformation(origin = {-80, 0}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {-80, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Electrical.Analog.Interfaces.PositivePin pin_p annotation(
     Placement(transformation(origin = {80, 60}, extent = {{-10, -10}, {10, 10}}), iconTransformation(origin = {80, 60}, extent = {{-10, -10}, {10, 10}})));
