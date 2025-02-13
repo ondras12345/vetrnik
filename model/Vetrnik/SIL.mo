@@ -16,6 +16,10 @@ model SIL "software-in-the-loop simulation of the whole 'vetrnik' system with li
     Placement(transformation(origin = {10, -30}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   Modelica.Electrical.Analog.Basic.VariableResistor Rl annotation(
     Placement(transformation(origin = {80, 0}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
+  RMSFilter iFilter;
+  RMSFilter iFilter2;
+  RMSFilter uFilter;
+  Modelica.Units.SI.Power filteredPower;
   parameter Modelica.Units.SI.Resistance Rload = 2.90 "load resistance";
   parameter Modelica.Units.SI.Time Ts = 0.5 "controller sampling time";
   Real duty "duty cycle";
@@ -38,14 +42,18 @@ equation
     Line(points = {{80, 10}, {80, 20}, {60, 20}, {60, 10}}, color = {0, 0, 255}));
   connect(Rl.n, capacitor.n) annotation(
     Line(points = {{80, -10}, {80, -20}, {60, -20}, {60, -10}}, color = {0, 0, 255}));
-  
+
+  iFilter.u = -polyphaseRectifier.pin_p.i;
+  iFilter2.u = Rl.i;
+  uFilter.u = capacitor.v;
+  filteredPower = uFilter.y * iFilter.y;
   when sample(0, Ts) then
     // max(0, ...) is needed to prevent failing assert in C due to floating point errors.
-    duty = vetrnikController(time, windTurbine.omega / (2*Modelica.Constants.pi) * 60, capacitor.v, max(0, Rl.i), windTurbine.vwind);
+    duty = vetrnikController(time, windTurbine.omega / (2*Modelica.Constants.pi) * 60, uFilter.y, max(0, iFilter2.y), windTurbine.vwind);
   end when;
   
   Rl.R = Rload / max(duty, 1e-12);
   annotation(
     uses(Modelica(version = "4.0.0")),
-    experiment(StartTime = 0, StopTime = 50, Tolerance = 1e-06, Interval = 0.01));
+    experiment(StartTime = 0, StopTime = 100, Tolerance = 1e-06, Interval = 0.05));
 end SIL;
