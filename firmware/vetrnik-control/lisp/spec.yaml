@@ -142,7 +142,9 @@ functions:
     description: >-
       Get a value from the power board state object.
       Numerical values (in SI units without metric prefix) are returned.
-    nargs: 1
+    nargs:
+      min: 1
+      max: 2
     args:
       - name: name
         type: string
@@ -159,6 +161,10 @@ functions:
           - '"sw_enable"'
           - '"enabled"'
           - '"emergency"'
+            # TODO '"REL"' would break tests
+      - name: relay_nr
+        type: number
+        description: 'relay number (starting from 1); only used if name == "REL"'
     return:
       type: any
     tests:
@@ -170,6 +176,7 @@ functions:
               (atom ({{this.name}} {{v}}))
             {%- endfor %}
             )
+      - '(atom (pwrg "REL" 1))'
 
   - name: pwrs
     description: >-

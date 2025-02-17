@@ -160,6 +160,7 @@ Get a value from the power board state object. Numerical values (in SI units wit
 ```lisp
 (pwrg
     name
+    [relay_nr]
 )
 ```
 
@@ -178,6 +179,7 @@ Get a value from the power board state object. Numerical values (in SI units wit
     - `"sw_enable"`
     - `"enabled"`
     - `"emergency"`
+- `relay_nr` \[number\]: relay number (starting from 1); only used if name == "REL"
 
 ### Return value
 \[any\]
