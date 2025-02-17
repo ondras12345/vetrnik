@@ -3,6 +3,7 @@ import yaml
 import logging
 import jinja2
 import pathlib
+import sexpdata
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
@@ -48,9 +49,12 @@ class Test:
     def get_code(self, fn: "Function") -> str:
         """Get LISP code for the test."""
         if self._code is not None:
-            return self._code
+            code = self._code
         else:
-            return jinja_env.overlay(autoescape=False).from_string(self._template).render(this=fn)
+            code = jinja_env.overlay(autoescape=False).from_string(self._template).render(this=fn)
+
+        sexpdata.loads(code)  # check for unbalanced parens
+        return code
 
     @classmethod
     def from_dict(cls, d):
