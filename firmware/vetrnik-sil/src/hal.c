@@ -157,6 +157,12 @@ static uint8_t display_get_rows()
 }
 
 
+static float vwind()
+{
+    return sil_state->vwind;
+}
+
+
 wt_hal_t wt_hal = {
     .pwr_get_status     = pwr_get_status,
     .pwr_set_duty       = pwr_set_duty,
@@ -182,6 +188,8 @@ wt_hal_t wt_hal = {
     .out_set = out_set,
     .out_get = out_get,
     .out_validate = wt_hal_out_validate,
+
+    .vwind = vwind,
 };
 
 

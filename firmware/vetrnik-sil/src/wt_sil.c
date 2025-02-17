@@ -5,6 +5,7 @@
 #include <fe_utils.h>
 #include <assert.h>
 #include <unistd.h>
+#include <math.h>
 #include "hal.h"
 
 void wt_sil_init(wt_sil_state_t * state)
@@ -18,6 +19,7 @@ void wt_sil_init(wt_sil_state_t * state)
     state->pwr_status.enabled = (enabled_t){true, true, true};
     state->pwr_status.last5m = true;
     state->ctrl_strategy = control_lisp;
+    state->vwind = 0.0/0.0;  // NaN
 
     sil_hal_init(state);
 
@@ -140,6 +142,7 @@ double wt_sil_controller(const char * filename, double time, double RPM, double 
     assert(RPM >= 0);
     assert(voltage >= 0);
     assert(current >= 0);
+    assert(vwind >= 0);
 
     // The OpenModelica solver can (and does) call this function multiple times
     // as it tries to find a solution for a given sample.
@@ -154,6 +157,7 @@ double wt_sil_controller(const char * filename, double time, double RPM, double 
         state.pwr_status.voltage = (voltage > UINT16_MAX) ? UINT16_MAX : voltage;
         current *= 1e3;
         state.pwr_status.current = (current > UINT16_MAX) ? UINT16_MAX : current;
+        state.vwind = roundf(vwind * 100) / 100;
 
         state.pwr_status.time += 1;
 

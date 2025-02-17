@@ -17,6 +17,7 @@
 #include "stats.h"
 #include "display.h"
 #include "sensor_DS18B20.h"
+#include "sensor_wind.h"
 #include "log.h"
 #include "reset_cause.h"
 #include <SerialFlash.h>
@@ -80,6 +81,7 @@ void setup()
     uart_power_init();
     control_init();
     sensor_DS18B20_init();
+    sensor_wind_init();
     lisp_init();
     control_init_lisp();
     INFO->println("boot");
@@ -144,6 +146,7 @@ void loop()
     }
 
     sensor_DS18B20_loop();
+    sensor_wind_loop();
     control_loop();
     CLI_loop();
     unsigned long loop_duration_mid = millis() - loop_start_millis;

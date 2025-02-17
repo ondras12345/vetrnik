@@ -277,6 +277,7 @@ functions:
         values:
           - '"strategy"'
           - '"contactor"'
+          - '"vwind"'
     return:
       type: any
     tests:

@@ -5,6 +5,7 @@
 #include "pump.h"
 #include "stats.h"
 #include "display.h"
+#include "sensor_wind.h"
 #include <Arduino.h>
 
 
@@ -103,6 +104,8 @@ wt_hal_t wt_hal = {
     .out_set = out_set,
     .out_get = out_get,
     .out_validate = wt_hal_out_validate,
+
+    .vwind = sensor_wind_read,
 };
 
 

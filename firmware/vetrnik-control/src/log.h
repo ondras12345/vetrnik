@@ -51,7 +51,11 @@ typedef enum
     X(kPumpOff, "pump off") \
     X(kDS18B20Error, "DS18B20 error") \
     X(kSoftwareReset, "software reset") \
-    X(kMillisRollover, "millis rollover")
+    X(kMillisRollover, "millis rollover") \
+    X(kWindTimeout, "vwind timeout") \
+    X(kWindCRC, "vwind CRC error") \
+    X(kWindMalformed, "vwind malformed") \
+    /* */
 
 
 /**

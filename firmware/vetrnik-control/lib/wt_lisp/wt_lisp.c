@@ -131,6 +131,12 @@ static fe_Object* cfunc_ctrlg(fe_Context *ctx, fe_Object *arg)
         if (cs != (unsigned long)-1) r = cs;
         return fe_number(ctx, r);
     }
+    else if (strcmp(name, "vwind") == 0)
+    {
+        fe_Number vwind = wt.vwind();
+        if (vwind != vwind) return fe_bool(ctx, 0);  // translate NaN to nil
+        return fe_number(ctx, vwind);
+    }
     else
     {
         fe_error(ctx, "invalid ctrl param name");

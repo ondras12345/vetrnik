@@ -189,6 +189,9 @@ typedef struct
     /// Verify if provided value is a valid digital_output_t
     /// \return true if valid
     bool (*out_validate)(int v);
+
+    /// Get wind velocity in m/s (or NaN if unknown)
+    float (*vwind)();
 } wt_hal_t;
 
 

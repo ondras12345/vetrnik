@@ -338,6 +338,7 @@ Get a value from the control subsystem.
 - `name` \[string\]
     - `"strategy"`
     - `"contactor"`
+    - `"vwind"`
 
 ### Return value
 \[any\]

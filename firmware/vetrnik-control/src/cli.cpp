@@ -24,6 +24,7 @@
 #include "version.h"
 #include "log.h"
 #include "flash_tools.h"
+#include "hal.h"
 #include <CLIeditor.h>
 #include <malloc.h>
 
@@ -371,6 +372,9 @@ static void cmnd_control(char *args, Stream *response)
             response->print(cs / 60000UL);
             response->println(" min remaining)");
         }
+        response->print("vwind: ");
+        response->print(wt_hal.vwind());
+        response->println(" m/s");
     }
 
     // subcommands that need no value

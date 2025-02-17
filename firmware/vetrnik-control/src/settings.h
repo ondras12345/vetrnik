@@ -15,6 +15,9 @@
 #define PIN_ETH_RST     PB10 // active low
 #define PIN_SHORT_SENSE PC14  // low = shorted
 
+#define PIN_WIND_DE     PB0
+#define UART_WIND       Serial2  // PA2, PA3
+
 #define BUTTON_DEBOUNCE 50  // ms
 #define BUTTON_LONG 500  // ms
 
@@ -83,23 +86,26 @@ typedef struct {
 
 #define COMMA ,
 // X(printer_name, data_type, array_len?, name, default_value)
-// array_len: [array_length] || : number_of_bits
+// array_len: '[array_length]' || ':number_of_bits' || ''
 // cppcheck-suppress preprocessorErrorDirective
 #define CONF_ITEMS(X) \
-    X(MAC,  uint8_t,  [6],    ETH_MAC, { 0xDE COMMA 0xAD COMMA 0xBE COMMA 0xEF COMMA 0xFE COMMA 0xED }) \
-    X(IP,   uint8_t,  [4],    ETH_IP, {0}) /* IPv4 */ \
-    X(IP,   uint8_t,  [4],    MQTTserver, {0}) /* IPv4 */ \
-    X(str,  char,     [16],   MQTTuser, "") \
-    X(str,  char,     [32],   MQTTpassword, "") \
-    X(int,  uint8_t,  ,       DS18B20_sampling, 10) /* seconds, no sampling if 0 */ \
+    /* printer data    arr     name                 default */ \
+    X(MAC,  uint8_t,  [6],    ETH_MAC,              { 0xDE COMMA 0xAD COMMA 0xBE COMMA 0xEF COMMA 0xFE COMMA 0xED }) \
+    X(IP,   uint8_t,  [4],    ETH_IP,               {0}) /* IPv4 */ \
+    X(IP,   uint8_t,  [4],    MQTTserver,           {0}) /* IPv4 */ \
+    X(str,  char,     [16],   MQTTuser,             "") \
+    X(str,  char,     [32],   MQTTpassword,         "") \
+    X(int,  uint8_t,  ,       DS18B20_sampling,     10) /* seconds, no sampling if 0 */ \
     X(DS18B20, settings_DS18B20_t, [SENSOR_DS18B20_COUNT], DS18B20s, {0}) /* default: all zeros */ \
-    X(str,  char,     [16],   OTAname, "vetrnik") /* probably for mDNS, untested */ \
-    X(str,  char,     [32],   OTApassword, "pass") \
-    X(bool, bool,     :1,     shell_telnet, true) /* important: default true to prevent lockout */ \
-    X(bool, bool,     :1,     report_raw, false) /* MQTT report of raw datapoints */ \
+    X(str,  char,     [16],   OTAname,              "vetrnik") /* probably for mDNS, untested */ \
+    X(str,  char,     [32],   OTApassword,          "pass") \
+    X(bool, bool,     :1,     shell_telnet,         true) /* important: default true to prevent lockout */ \
+    X(bool, bool,     :1,     report_raw,           false) /* MQTT report of raw datapoints */ \
     X(int,  uint8_t,  ,       contactor_debounce_min, 15) \
-    X(int,  uint8_t,  ,       DHCP_timeout_s, 14) /* default timeout in Ethernet.h is 60 s ; needs to be lower than WATCHDOG_TIME */ \
-    X(int,  uint8_t,  ,       MQTT_timeout_s, 4) /* default timeout is 15 s, should be lower than power board uart timeout (5.1s) */
+    X(int,  uint8_t,  ,       DHCP_timeout_s,       14) /* default timeout in Ethernet.h is 60 s ; needs to be lower than WATCHDOG_TIME */ \
+    X(int,  uint8_t,  ,       MQTT_timeout_s,       4) /* default timeout is 15 s, should be lower than power board uart timeout (5.1s) */ \
+    X(int,  uint8_t,  ,       wind_sampling,        5) /* *100 ms, no sampling if 0 */ \
+    /* */
 
 
 // #undef COMMA - cannot undef, needed during expansion

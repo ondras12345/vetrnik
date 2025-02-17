@@ -29,6 +29,7 @@ typedef struct
     uint8_t lcd_buf_index;
     bool ctrl_contactor_state;
     bool pump;
+    float vwind;
     void * fe_ctx;
     // fe requires the buffer to be 32-bit aligned.
     uint8_t fe_buf[16*1024]
