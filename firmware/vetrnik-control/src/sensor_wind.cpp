@@ -57,13 +57,13 @@ void sensor_wind_loop()
 
         case request:
             UART_WIND.write(read_cmd, sizeof read_cmd);
-            state = read;
+            state = wait_DE_l;
             break;
 
         case wait_DE_l:
             // UART_WIND.flush() would be an easy solution,
             // but I want to avoid a blocking call.
-            if (SERIAL_TX_BUFFER_SIZE-1 - UART_WIND.availableForWrite() >= 0)
+            if (SERIAL_TX_BUFFER_SIZE-1 - UART_WIND.availableForWrite() > 0)
             {
                 prev_millis = now;
             }
