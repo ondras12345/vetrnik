@@ -11,6 +11,7 @@
 #include "stats.h"
 #include "pump.h"
 #include "sensor_DS18B20.h"
+#include "sensor_wind.h"
 #include "display.h"
 #include "cli.h"
 #include "log.h"
@@ -426,6 +427,17 @@ uint_fast8_t log_id = 0;
         MAKETMP_BOOL(backlight);
         log_id = 26;
         PUBLISH_LOG(MQTTtopic_tele_display_backlight, tmp, true);
+    }
+
+    static float prev_vwind = 0.0;
+    float vwind = sensor_wind_read();
+    if (COND_NEQ(vwind) || force_report)
+    {
+        prev_vwind = vwind;
+        log_id = 27;
+        char tmp[sizeof "123.4"];
+        snprintf(tmp, sizeof tmp, "%.1f", vwind);
+        PUBLISH_LOG(MQTTtopic_tele_control "vwind", tmp, true);
     }
 
     // Only log if there was a publish that wasn't skipped and did not succeed.
