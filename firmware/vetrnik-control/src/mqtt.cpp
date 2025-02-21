@@ -50,11 +50,7 @@ uint8_t MQTT_reinit()
     IWatchdog.reload();
 #endif
     ETH_reset();
-    auto r = MQTT_init();
-#ifdef WATCHDOG_TIME
-    IWatchdog.reload();
-#endif
-    return r;
+    return MQTT_init();
 }
 
 
@@ -139,6 +135,7 @@ void MQTT_loop()
         log_add_event_and_println(kMqttReinitTime, INFO);
         MQTT_last_full_loop = now;
         MQTT_reinit();
+        return;  // do not waste any more time in this loop()
     }
 
     // force reporting of values after successful MQTT connection
