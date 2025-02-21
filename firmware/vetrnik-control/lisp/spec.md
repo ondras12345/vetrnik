@@ -426,6 +426,47 @@ overwrite this function with their own implementation.
 
 ### Return value
 \[nil\]
+
+### Example
+```lisp
+A simple "blink" control function:
+```lisp
+(= dl 50) ; off state duty
+(= dh 200) ; on state duty
+(= p 5) ; period in seconds
+(= pt 0) ; prev time
+(= ctrl (fn ()
+  ; t is used for "true", do not overwrite - named ti instead
+  (let ti (pwrg "time"))
+  ; max time is 65535 (see power report()), so no problem with rem
+  (if (and (is (rem ti p) 0) (not (is ti pt)))
+    (do
+      (= pt ti)
+      (pwrs "duty" (if (<= (pwrg "duty") dl) dh dl))
+    )
+  )
+))
+```
+
+Simple RPM threshold-based control:
+```lisp
+(= ctrl (fn ()
+  (let r (pwrg "RPM")) ; current RPM
+  (pwrs "duty"
+    (if
+      ; pretty much random values
+      (< r 10) 0
+      (< r 15) 10
+      (< r 20) 20
+      (< r 30) 40
+      (< r 60) 100
+      255
+    )
+  )
+))
+```
+```
+
 ## `disp`
 Category: callbacks
 
