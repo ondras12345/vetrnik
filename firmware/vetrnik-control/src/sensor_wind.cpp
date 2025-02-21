@@ -20,6 +20,7 @@ typedef enum {
 
 void sensor_wind_init()
 {
+    pinMode(PIN_WIND_DE, OUTPUT);
     UART_WIND.begin(4800);
 }
 
