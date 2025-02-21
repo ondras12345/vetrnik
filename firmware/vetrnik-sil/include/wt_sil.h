@@ -32,7 +32,7 @@ typedef struct
     float vwind;
     void * fe_ctx;
     // fe requires the buffer to be 32-bit aligned.
-    uint8_t fe_buf[16*1024]
+    uint8_t fe_buf[24*1024]
 // cffi python lib does not like __attribute__
 #ifndef CFFI_HEADER
         __attribute__((aligned(4)))
