@@ -431,7 +431,7 @@ uint_fast8_t log_id = 0;
 
     static float prev_vwind = 0.0;
     float vwind = sensor_wind_read();
-    if (COND_NEQ(vwind) || force_report)
+    if (((vwind != prev_vwind) && !(isnan(prev_vwind) && isnan(vwind)) ) || force_report)
     {
         prev_vwind = vwind;
         log_id = 27;
