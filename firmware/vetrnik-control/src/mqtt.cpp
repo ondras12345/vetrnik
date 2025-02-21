@@ -27,6 +27,7 @@ bool eth_skip = false;
 bool MQTT_skip = true;
 bool DHCP_mode = true;
 uint_fast8_t MQTT_reconnect_count = 0;
+unsigned long MQTT_last_init_ms = 0;
 
 /**
  * millis() time when last valid MQTT command for power_board or control
@@ -84,15 +85,28 @@ uint8_t MQTT_init()
     MQTTClient.setCallback(MQTTcallback);
     MQTTClient.setServer(settings.MQTTserver, MQTTport);
 
+    MQTT_last_init_ms = millis();
     return result;
 }
 
 
 void MQTT_loop()
 {
-    if (eth_skip) return;
-
     unsigned long now = millis();
+    static unsigned long MQTT_last_full_loop = 0;
+
+    if (eth_skip)
+    {
+        // retry
+        if (now - MQTT_last_init_ms >= MQTTWaitBeforeEthernetReset)
+        {
+            log_add_event_and_println(kMqttReinitTime, INFO);
+            MQTT_reinit();
+            MQTT_last_full_loop = now;  // prevent second reinit
+        }
+        return;
+    }
+
     if (Ethernet.localIP() == IPAddress(0, 0, 0, 0) &&
         Ethernet.subnetMask() == IPAddress(0, 0, 0, 0)
         )
@@ -121,7 +135,6 @@ void MQTT_loop()
     }
 
     static unsigned long MQTTLastReconnect = 0;
-    static unsigned long MQTT_last_full_loop = 0;
 
     now = millis();
     if (MQTT_reconnect_count > 6)
