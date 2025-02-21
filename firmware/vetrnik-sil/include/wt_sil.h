@@ -42,7 +42,7 @@ typedef struct
 
 void wt_sil_init(wt_sil_state_t * state);
 void wt_sil_close(wt_sil_state_t * state);
-void wt_sil_repl(wt_sil_state_t * state);
+bool wt_sil_repl(wt_sil_state_t * state);
 int wt_sil_run_file(wt_sil_state_t * state, const char * filename);
 void wt_sil_run_str(wt_sil_state_t * state, const char * code);
 

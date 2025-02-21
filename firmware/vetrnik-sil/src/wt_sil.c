@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <unistd.h>
 #include <math.h>
+#include <setjmp.h>
 #include "hal.h"
 
 void wt_sil_init(wt_sil_state_t * state)
@@ -43,14 +44,43 @@ void wt_sil_close(wt_sil_state_t * state)
 }
 
 
-/// Start a LISP read-eval-print-loop on stdin/stdout
-void wt_sil_repl(wt_sil_state_t * state)
+static jmp_buf error_jmp;
+static void onerror(fe_Context *ctx, const char *msg, fe_Object *cl)
+{
+    fprintf(stderr, "error: %s\n", msg);
+
+    // Stack trace
+    for (; !fe_isnil(ctx, cl); cl = fe_cdr(ctx, cl))
+    {
+        char buf[64];
+        fe_tostring(ctx, fe_car(ctx, cl), buf, sizeof(buf));
+        fprintf(stderr, "=> %s\r\n", buf);
+    }
+    longjmp(error_jmp, -1);
+}
+
+
+/**
+ * Start a LISP read-eval-print-loop on stdin/stdout
+ * \return true on success, false on error
+ */
+bool wt_sil_repl(wt_sil_state_t * state)
 {
     sil_hal_init(state);
 
     int gc;
     fe_Object *obj;
     fe_Context * ctx = state->fe_ctx;
+
+    bool jumped_in = false;
+    setjmp(error_jmp);
+    if (jumped_in)
+    {
+        fe_handlers(ctx)->error = NULL;
+        return false;
+    }
+    jumped_in = true;
+    fe_handlers(ctx)->error = onerror;
 
     gc = fe_savegc(ctx);
     for (;;)
@@ -62,6 +92,9 @@ void wt_sil_repl(wt_sil_state_t * state)
         fe_writefp(ctx, obj, stdout);
         printf("\n");
     }
+
+    fe_handlers(ctx)->error = NULL;
+    return true;
 }
 
 

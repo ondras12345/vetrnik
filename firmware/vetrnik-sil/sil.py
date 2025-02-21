@@ -77,7 +77,10 @@ def main():
     try:
         match args.command:
             case "repl":
-                sil.wt_sil_repl(s)
+                # retry on error:
+                r = False
+                while not r:
+                    r = sil.wt_sil_repl(s)
             case "run":
                 for f in args.file:
                     print(f"running file {f}")
