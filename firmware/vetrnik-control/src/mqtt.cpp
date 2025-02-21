@@ -50,7 +50,11 @@ uint8_t MQTT_reinit()
     IWatchdog.reload();
 #endif
     ETH_reset();
-    return MQTT_init();
+    auto r = MQTT_init();
+#ifdef WATCHDOG_TIME
+    IWatchdog.reload();
+#endif
+    return r;
 }
 
 
