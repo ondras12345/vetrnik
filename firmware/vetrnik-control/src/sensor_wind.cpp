@@ -26,8 +26,9 @@ void sensor_wind_init()
 
 void sensor_wind_loop()
 {
-    const unsigned long now = millis();
     const unsigned long sampling_interval = settings.wind_sampling * 100UL;
+    if (sampling_interval == 0) return;  // sensor disabled
+    const unsigned long now = millis();
     static unsigned long prev_millis = 0;
     static state_t state = idle;
 
