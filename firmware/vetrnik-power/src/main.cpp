@@ -19,6 +19,7 @@ void error_create_callback(const errm_error *err);
 
 
 static unsigned long mode_prev_millis = 0;
+static uint8_t stopping_prev_duty = 0;
 
 bool set_mode(mode_t new_mode)
 {
@@ -34,8 +35,7 @@ bool set_mode(mode_t new_mode)
         case stopping:
             {
                 if (mode != const_duty) return false;
-                // TODO switch all relays on
-                Hbridge_set_duty(255);
+                stopping_prev_duty = duty;
                 // Not setting duty to be able to recover after enable input
                 // goes back up
                 mode_prev_millis = millis();
@@ -46,6 +46,8 @@ bool set_mode(mode_t new_mode)
         case const_duty:
             {
                 if (mode != stopping) return false;
+                if (OVP_stop) return false;  // prevent is_enabled() logic from fighting OVP stop
+                duty = stopping_prev_duty;
                 // Stopping mode can sometimes SHORT if it detects it is not
                 // effective by itself.
                 gpio_set(pin_SHORT);
@@ -177,18 +179,29 @@ void loop()
         set_mode(const_duty);
     }
 
+    static unsigned long stopping_prev_ms = 0;
+    unsigned long now = millis();
     switch (mode)
     {
         case stopping:
-            if (millis() - mode_prev_millis >= stopping_time)
+            if (now - stopping_prev_ms >= stopping_period)
+            {
+                stopping_prev_ms = now;
+                uint8_t tmp = duty + stopping_step;
+                duty = (tmp > duty) ? tmp : 255;
+                Hbridge_set_duty(duty);
+            }
+            if (now - mode_prev_millis >= stopping_time)
             {
                 // TODO do this based on energy instead??
                 if (RPM >= settings[kStoppingRPM].value)
                 {
                     gpio_clr(pin_SHORT);
                     // Failsafe - do not boil water in case the contactor is
-                    // disconnected
-                    Hbridge_set_duty(0);
+                    // disconnected.
+                    // Actually, that is not a good idea when stopping mode is
+                    // also used for OVP.
+                    //Hbridge_set_duty(0);
                 }
             }
             break;

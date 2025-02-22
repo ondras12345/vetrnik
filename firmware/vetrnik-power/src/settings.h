@@ -13,7 +13,10 @@
 #define voltage_R2 3300
 
 // Time after which turbine RPM must reduce to stopping_RPM in stopping mode
-#define stopping_time 10000UL  // ms
+#define stopping_time 20000UL  // ms
+/// duty step in stopping mode
+#define stopping_step 20
+#define stopping_period 150UL  // ms
 
 #define NTC_heatsink_Rdiv 4700
 #define NTC_heatsink_beta 3977
