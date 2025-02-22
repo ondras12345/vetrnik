@@ -35,8 +35,11 @@
 (= swen (fn ()
   (pwrs "sw_enable"
     (if
-      (pwrg "sw_enable") (if (not t0) nil (< t0 T0M))  ; enabled - check MAX
-      (if (not t0) nil (< t0 T0S))  ; disabled - check start
+      (not t0) nil  ; always off if the temperature sensor doesn't work
+      (if
+        (pwrg "sw_enable") (< t0 T0M)  ; enabled - check MAX
+        (< t0 T0S)  ; disabled - check start
+      )
     )
   )
 ))
