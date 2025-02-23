@@ -63,8 +63,8 @@ disassemble:    ## Open less with disassembly of the firmware
 
 .PHONY: puncover
 puncover:      ## Run puncover to analyze flash usage
-	./venv/bin/puncover --gcc_tools_base ~/.platformio/packages/toolchain-atmelavr/bin/avr- \
-	    --elf .pio/build/ATmega8/firmware.elf \
+	puncover --gcc_tools_base ~/.platformio/packages/toolchain-atmelavr/bin/avr- \
+	    --elf-file .pio/build/ATmega8/firmware.elf \
 	    --build_dir .pio/build/ATmega8/ \
 	    --src_root .
 
