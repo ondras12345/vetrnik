@@ -19,7 +19,7 @@ void error_create_callback(const errm_error *err);
 
 
 static unsigned long mode_prev_millis = 0;
-static uint8_t stopping_prev_duty = 0;
+static uint8_t stopping_duty = 0;
 
 bool set_mode(mode_t new_mode)
 {
@@ -35,9 +35,9 @@ bool set_mode(mode_t new_mode)
         case stopping:
             {
                 if (mode != const_duty) return false;
-                stopping_prev_duty = duty;
-                // Not setting duty to be able to recover after enable input
-                // goes back up
+                stopping_duty = duty;
+                // Not overwriting duty to be able to recover after enable input
+                // goes back up.
                 mode_prev_millis = millis();
             }
             mode = stopping;
@@ -47,7 +47,6 @@ bool set_mode(mode_t new_mode)
             {
                 if (mode != stopping) return false;
                 if (OVP_stop) return false;  // prevent is_enabled() logic from fighting OVP stop
-                duty = stopping_prev_duty;
                 // Stopping mode can sometimes SHORT if it detects it is not
                 // effective by itself.
                 gpio_set(pin_SHORT);
@@ -187,9 +186,9 @@ void loop()
             if (now - stopping_prev_ms >= stopping_period)
             {
                 stopping_prev_ms = now;
-                uint8_t tmp = duty + stopping_step;
-                duty = (tmp > duty) ? tmp : 255;
-                Hbridge_set_duty(duty);
+                uint8_t tmp = stopping_duty + stopping_step;
+                stopping_duty = (tmp > stopping_duty) ? tmp : 255;
+                Hbridge_set_duty(stopping_duty);
             }
             if (now - mode_prev_millis >= stopping_time)
             {
