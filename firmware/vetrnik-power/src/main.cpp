@@ -59,7 +59,6 @@ bool set_mode(mode_t new_mode)
             {
                 if (mode != shorted) return false;
                 if (emergency) return false;
-                if (!is_enabled()) return false;
                 Hbridge_set_duty(0);
                 duty = 0;
                 Hbridge_set_enabled(true);
