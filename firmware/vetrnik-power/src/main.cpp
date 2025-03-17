@@ -27,7 +27,7 @@ bool set_mode(mode_t new_mode)
     switch (new_mode)
     {
         case shorted:
-            gpio_clr(pin_SHORT);
+            gpio_clr(pin_EMERGENCY);  // active low
             Hbridge_set_enabled(false);
             mode = shorted;
             break;
@@ -47,9 +47,9 @@ bool set_mode(mode_t new_mode)
             {
                 if (mode != stopping) return false;
                 if (OVP_stop) return false;  // prevent is_enabled() logic from fighting OVP stop
-                // Stopping mode can sometimes SHORT if it detects it is not
-                // effective by itself.
-                gpio_set(pin_SHORT);
+                // Stopping mode can sometimes activate the emergency contactor
+                // if it detects it is not effective by itself.
+                gpio_set(pin_EMERGENCY);
                 Hbridge_set_duty(duty);
             }
             mode = const_duty;
@@ -62,7 +62,7 @@ bool set_mode(mode_t new_mode)
                 Hbridge_set_duty(0);
                 duty = 0;
                 Hbridge_set_enabled(true);
-                gpio_set(pin_SHORT);
+                gpio_set(pin_EMERGENCY);
             }
             mode = const_duty;
             break;
@@ -97,7 +97,7 @@ void setup()
 {
     errm_create_callback = error_create_callback;
 
-    gpio_conf(pin_SHORT, OUTPUT, 0);
+    gpio_conf(pin_EMERGENCY, OUTPUT, 0);  // active low
 
     // set up fan PWM
     gpio_conf(pin_FAN, OUTPUT, 1);
@@ -194,7 +194,7 @@ void loop()
                 // TODO do this based on energy instead??
                 if (RPM >= settings[kStoppingRPM].value)
                 {
-                    gpio_clr(pin_SHORT);
+                    gpio_clr(pin_EMERGENCY);
                     // Failsafe - do not boil water in case the contactor is
                     // disconnected.
                     // Actually, that is not a good idea when stopping mode is

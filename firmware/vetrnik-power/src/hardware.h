@@ -19,7 +19,7 @@
 // PD5 & PB3 are connected together
 #define pin_FAN_extra   D, 5, 5 // PD5, cannot do PWM on ATmega8
 #define pin_FAN         B, 3, 3 // PB3, can do PWM
-#define pin_SHORT       D, 6, 6 // PD6, inverted
+#define pin_EMERGENCY   D, 6, 6 // PD6, inverted
 
 // See Hbridge.h
 #define pin_PWM1        B, 1, 1 // PB1
