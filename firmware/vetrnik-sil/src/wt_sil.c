@@ -14,7 +14,7 @@ void wt_sil_init(wt_sil_state_t * state)
     // sensible defaults
     memset(state, 0, sizeof *state);
     state->pwr_status.time = 0;
-    state->pwr_status.mode = const_duty;
+    state->pwr_status.mode = pwrmode_const_duty;
     state->pwr_status.duty = 0;
     state->pwr_status.OCP_max_duty = 255;
     state->pwr_status.enabled = (enabled_t){true, true, true};

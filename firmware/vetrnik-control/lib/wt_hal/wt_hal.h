@@ -59,7 +59,7 @@ typedef struct {
 #define POWER_BOARD_MODES(X) \
     /** Generator output shorted by three-phase contactor.
      Fault condition or fresh start. */ \
-    X(shorted, 0) \
+    X(emergency, 0) \
     /** Trying to stop the turbine without directly shorting it.
     Used when target water temperature is reached. */ \
     X(stopping, 1) \
@@ -68,10 +68,12 @@ typedef struct {
     /** Start from shorted state to const_duty. */ \
     X(start, 3)
 
+#define X_ENUM_PWRMODE(name, value) pwrmode_##name = value,
 typedef enum {
-    POWER_BOARD_MODES(X_ENUM)
+    POWER_BOARD_MODES(X_ENUM_PWRMODE)
     POWER_MODE_LAST_
 } power_board_mode_t;
+#undef X_ENUM_PWRMODE
 
 extern const char * power_board_modes[];
 
@@ -97,7 +99,7 @@ typedef enum {
     OUT_NAMES(X_ENUM_OUT)
     OUT_LAST_
 } digital_output_t;
-#undef X_EUM_OUT
+#undef X_ENUM_OUT
 
 extern const char * digital_output_names[];
 

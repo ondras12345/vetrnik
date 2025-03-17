@@ -199,7 +199,7 @@ functions:
     tests:
       - '(do (pwrs "sw_enable" t) (pwrg "sw_enable"))'
       - '(do (pwrs "sw_enable" nil) (not (pwrg "sw_enable")))'
-      - '(do (pwrs "mode" pwr_shorted) t)'
+      - '(do (pwrs "mode" pwr_emergency) t)'
 
   - name: lcdc
     description: Set LCD cursor position to specified column.

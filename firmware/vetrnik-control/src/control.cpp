@@ -45,10 +45,10 @@ void control_new_state()
     switch (strategy)
     {
         case control_shorted:
-            if (power_board_status.mode != shorted)
+            if (power_board_status.mode != pwrmode_emergency)
             {
                 log_add_event_and_println(kControlNotShorted, INFO);
-                power_board_set_mode(shorted);
+                power_board_set_mode(pwrmode_emergency);
             }
             break;
 
@@ -97,8 +97,8 @@ void control_loop()
     // shorting the generator but it is not expected to.)
     bool short_emergency = (
             control_get_strategy() != control_shorted &&
-            power_board_status.mode != shorted &&
-            power_board_status.mode != stopping && // stopping mode can sometimes SHORT
+            power_board_status.mode != pwrmode_emergency &&
+            power_board_status.mode != pwrmode_stopping && // stopping mode can sometimes use the emergency contactor
             contactor_state &&
             !digitalRead(PIN_SHORT_SENSE)
         );
@@ -127,7 +127,7 @@ void control_set_strategy(control_strategy_t s)
     {
         case control_shorted:
             power_board_set_duty(0);
-            power_board_set_mode(shorted);
+            power_board_set_mode(pwrmode_emergency);
             power_board_set_software_enable(false);
             pump_set(false);
             contactor_state = false;
