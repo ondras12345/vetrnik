@@ -99,7 +99,7 @@ static void OVP() {
     {
         OVP_stop = true;
         OVP_mode = mode;
-        set_mode(stopping);
+        set_mode(mode_stopping);
         errm_add(errm_create(&etemplate_OVP_stop));
     }
 

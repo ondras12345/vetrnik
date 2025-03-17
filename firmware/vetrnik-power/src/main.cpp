@@ -26,45 +26,45 @@ bool set_mode(mode_t new_mode)
     if (emergency) return false;
     switch (new_mode)
     {
-        case shorted:
+        case mode_emergency:
             gpio_clr(pin_EMERGENCY);  // active low
             Hbridge_set_enabled(false);
-            mode = shorted;
+            mode = mode_emergency;
             break;
 
-        case stopping:
+        case mode_stopping:
             {
-                if (mode != const_duty) return false;
+                if (mode != mode_const_duty) return false;
                 stopping_duty = duty;
                 // Not overwriting duty to be able to recover after enable input
                 // goes back up.
                 mode_prev_millis = millis();
             }
-            mode = stopping;
+            mode = mode_stopping;
             break;
 
-        case const_duty:
+        case mode_const_duty:
             {
-                if (mode != stopping) return false;
+                if (mode != mode_stopping) return false;
                 if (OVP_stop) return false;  // prevent is_enabled() logic from fighting OVP stop
                 // Stopping mode can sometimes activate the emergency contactor
                 // if it detects it is not effective by itself.
                 gpio_set(pin_EMERGENCY);
                 Hbridge_set_duty(duty);
             }
-            mode = const_duty;
+            mode = mode_const_duty;
             break;
 
-        case start:
+        case mode_start:
             {
-                if (mode != shorted) return false;
+                if (mode != mode_emergency) return false;
                 if (emergency) return false;
                 Hbridge_set_duty(0);
                 duty = 0;
                 Hbridge_set_enabled(true);
                 gpio_set(pin_EMERGENCY);
             }
-            mode = const_duty;
+            mode = mode_const_duty;
             break;
     }
     return true;
@@ -168,20 +168,20 @@ void loop()
     uart_loop();
 
     enabled.hardware = !gpio_rd8(PIN, pin_ENABLE);
-    if (!is_enabled() && mode != stopping && mode != shorted)
+    if (!is_enabled() && mode != mode_stopping && mode != mode_emergency)
     {
-        set_mode(stopping);
+        set_mode(mode_stopping);
     }
-    if (is_enabled() && mode == stopping)
+    if (is_enabled() && mode == mode_stopping)
     {
-        set_mode(const_duty);
+        set_mode(mode_const_duty);
     }
 
     static unsigned long stopping_prev_ms = 0;
     unsigned long now = millis();
     switch (mode)
     {
-        case stopping:
+        case mode_stopping:
             if (now - stopping_prev_ms >= stopping_period)
             {
                 stopping_prev_ms = now;
