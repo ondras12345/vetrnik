@@ -7,7 +7,7 @@ typedef enum {
     /// Fault condition or fresh start.
     mode_emergency = 0,
 
-    /// Trying to stop the turbine without directly shorting it.
+    /// Trying to stop the turbine without using the contactor.
     /// Used when target water temperature is reached (enable pin
     /// is low).
     mode_stopping = 1,

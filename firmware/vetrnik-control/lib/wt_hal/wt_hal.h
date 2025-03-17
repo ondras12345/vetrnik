@@ -57,15 +57,15 @@ typedef struct {
 
 // mode numbers must start from 0 and be consecutive
 #define POWER_BOARD_MODES(X) \
-    /** Generator output shorted by three-phase contactor.
-     Fault condition or fresh start. */ \
+    /** Generator output disconnected by three-phase contactor.
+    Fault condition or fresh start. */ \
     X(emergency, 0) \
-    /** Trying to stop the turbine without directly shorting it.
-    Used when target water temperature is reached. */ \
+    /** Trying to stop the turbine without using the contactor.
+    Used when target water temperature is reached (enable pin is low). */ \
     X(stopping, 1) \
     /** Constant duty cycle. */ \
     X(const_duty, 2) \
-    /** Start from shorted state to const_duty. */ \
+    /** Command to switch from emergency to const_duty. */ \
     X(start, 3)
 
 #define X_ENUM_PWRMODE(name, value) pwrmode_##name = value,
