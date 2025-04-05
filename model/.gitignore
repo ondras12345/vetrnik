@@ -2,6 +2,11 @@ listings/
 data/
 windCp.csv
 
+diagrams/*-converted.pdf
+# I will not track exported diagrams, at least for now.
+# Unfortunately, they have to be exported manually in OMEdit.
+diagrams/*.svg
+
 
 ## Modelica - an object-oriented language for modeling of cyber-physical systems
 # https://github.com/github/gitignore/blob/main/Modelica.gitignore
