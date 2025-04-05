@@ -4,9 +4,9 @@ model SimplifiedOpenLoopTest "model for manual testing of SimplifiedOpenLoop"
   // set w start to make sure the turbine doesn't fail to start with large constB.
   SimplifiedOpenLoop simplifiedOpenLoop(inertia(w(start=100, fixed = true))) annotation(
     Placement(transformation(extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Constant constVwind(k = 10)  annotation(
+  Modelica.Blocks.Sources.Constant constVwind(k = 15)  annotation(
     Placement(transformation(origin = {-80, -20}, extent = {{-10, -10}, {10, 10}})));
-  Modelica.Blocks.Sources.Constant constB(k = .122)  annotation(
+  Modelica.Blocks.Sources.Constant constB(k = .300)  annotation(
     Placement(transformation(origin = {-80, 20}, extent = {{-10, -10}, {10, 10}})));
 equation
   connect(simplifiedOpenLoop.b, constB.y) annotation(
