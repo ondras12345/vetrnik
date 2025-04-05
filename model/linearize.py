@@ -32,7 +32,10 @@ def main():
     wd = pathlib.Path(__file__).resolve().parent
     vetrnik_package = wd / "Vetrnik" / "package.mo"
 
-    mod = ModelicaSystem(str(vetrnik_package), "Vetrnik.SimplifiedOpenLoopLin")
+    mod = ModelicaSystem(str(vetrnik_package),
+                         "Vetrnik.SimplifiedOpenLoopLin",
+                         ["Modelica"],
+                         raiseerrors=True)
 
     # lambda_opt = 9.25  # read from plotCp graph
     # R = float(mod.getParameters("windTurbine.R")[0])  # rotor diameter
