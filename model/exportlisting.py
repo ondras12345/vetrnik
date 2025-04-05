@@ -8,8 +8,10 @@ from OMPython import OMCSessionZMQ
 
 
 def strip_annots(omc, model_name: str) -> str:
-    omc.sendExpression('loadModel(Modelica)')
-    omc.sendExpression(f'loadFile("Vetrnik/package.mo")')
+    if not omc.sendExpression('loadModel(Modelica)'):
+        raise Exception("Failed to load 'Modelica' library")
+    if not omc.sendExpression(f'loadFile("Vetrnik/package.mo")'):
+        raise Exception("Failed to load Vetrnik/package.mo")
     with tempfile.TemporaryDirectory() as tmp:
         tmpfile = pathlib.Path(tmp) / "listing.mo"
         print("tmpfile =", tmpfile, file=sys.stderr)
