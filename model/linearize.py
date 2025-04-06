@@ -4,20 +4,9 @@ import pathlib
 import logging
 import argparse
 import numpy as np
-import numpy.typing as npt
 import pickle
-from dataclasses import dataclass
 from pprint import pprint
-
-
-@dataclass
-class Result:
-    vwind: float
-    b: float
-    A: npt.ArrayLike
-    B: npt.ArrayLike
-    C: npt.ArrayLike
-    D: npt.ArrayLike
+from linearize_result import Result
 
 
 def main():

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import pickle
-from linearize import Result
+from linearize_result import Result
 import control as ctl
 import matplotlib.pyplot as plt
 import numpy as np
