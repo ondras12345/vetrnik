@@ -16,17 +16,20 @@ def export_mat(result, filename):
 
 
 if __name__ == "__main__":
-    with open("linearize.p", "rb") as f:
+    with open("data/linearize.p", "rb") as f:
         p = pickle.load(f)
 
     # export first result for use in matlab
-    export_mat(p["results"][0], "linearize_0.mat")
+    export_mat(p["results"][0], "data/linearize_0.mat")
 
     systems = []
     for result in p["results"]:
         systems.append(ctl.ss(result.A, result.B, result.C, result.D).minreal())
     # transfer functions from b to omega
     b_tfs = [ctl.tf(sys)[0,0] for sys in systems]
+
+    with open("data/linearize_b_tfs.p", "wb") as f:
+        pickle.dump(b_tfs, f)
 
     # plot individual systems in parametric plane
     plt.title("Parametric plane")

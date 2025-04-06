@@ -2,7 +2,6 @@
 import math
 import numpy as np
 import pandas as pd
-#import matplotlib.pyplot as plt
 from OMPython import OMCSessionZMQ
 omc = OMCSessionZMQ()
 
@@ -22,10 +21,4 @@ for b in beta:
 data = {"beta": betas, "lambda": lambdas, "Cp": Cp}
 # print({x: len(data[x]) for x in data})
 df = pd.DataFrame(data)
-df.to_csv("windCp.csv", index=False)
-
-# with pd.plotting.plot_params.use("x_compat", True):
-#     for b in beta:
-#         df[df.beta == b].plot(x="lambda", y="Cp", )
-# plt.grid()
-# plt.show()
+df.to_csv("data/windCp.csv", index=False)

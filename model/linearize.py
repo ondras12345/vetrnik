@@ -97,7 +97,7 @@ def main():
         "states": mod.getLinearStates(),
     }
     pprint(p)
-    with open("linearize.p", "wb") as f:
+    with open("data/linearize.p", "wb") as f:
         pickle.dump(p, f)
 
 

@@ -30,7 +30,7 @@ sudo ldconfig
 ```
 
 
-## Run
+## Run manual simulation
 1. Build LISP controller:
   ```sh
   cd firmware/vetrnik-control/lisp
@@ -44,3 +44,16 @@ sudo ldconfig
   ```
 1. Open `Vetrnik/package.mo` in OMEdit, choose a model to run and start
    simulation.
+
+
+## Run Python tools
+1. Create a virtual environment
+  ```sh
+  python3 -m venv venv
+  . ./venv/bin/activate
+  pip3 install -r requirements.txt
+  ```
+1. Run Python tools (linearization, etc.)
+  ```sh
+  make
+  ```

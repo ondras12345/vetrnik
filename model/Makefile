@@ -1,5 +1,5 @@
 .PHONY: all
-all: listings windCp.csv diagrams
+all: listings data/windCp.csv diagrams data/linearize_b_tfs.p
 
 LISTINGS=windCp WindTurbine VariableDamper vetrnikController
 .PHONY: listings
@@ -12,7 +12,7 @@ diagrams: $(patsubst %.svg,%-converted.pdf, $(wildcard diagrams/*.svg))
 listings/%.listing: Vetrnik/%.mo
 	./exportlisting.py -o $@ $(patsubst Vetrnik/%.mo, %, $<)
 
-windCp.csv: Vetrnik/windCp.mo windCp.py
+data/windCp.csv: Vetrnik/windCp.mo windCp.py
 	./windCp.py
 
 # inkscape does not work well for exporting pdfs from svg diagrams,
@@ -20,6 +20,12 @@ windCp.csv: Vetrnik/windCp.mo windCp.py
 diagrams/%-converted.pdf: diagrams/%.svg
 	cairosvg $< -o $@
 
+data/linearize.p: linearize.py $(wildcard Vetrnik/*.mo)
+	./linearize.py
+
+data/linearize_b_tfs.p: linearize_analyze.py data/linearize.p
+	./linearize_analyze.py
+
 .PHONY: clean
 clean:
-	rm -f windCp.csv listings/*.listing diagrams/*-converted.pdf
+	rm -f data/windCp.csv data/linearize*.p data/linearize*.mat listings/*.listing diagrams/*-converted.pdf

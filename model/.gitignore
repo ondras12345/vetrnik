@@ -1,8 +1,5 @@
 listings/
 data/
-windCp.csv
-
-linearize.p
 
 diagrams/*-converted.pdf
 # I will not track exported diagrams, at least for now.
