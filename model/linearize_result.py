@@ -14,6 +14,7 @@ def _array_eq(arr1, arr2):
 class Result:
     vwind: float
     b: float
+    tsr: float  # lambda (tip speed ratio)
     A: npt.ArrayLike
     B: npt.ArrayLike
     C: npt.ArrayLike

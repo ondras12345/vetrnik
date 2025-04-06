@@ -43,7 +43,6 @@ def main():
         (6,         0.120),  # lambda=6.5
         (6,         0.030),  # lambda=12.7
         (10,        0.200),  # lambda=6.5
-        (10,        0.250),  # lambda=0.8
         (10,        0.020),  # lambda=15.2
         (15,        0.020),  # lambda=15.9
         (15,        0.300),  # lambda=6.5
@@ -63,11 +62,21 @@ def main():
 
         mod.setLinearizationOptions(["stopTime=100.0", "stepSize=0.05"])
 
-        (A, B, C, D) = mod.linearize()
+        sim_datafile = wd/'data'/'linearize.csv'
+        (A, B, C, D) = mod.linearize(simflags=f" -override=outputFormat=csv -r={sim_datafile}")
+        with open(sim_datafile, "r") as f:
+            line = f.readline()
+            delimiter = ","
+            col = line.split(delimiter).index('"windTurbine.lambda"')
+            # move to last line
+            for line in f:
+                pass
+            tsr = float(line.split(delimiter)[col])  # lambda
+        sim_datafile.unlink()  # delete temporary data file
 
         result = Result(
             A=np.array(A), B=np.array(B), C=np.array(C), D=np.array(D),
-            vwind=vwind, b=b
+            vwind=vwind, b=b, tsr=tsr
         )
         results.append(result)
 
@@ -77,7 +86,7 @@ def main():
     # mod.setSimulationOptions(["outputFormat=csv", "stopTime=100.0"])
     # vwind, b = operating_points[-1]
     # mod.setInputs([f"vwind={vwind}", f"b={b}"])
-    # mod.simulate(resultfile=str(wd / "test.csv"))
+    # mod.simulate(resultfile=str(wd / "data" / "linearize_simtest.csv"))
 
     p = {
         "results": results,
