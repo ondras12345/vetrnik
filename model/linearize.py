@@ -33,7 +33,7 @@ def main():
         # vwind     b
         # b values were determined experimentally to reach lambda_opt.
         (4,         0.048),
-        (6,         0.074),
+        (6,         0.073),
         (8,         0.100),
         (10,        0.122),
         (12,        0.145),

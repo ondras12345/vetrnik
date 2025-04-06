@@ -32,22 +32,22 @@ if __name__ == "__main__":
         pickle.dump(b_tfs, f)
 
     # plot individual systems in parametric plane
-    plt.title("Parametric plane")
-    for tf in b_tfs:
-        b0 = tf.num[0][0].item()
-        a0 = tf.den[0][0][-1].item()
-        plt.scatter(a0, b0)
-    leg = [f"P_{{{i}}}" for i in range(len(systems))]
-    plt.legend(leg)
-    plt.xlabel("a_0")
-    plt.ylabel("b_0")
-    plt.grid()
-    plt.show()
+    # plt.title("Parametric plane")
+    # for tf in b_tfs:
+    #     b0 = tf.num[0][0].item()
+    #     a0 = tf.den[0][0][-1].item()
+    #     plt.scatter(a0, b0)
+    # leg = [f"P_{{{i}}}" for i in range(len(systems))]
+    # plt.legend(leg)
+    # plt.xlabel("a_0")
+    # plt.ylabel("b_0")
+    # plt.grid()
+    # plt.show()
 
     # plot DC gains
-    plt.title("DC gains")
-    gains = [tf.dcgain() for tf in b_tfs]
-    plt.bar(range(len(gains)), gains)
-    plt.ylabel("dcgain")
-    plt.xlabel("i (plant index)")
-    plt.show()
+    # plt.title("DC gains")
+    # gains = [tf.dcgain() for tf in b_tfs]
+    # plt.bar(range(len(gains)), gains)
+    # plt.ylabel("dcgain")
+    # plt.xlabel("i (plant index)")
+    # plt.show()

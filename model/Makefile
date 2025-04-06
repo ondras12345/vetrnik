@@ -21,7 +21,9 @@ diagrams/%-converted.pdf: diagrams/%.svg
 	cairosvg $< -o $@
 
 data/linearize.p: linearize.py $(wildcard Vetrnik/*.mo)
+	cp data/linearize.p data/linearize-old.p
 	./linearize.py
+	./linearize_diff.py data/linearize.p data/linearize-old.p
 
 data/linearize_b_tfs.p: linearize_analyze.py data/linearize.p
 	./linearize_analyze.py
