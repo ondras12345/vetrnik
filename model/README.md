@@ -21,12 +21,12 @@ EOF
 sudo apt update
 sudo apt install openmodelica
 
-# OMPython does not work: libicuuc.so.74 is too new
-wget https://launchpad.net/ubuntu/+source/icu/70.1-2/+build/23145450/+files/libicu70_70.1-2_amd64.deb
-# extract it
-# copy usr/lib/x86_64-linux-gnu to /usr/local/lib/x86_64-linux-gnu
-# sudo cp -d * /usr/local/lib/x86_64-linux-gnu/
-sudo ldconfig
+# Install Modelica library
+tee tmp.mos >/dev/null <<"EOF"
+installPackage(Modelica)
+EOF
+omc tmp.mos
+rm tmp.mos
 ```
 
 
