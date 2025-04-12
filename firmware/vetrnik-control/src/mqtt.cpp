@@ -5,16 +5,11 @@
 #include "power_datapoints.h"
 #include "uart_power.h"
 #include "debug.h"
-#include "power_board.h"
 #include "lisp.h"
-#include "control.h"
-#include "stats.h"
-#include "pump.h"
 #include "sensor_DS18B20.h"
-#include "sensor_wind.h"
-#include "display.h"
 #include "cli.h"
 #include "log.h"
+#include "hal.h"
 #include <MQTT_helpers.h>
 #ifdef WATCHDOG_TIME
 #include <IWatchdog.h>
@@ -250,48 +245,49 @@ uint_fast8_t log_id = 0;
     }
 
 
-    static power_board_status_t prev_power_board_status = {0};
+    power_board_status_t pb_stat = wt_hal.pwr_get_status();
+    static power_board_status_t prev_pb_stat = {0};
 
 #define PB_c(name, topic, maketmp, cond)                                    \
     if ((cond) || force_report)                                             \
     {                                                                       \
-        prev_power_board_status.name = power_board_status.name;             \
+        prev_pb_stat.name = pb_stat.name;                                   \
         maketmp                                                             \
-        PUBLISH_LOG(MQTTtopic_tele_power_board topic, tmp, true);    \
+        PUBLISH_LOG(MQTTtopic_tele_power_board topic, tmp, true);           \
     }
 
 /// Report a uint16_t power board datapoint, COND_NEQ
 #define PB_uint16(name, topic)                                              \
-    PB_c(name, topic, MAKETMP_UINT(power_board_status.name),                \
-         COND_NEQ(power_board_status.name)                                  \
+    PB_c(name, topic, MAKETMP_UINT(pb_stat.name),                           \
+         COND_NEQ(pb_stat.name)                                             \
          )
 
 /// Report a uint16_t power board datapoint, COND_HYST
 #define PB_uint16_h(name, topic, hysteresis)                                \
-    PB_c(name, topic, MAKETMP_UINT(power_board_status.name),                \
-         COND_HYST(power_board_status.name, hysteresis))
+    PB_c(name, topic, MAKETMP_UINT(pb_stat.name),                           \
+         COND_HYST(pb_stat.name, hysteresis))
 
 /// Report a bool power board datapoint
 #define PB_bool(name, topic)                                                \
-    PB_c(name, topic, MAKETMP_BOOL(power_board_status.name),                \
-         COND_NEQ(power_board_status.name)                                  \
+    PB_c(name, topic, MAKETMP_BOOL(pb_stat.name),                           \
+         COND_NEQ(pb_stat.name)                                             \
          )
 #define PB_decimal(name, topic, dp) \
-    PB_c(name, topic, MAKETMP_DECIMAL(power_board_status.name, dp),         \
-         COND_NEQ(power_board_status.name)                                  \
+    PB_c(name, topic, MAKETMP_DECIMAL(pb_stat.name, dp),                    \
+         COND_NEQ(pb_stat.name)                                             \
          )
 #define PB_decimal_h(name, topic, dp, hysteresis)                           \
-    PB_c(name, topic, MAKETMP_DECIMAL(power_board_status.name, dp),         \
-         COND_HYST(power_board_status.name, hysteresis))
+    PB_c(name, topic, MAKETMP_DECIMAL(pb_stat.name, dp),                    \
+         COND_HYST(pb_stat.name, hysteresis))
 
-    if (COND_NEQ(power_board_status.voltage)
-        || COND_NEQ(power_board_status.current)
+    if (COND_NEQ(pb_stat.voltage)
+        || COND_NEQ(pb_stat.current)
         || force_report)
     {
         // W * 10
         uint16_t power =
-            ((uint32_t)(power_board_status.voltage) *
-             power_board_status.current
+            ((uint32_t)(pb_stat.voltage) *
+             pb_stat.current
             ) / 1000;
         MAKETMP_DECIMAL(power, 1)
         log_id = 2;
@@ -343,7 +339,7 @@ uint_fast8_t log_id = 0;
     // TODO publish supported power_board modes ??
 
     static control_strategy_t prev_control_strategy = control_emergency;
-    control_strategy_t control_strategy = control_get_strategy();
+    control_strategy_t control_strategy = wt_hal.ctrl_get_strategy();
     if (COND_NEQ(control_strategy) || force_report)
     {
         prev_control_strategy = control_strategy;
@@ -355,7 +351,7 @@ uint_fast8_t log_id = 0;
     // minutes remaining before contactor switches off, 255 ==> contactor is
     // off
     static uint8_t prev_control_contactor_min = 0;
-    unsigned long cs = control_contactor_get();
+    unsigned long cs = wt_hal.ctrl_contactor_get();
     uint8_t control_contactor_min = 255;
     if (cs != (unsigned long)-1) control_contactor_min = cs / 60000UL;
     if (COND_NEQ(control_contactor_min) || force_report)
@@ -367,6 +363,7 @@ uint_fast8_t log_id = 0;
     }
 
     static stats_t prev_stats = {0};
+    stats_t stats = wt_hal.stats_get();
     if (COND_NEQ(stats.energy) || force_report)
     {
         prev_stats.energy = stats.energy;
@@ -409,7 +406,7 @@ uint_fast8_t log_id = 0;
     }
 
     static bool prev_pump = false;
-    bool pump = pump_get();
+    bool pump = wt_hal.pump_get();
     if (COND_NEQ(pump) || force_report)
     {
         prev_pump = pump;
@@ -420,7 +417,7 @@ uint_fast8_t log_id = 0;
 
 
     static bool prev_backlight = false;
-    bool backlight = display_backlight_get();
+    bool backlight = lcd_hal.backlight_get();
     if (COND_NEQ(backlight) || force_report)
     {
         prev_backlight = backlight;
@@ -430,7 +427,7 @@ uint_fast8_t log_id = 0;
     }
 
     static float prev_vwind = 0.0;
-    float vwind = sensor_wind_read();
+    float vwind = wt_hal.vwind();
     if (((vwind != prev_vwind) && !(isnan(prev_vwind) && isnan(vwind)) ) || force_report)
     {
         prev_vwind = vwind;
@@ -504,24 +501,24 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
         unsigned int duty;
         sscanf(buff, "%u", &duty);
         if (duty > 255) return;
-        power_board_set_duty(duty);
+        wt_hal.pwr_set_duty(duty);
         return;
     }
 
     if (strcmp(topic, MQTTtopic_cmnd_power_board "sw_enable") == 0)
     {
-        power_board_set_software_enable(payload[0] == '1');
+        wt_hal.pwr_set_sw_enable(payload[0] == '1');
         return;
     }
 
     if (strcmp(topic, MQTTtopic_cmnd_power_board "command") == 0)
     {
         if (strncmp((const char *)payload, "clear_errors", length) == 0)
-            power_board_clear_errors();
+            wt_hal.pwr_clear_errors();
         else if (strncmp((const char *)payload, "reset", length) == 0)
-            power_board_command(PCOMMAND_RESET);
+            wt_hal.pwr_reset();
         else if (strncmp((const char *)payload, "WDT_test", length) == 0)
-            power_board_command(PCOMMAND_WDT_TEST);
+            wt_hal.pwr_test_WDT();
         return;
     }
 
@@ -533,7 +530,7 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
                 strncmp((const char *)payload, power_board_modes[i], length) == 0)
             {
                 power_board_mode_t mode = (power_board_mode_t)i;
-                power_board_set_mode(mode);
+                wt_hal.pwr_set_mode(mode);
                 return;
             }
         }
@@ -548,34 +545,29 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
 
     if (strcmp(topic, MQTTtopic_cmnd_control "strategy") == 0)
     {
-        for (size_t i = 0; control_strategies[i] != nullptr; i++)
-        {
-            if (length == strlen(control_strategies[i]) &&
-                strncmp((const char *)payload, control_strategies[i], length) == 0)
-            {
-                control_strategy_t strategy = (control_strategy_t)i;
-                control_set_strategy(strategy);
-                return;
-            }
-        }
+        char buf[32];
+        if (length >= sizeof buf) return;
+        memcpy(buf, payload, length);
+        buf[length] = '\0';
+        wt_hal.ctrl_set_strategy_str(buf);
         return;
     }
 
     if (strcmp(topic, MQTTtopic_cmnd_control "contactor") == 0)
     {
-        if (payload[0] == '1') control_contactor_set();
+        if (payload[0] == '1') wt_hal.ctrl_contactor_set();
         return;
     }
 
     if (strcmp(topic, MQTTtopic_cmnd_pump) == 0)
     {
-        pump_set(payload[0] == '1');
+        wt_hal.pump_set(payload[0] == '1');
         return;
     }
 
     if (strcmp(topic, MQTTtopic_cmnd_display_backlight) == 0)
     {
-        display_backlight_set(payload[0] == '1');
+        lcd_hal.backlight_set(payload[0] == '1');
         return;
     }
 

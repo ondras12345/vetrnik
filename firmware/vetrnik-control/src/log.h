@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <Print.h>
-#include "control.h"
+#include <wt_hal.h>
 #include "reset_cause.h"
 #include "settings.h"
 
