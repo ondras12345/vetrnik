@@ -91,11 +91,11 @@ void control_loop()
     digitalWrite(PIN_EMERGENCY, contactor_state && strategy != control_emergency);
 
     // Handle external e-stop button, hardware OVP, ...
-    static bool prev_short_emergency = false;
-    static unsigned long short_emergency_millis = 0;
-    // this value will be true if something is wrong (contactor is
-    // shorting the generator but it is not expected to.)
-    bool short_emergency = (
+    static bool prev_estop = false;
+    static unsigned long estop_millis = 0;
+    // this value will be true if something is wrong (emergency contactor is
+    // in emergency state when it is not expected to.)
+    bool estop = (
             control_get_strategy() != control_emergency &&
             power_board_status.mode != pwrmode_emergency &&
             power_board_status.mode != pwrmode_stopping && // stopping mode can sometimes use the emergency contactor
@@ -104,16 +104,14 @@ void control_loop()
         );
 
     // the contactor is slow, let's give it some time before actually tripping
-    if (prev_short_emergency && now - short_emergency_millis >= 500UL)
+    if (prev_estop && now - estop_millis >= 500UL)
     {
         log_add_event_and_println(kControlEstop, INFO);
         control_set_strategy(control_emergency);
-        short_emergency = false;
     }
 
-    if (short_emergency && !prev_short_emergency)
-        short_emergency_millis = now;
-    prev_short_emergency = short_emergency;
+    if (estop && !prev_estop) estop_millis = now;
+    prev_estop = estop;
 }
 
 
