@@ -8,14 +8,14 @@
 #include "log.h"
 #include <Arduino.h>
 
-static control_strategy_t strategy = control_shorted;
+static control_strategy_t strategy = control_emergency;
 static unsigned long contactor_prev_millis = 0;
 static bool contactor_state = false;
 
 
 void control_init()
 {
-    control_set_strategy(control_shorted);
+    control_set_strategy(control_emergency);
 }
 
 
@@ -34,20 +34,20 @@ void control_init_lisp()
  */
 void control_new_state()
 {
-    if (!power_board_status.valid && strategy != control_shorted)
+    if (!power_board_status.valid && strategy != control_emergency)
     {
         // If status becomes invalid, it means that communication with power
         // board was lost. This function isn't called before the first status
         // message is received, so no problems at startup.
-        control_set_strategy(control_shorted);
+        control_set_strategy(control_emergency);
     }
 
     switch (strategy)
     {
-        case control_shorted:
+        case control_emergency:
             if (power_board_status.mode != pwrmode_emergency)
             {
-                log_add_event_and_println(kControlNotShorted, INFO);
+                log_add_event_and_println(kControlNotEmergency, INFO);
                 power_board_set_mode(pwrmode_emergency);
             }
             break;
@@ -56,7 +56,7 @@ void control_new_state()
             if (millis() - MQTT_last_command_ms >= 30000UL)
             {
                 log_add_event_and_println(kControlMqttTimeout, INFO);
-                control_set_strategy(control_shorted);
+                control_set_strategy(control_emergency);
             }
             break;
 
@@ -66,7 +66,7 @@ void control_new_state()
                 if (!success)
                 {
                     log_add_event_and_println(kControlLispError, INFO);
-                    control_set_strategy(control_shorted);
+                    control_set_strategy(control_emergency);
                 }
             }
             break;
@@ -88,7 +88,7 @@ void control_loop()
     }
 
     // set contactor state
-    digitalWrite(PIN_SHORT, contactor_state && strategy != control_shorted);
+    digitalWrite(PIN_SHORT, contactor_state && strategy != control_emergency);
 
     // Handle external e-stop button, hardware OVP, ...
     static bool prev_short_emergency = false;
@@ -96,7 +96,7 @@ void control_loop()
     // this value will be true if something is wrong (contactor is
     // shorting the generator but it is not expected to.)
     bool short_emergency = (
-            control_get_strategy() != control_shorted &&
+            control_get_strategy() != control_emergency &&
             power_board_status.mode != pwrmode_emergency &&
             power_board_status.mode != pwrmode_stopping && // stopping mode can sometimes use the emergency contactor
             contactor_state &&
@@ -107,7 +107,7 @@ void control_loop()
     if (prev_short_emergency && now - short_emergency_millis >= 500UL)
     {
         log_add_event_and_println(kControlShortEstop, INFO);
-        control_set_strategy(control_shorted);
+        control_set_strategy(control_emergency);
         short_emergency = false;
     }
 
@@ -125,7 +125,7 @@ void control_set_strategy(control_strategy_t s)
 
     switch (s)
     {
-        case control_shorted:
+        case control_emergency:
             power_board_set_duty(0);
             power_board_set_mode(pwrmode_emergency);
             power_board_set_software_enable(false);

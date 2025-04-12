@@ -11,8 +11,8 @@ extern "C" {
 
 // mode numbers must start from 0 and be consecutive
 #define CONTROL_STRATEGIES(X) \
-    /** Contactor shorted. */ \
-    X(control_shorted, 0) \
+    /** Generator output disconnected by three-phase contactor. */ \
+    X(control_emergency, 0) \
     /** Manual (CLI) control with no timeouts. */ \
     X(control_manual, 1) \
     /** MQTT remote control with timeout. */ \

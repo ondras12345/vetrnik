@@ -1,7 +1,7 @@
 ; button handler functions
 
 (= btn1_short (fn ()
-  (ctrls "strategy" "control_shorted")
+  (ctrls "strategy" "control_emergency")
 ))
 
 

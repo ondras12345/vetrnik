@@ -138,7 +138,7 @@ mqtt:
       state_topic: vetrnik/tele/control/strategy
       command_topic: vetrnik/cmnd/control/strategy
       options:
-        - control_shorted
+        - control_emergency
         - control_manual
         - control_MQTT
         - control_lisp
