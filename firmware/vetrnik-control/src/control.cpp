@@ -88,7 +88,7 @@ void control_loop()
     }
 
     // set contactor state
-    digitalWrite(PIN_SHORT, contactor_state && strategy != control_emergency);
+    digitalWrite(PIN_EMERGENCY, contactor_state && strategy != control_emergency);
 
     // Handle external e-stop button, hardware OVP, ...
     static bool prev_short_emergency = false;
@@ -131,14 +131,14 @@ void control_set_strategy(control_strategy_t s)
             power_board_set_software_enable(false);
             pump_set(false);
             contactor_state = false;
-            digitalWrite(PIN_SHORT, LOW);
+            digitalWrite(PIN_EMERGENCY, LOW);
             break;
 
         case control_manual:
         case control_MQTT:
         case control_lisp:
-            // PIN_SHORT should be controlled via control_contactor_set()
-            //digitalWrite(PIN_SHORT, HIGH);
+            // PIN_EMERGENCY should be controlled via control_contactor_set()
+            //digitalWrite(PIN_EMERGENCY, HIGH);
             break;
     }
     strategy = s;

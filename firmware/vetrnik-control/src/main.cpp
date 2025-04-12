@@ -49,7 +49,7 @@ void setup()
 
     pinMode(PIN_CONTACTOR_SENSE, INPUT_PULLUP);
     pinMode(PIN_BUZZER, OUTPUT);
-    pinMode(PIN_SHORT, OUTPUT);
+    pinMode(PIN_EMERGENCY, OUTPUT);
     pinMode(PIN_LED, OUTPUT);
     // PIN_ONEWIRE is unused
     pinMode(PIN_REL1, OUTPUT);

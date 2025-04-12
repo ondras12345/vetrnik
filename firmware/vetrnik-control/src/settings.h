@@ -5,7 +5,7 @@
 #define PIN_BUZZER      PB12
 #define PIN_BUTTON1     PB13
 #define PIN_BUTTON2     PB14
-#define PIN_SHORT       PB15 // active low
+#define PIN_EMERGENCY   PB15 // emergency contactor control; low = emergency mode
 #define PIN_LED         PA15
 #define PIN_ONEWIRE     PB5
 #define PIN_REL1        PB8
