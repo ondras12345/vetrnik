@@ -30,12 +30,6 @@ void display_init()
 }
 
 
-void display_init_lisp()
-{
-    lisp_empty_func("disp");
-}
-
-
 void display_loop()
 {
     static unsigned long last_ms = 0;

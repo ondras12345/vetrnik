@@ -83,11 +83,9 @@ void setup()
     sensor_DS18B20_init();
     sensor_wind_init();
     lisp_init();
-    control_init_lisp();
     INFO->println("boot");
     CLI_init();
     display_init();
-    display_init_lisp();
     lisp_run_blind_file(LISP_INIT_FILENAME, -1);
 
     digitalWrite(PIN_BUZZER, LOW);

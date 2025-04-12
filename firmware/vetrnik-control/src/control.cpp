@@ -20,15 +20,6 @@ void control_init()
 
 
 /**
- * Must be called whenever lisp is (re)initialized.
- */
-void control_init_lisp()
-{
-    lisp_empty_func("ctrl");
-}
-
-
-/**
  * To be called when a new state object is received from power board.
  * Also called when state is invalidated after timeout.
  */

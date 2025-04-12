@@ -5,8 +5,6 @@
 #define DISPLAY_ROWS 2
 
 void display_init();
-void display_init_lisp();
-
 void display_loop();
 
 bool display_commit(uint8_t row);

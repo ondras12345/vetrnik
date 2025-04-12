@@ -118,6 +118,9 @@ void lisp_init()
     fe_set(ctx, fe_symbol(ctx, "ethrst"), fe_cfunc(ctx, cfunc_ethrst));
     fe_set(ctx, fe_symbol(ctx, "ds18"), fe_cfunc(ctx, cfunc_DS18B20));
 
+    lisp_empty_func("ctrl");
+    lisp_empty_func("disp");
+
     fe_restoregc(ctx, gc);
 }
 

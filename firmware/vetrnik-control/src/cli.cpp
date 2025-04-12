@@ -11,16 +11,11 @@
 #include "Print_utils.h"
 #include "uart_power.h"
 #include "power_datapoints.h"
-#include "power_board.h"
 #include "lisp.h"
-#include "control.h"
-#include "stats.h"
-#include "display.h"
 #include "debug.h"
 #include "onewire.h"
 #include "sensor_DS18B20.h"
 #include "ota.h"
-#include "pump.h"
 #include "version.h"
 #include "log.h"
 #include "flash_tools.h"
@@ -231,17 +226,18 @@ static void cmnd_rx(char *args, Stream *response)
 
 static void print_power_board_status(Print *response)
 {
+    power_board_status_t pb_stat = wt_hal.pwr_get_status();
     response->println("power board status:");
 #define printStat(name) \
     response->print("" #name ": "); \
-    response->println(power_board_status.name);
+    response->println(pb_stat.name);
 #define printStatU(name, unit) \
     response->print("" #name ": "); \
-    response->print(power_board_status.name); \
+    response->print(pb_stat.name); \
     response->println(" " unit);
 #define printStatC(name, conversion, dp, unit) \
     response->print("" #name ": "); \
-    response->print(power_board_status.name * conversion, dp); \
+    response->print(pb_stat.name * conversion, dp); \
     response->println(" " unit); \
 
     printStat(retrieved_millis);
@@ -281,18 +277,18 @@ static void cmnd_power(char *args, Stream *response)
     // subcommands that need no value
     else if (strcmp(setting_name, "clear_errors") == 0)
     {
-        power_board_clear_errors();
+        wt_hal.pwr_clear_errors();
         response->println("Power board errors cleared.");
     }
 
     else if (strcmp(setting_name, "reset") == 0)
     {
-        power_board_command(PCOMMAND_RESET);
+        wt_hal.pwr_reset();
     }
 
     else if (strcmp(setting_name, "WDT_test") == 0)
     {
-        power_board_command(PCOMMAND_WDT_TEST);
+        wt_hal.pwr_test_WDT();
     }
 
     else if (setting_value == nullptr)
@@ -311,7 +307,7 @@ static void cmnd_power(char *args, Stream *response)
             response->println("duty must be 0-255");
             goto bad;
         }
-        power_board_set_duty(duty);
+        wt_hal.pwr_set_duty(duty);
         response->print("Setting duty to ");
         response->println(duty);
     }
@@ -326,7 +322,7 @@ static void cmnd_power(char *args, Stream *response)
                 power_board_mode_t mode = (power_board_mode_t)i;
                 response->print("Setting mode to ");
                 response->println(mode);
-                power_board_set_mode(mode);
+                wt_hal.pwr_set_mode(mode);
             }
         }
         if (!found)
@@ -345,8 +341,7 @@ static void cmnd_power(char *args, Stream *response)
     }
     else if (strcmp(setting_name, "sw_enable") == 0)
     {
-        bool value = setting_value[0] == '1';
-        power_board_set_software_enable(value);
+        wt_hal.pwr_set_sw_enable(setting_value[0] == '1');
     }
 
 bad:
@@ -362,9 +357,9 @@ static void cmnd_control(char *args, Stream *response)
     {
         // do nothing, just print out status
         response->print("strategy: ");
-        response->println(control_strategies[control_get_strategy()]);
+        response->println(control_strategies[wt_hal.ctrl_get_strategy()]);
         response->print("contactor: ");
-        unsigned long cs = control_contactor_get();
+        unsigned long cs = wt_hal.ctrl_contactor_get();
         if (cs == (unsigned long)-1) response->println('0');
         else
         {
@@ -380,7 +375,7 @@ static void cmnd_control(char *args, Stream *response)
     // subcommands that need no value
     else if (strcmp(setting_name, "contactor_on") == 0)
     {
-        control_contactor_set();
+        wt_hal.ctrl_contactor_set();
         response->println("contactor set to on");
     }
 
@@ -392,7 +387,7 @@ static void cmnd_control(char *args, Stream *response)
     // subcommands that need setting_value
     else if (strcmp(setting_name, "strategy") == 0)
     {
-        if (!control_set_strategy(setting_value))
+        if (!wt_hal.ctrl_set_strategy_str(setting_value))
         {
             response->print("Unknown strategy: ");
             response->println(setting_value);
@@ -420,11 +415,12 @@ bad:
 
 static void cmnd_stats(char *args, Stream *response)
 {
+    stats_t s = wt_hal.stats_get();
     response->println("stats:");
     response->printf("energy: %u.%03u kWh\r\n",
-                     stats.energy / 1000U, stats.energy % 1000U);
+                     s.energy / 1000U, s.energy % 1000U);
     response->printf("energy_Ws: %u.%u Ws\r\n",
-                     stats.energy_Ws10 / 10U, stats.energy_Ws10 % 10U);
+                     s.energy_Ws10 / 10U, s.energy_Ws10 % 10U);
 }
 
 
@@ -452,8 +448,6 @@ static void cmnd_lisp(char *args, Stream *response)
 static void cmnd_lisp_reset(char *args, Stream *response)
 {
     lisp_reinit();
-    control_init_lisp();
-    display_init_lisp();
     // Loading init.lisp should be done manually using cmnd_lisp_read
     //lisp_run_blind_file(LISP_INIT_FILENAME);
 }
@@ -1005,11 +999,11 @@ static void cmnd_pump(char *args, Stream *response)  // cppcheck-suppress constP
     if (args[0] != '\0')
     {
         response->println("setting");
-        pump_set(args[0] == '1');
+        wt_hal.pump_set(args[0] == '1');
     }
 
     response->print("pump: ");
-    response->println(pump_get() ? '1' : '0');
+    response->println(wt_hal.pump_get() ? '1' : '0');
 }
 
 
