@@ -63,7 +63,7 @@ def main():
         mod.setLinearizationOptions(["stopTime=100.0", "stepSize=0.05"])
 
         sim_datafile = wd/'data'/'linearize.csv'
-        (A, B, C, D) = mod.linearize(simflags=f" -override=outputFormat=csv -r={sim_datafile}")
+        (A, B, C, D) = mod.linearize(simflags=f"-override=outputFormat=csv -r={sim_datafile}")
         with open(sim_datafile, "r") as f:
             line = f.readline()
             delimiter = ","
