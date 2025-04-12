@@ -301,7 +301,7 @@ void uart_loop()
         }
     }
 
-    if (mode != shorted) FOR_EACH_DP
+    if (mode != mode_emergency) FOR_EACH_DP
     {
         if (datapoints[i].refresh_interval && !DEBUG &&
             now - datapoints[i].last_updated >= datapoints[i].refresh_interval)

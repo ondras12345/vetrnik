@@ -342,7 +342,7 @@ uint_fast8_t log_id = 0;
 
     // TODO publish supported power_board modes ??
 
-    static control_strategy_t prev_control_strategy = control_shorted;
+    static control_strategy_t prev_control_strategy = control_emergency;
     control_strategy_t control_strategy = control_get_strategy();
     if (COND_NEQ(control_strategy) || force_report)
     {

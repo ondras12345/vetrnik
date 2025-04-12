@@ -99,14 +99,14 @@ static void OVP() {
     {
         OVP_stop = true;
         OVP_mode = mode;
-        set_mode(stopping);
+        set_mode(mode_stopping);
         errm_add(errm_create(&etemplate_OVP_stop));
     }
 
     if (voltage >= OVP_DISCONNECT && !emergency)
     {
         // Error with weight 10 will call emergency_stop automatically
-        errm_add(errm_create(&etemplate_OVP_short));
+        errm_add(errm_create(&etemplate_OVP_emergency));
     }
 }
 

@@ -15,7 +15,7 @@ uint16_t temperature_rectifier = 0;
 uint8_t fan = 0;
 uint8_t fan_manual = 0;
 
-mode_t mode = shorted;
+mode_t mode = mode_emergency;
 
 
 void set_duty(uint8_t value)
@@ -23,7 +23,7 @@ void set_duty(uint8_t value)
     if (value != duty)
     {
         duty = value;
-        if (mode == const_duty)
+        if (mode == mode_const_duty)
         {
             Hbridge_set_duty(value);
         }
@@ -33,7 +33,7 @@ void set_duty(uint8_t value)
 
 void emergency_stop()
 {
-    set_mode(shorted);
+    set_mode(mode_emergency);
     emergency = true;
     errm_add(errm_create(&etemplate_emergency));
 }

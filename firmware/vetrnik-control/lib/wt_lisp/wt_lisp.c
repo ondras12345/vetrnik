@@ -151,7 +151,7 @@ static fe_Object* cfunc_ctrls(fe_Context *ctx, fe_Object *arg)
     fe_tostring(ctx, fe_nextarg(ctx, &arg), name, sizeof name);
     if (strcmp(name, "strategy") == 0)
     {
-        char strategy_name[sizeof("control_shorted")+10];  // should be enough
+        char strategy_name[sizeof("control_emergency")+10];  // should be enough
         fe_tostring(ctx, fe_nextarg(ctx, &arg), strategy_name, sizeof strategy_name);
         if (!wt.ctrl_set_strategy_str(strategy_name)) fe_error(ctx, "invalid strategy");
     }

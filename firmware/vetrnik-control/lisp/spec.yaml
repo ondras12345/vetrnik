@@ -199,7 +199,16 @@ functions:
     tests:
       - '(do (pwrs "sw_enable" t) (pwrg "sw_enable"))'
       - '(do (pwrs "sw_enable" nil) (not (pwrg "sw_enable")))'
-      - '(do (pwrs "mode" pwr_shorted) t)'
+      - |-
+        ; verify that all power board modes are supported
+        (do
+          (= pwr_modes (list pwr_emergency pwr_stopping pwr_const_duty pwr_start))
+          (while pwr_modes
+            (pwrs "mode" (car pwr_modes))
+            (= pwr_modes (cdr pwr_modes))
+          )
+          t
+        )
 
   - name: lcdc
     description: Set LCD cursor position to specified column.

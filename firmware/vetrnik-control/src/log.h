@@ -36,10 +36,10 @@ typedef enum
     X(kEthernetStuck, "Eth stuck, rst") \
     X(kMqttConnected, "MQTT connected") \
     X(kMqttReinitTime, "MQTT reinit (time)") \
-    X(kControlNotShorted, "control_shorted, but mode != shorted") \
+    X(kControlNotEmergency, "control_emergency, but mode != emergency") \
     X(kControlMqttTimeout, "MQTT control timeout") \
     X(kControlLispError, "error in control_lisp") \
-    X(kControlShortEstop, "SHORT e-stop") \
+    X(kControlEstop, "control e-stop") \
     X(kSettingsReset, "Settings reset") \
     X(kSettingsWrite, "Settings write") \
     X(kSettingsErase, "Settings erase") \
