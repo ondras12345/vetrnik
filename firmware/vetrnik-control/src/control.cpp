@@ -103,10 +103,10 @@ void control_loop()
             !digitalRead(PIN_CONTACTOR_SENSE)
         );
 
-    // the contactor is slow
+    // the contactor is slow, let's give it some time before actually tripping
     if (prev_short_emergency && now - short_emergency_millis >= 500UL)
     {
-        log_add_event_and_println(kControlShortEstop, INFO);
+        log_add_event_and_println(kControlEstop, INFO);
         control_set_strategy(control_emergency);
         short_emergency = false;
     }
