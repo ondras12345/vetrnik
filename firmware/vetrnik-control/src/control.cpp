@@ -100,7 +100,7 @@ void control_loop()
             power_board_status.mode != pwrmode_emergency &&
             power_board_status.mode != pwrmode_stopping && // stopping mode can sometimes use the emergency contactor
             contactor_state &&
-            !digitalRead(PIN_SHORT_SENSE)
+            !digitalRead(PIN_CONTACTOR_SENSE)
         );
 
     // the contactor is slow

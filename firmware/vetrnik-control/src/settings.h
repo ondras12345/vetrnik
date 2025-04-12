@@ -13,7 +13,7 @@
 #define PIN_NTC1        PA0  // ADC
 #define PIN_NTC2        PA1  // ADC
 #define PIN_ETH_RST     PB10 // active low
-#define PIN_SHORT_SENSE PC14  // low = shorted
+#define PIN_CONTACTOR_SENSE PC14  // low = emergency mode
 
 #define PIN_WIND_DE     PB0
 #define UART_WIND       Serial2  // PA2, PA3
