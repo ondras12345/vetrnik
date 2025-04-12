@@ -83,7 +83,7 @@ mqtt:
       value_template: >-
         {%
           set modes = {
-            0: "shorted",
+            0: "emergency",
             1: "stopping",
             2: "const_duty",
           }
