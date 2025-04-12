@@ -117,6 +117,11 @@ typedef struct
     void (*pwr_set_duty)(uint8_t);
     /// Set requested mode on power board.
     void (*pwr_set_mode)(power_board_mode_t);
+    /**
+     * Set requested mode on power board.
+     * \return true on success (str is a valid power board name)
+     */
+    bool (*pwr_set_mode_str)(const char * str);
     /// Set enabled.software on power board.
     void (*pwr_set_sw_enable)(bool);
     /// Clear all errors on power board.

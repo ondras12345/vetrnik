@@ -313,19 +313,7 @@ static void cmnd_power(char *args, Stream *response)
     }
     else if (strcmp(setting_name, "mode") == 0)
     {
-        bool found = false;
-        for (size_t i = 0; power_board_modes[i] != nullptr; i++)
-        {
-            if (strcmp(setting_value, power_board_modes[i]) == 0)
-            {
-                found = true;
-                power_board_mode_t mode = (power_board_mode_t)i;
-                response->print("Setting mode to ");
-                response->println(mode);
-                wt_hal.pwr_set_mode(mode);
-            }
-        }
-        if (!found)
+        if (!wt_hal.pwr_set_mode_str(setting_value))
         {
             response->print("Unknown mode: ");
             response->println(setting_value);
@@ -337,7 +325,6 @@ static void cmnd_power(char *args, Stream *response)
             }
             response->println();
         }
-
     }
     else if (strcmp(setting_name, "sw_enable") == 0)
     {

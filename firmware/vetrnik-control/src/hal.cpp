@@ -83,6 +83,7 @@ wt_hal_t wt_hal = {
     .pwr_get_status     = pwr_get_status,
     .pwr_set_duty       = power_board_set_duty,
     .pwr_set_mode       = power_board_set_mode,
+    .pwr_set_mode_str   = power_board_set_mode,  // TODO common implementation in wt_hal
     .pwr_set_sw_enable  = power_board_set_software_enable,
     .pwr_clear_errors   = power_board_clear_errors,
     .pwr_reset          = pwr_reset,

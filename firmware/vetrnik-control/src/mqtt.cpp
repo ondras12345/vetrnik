@@ -524,16 +524,11 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
 
     if (strcmp(topic, MQTTtopic_cmnd_power_board "mode") == 0)
     {
-        for (size_t i = 0; power_board_modes[i] != nullptr; i++)
-        {
-            if (length == strlen(power_board_modes[i]) &&
-                strncmp((const char *)payload, power_board_modes[i], length) == 0)
-            {
-                power_board_mode_t mode = (power_board_mode_t)i;
-                wt_hal.pwr_set_mode(mode);
-                return;
-            }
-        }
+        char buf[32];
+        if (length >= sizeof buf) return;
+        memcpy(buf, payload, length);
+        buf[length] = '\0';
+        wt_hal.pwr_set_mode_str(buf);
         return;
     }
 

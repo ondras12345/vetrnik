@@ -67,6 +67,20 @@ void power_board_set_mode(power_board_mode_t mode)
 }
 
 
+bool power_board_set_mode(const char * str)
+{
+    for (size_t i = 0; power_board_modes[i] != nullptr; i++)
+    {
+        if (strcmp(str, power_board_modes[i]) == 0)
+        {
+            power_board_set_mode((power_board_mode_t)i);
+            return true;
+        }
+    }
+    return false;
+}
+
+
 /**
  * Set enabled.software on power board.
  */

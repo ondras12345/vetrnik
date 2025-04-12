@@ -20,6 +20,19 @@ static void pwr_set_mode(power_board_mode_t m)
     sil_state->pwr_status.mode = m;
 }
 
+static bool pwr_set_mode_str(const char * str)
+{
+    for (size_t i = 0; power_board_modes[i] != nullptr; i++)
+    {
+        if (strcmp(str, power_board_modes[i]) == 0)
+        {
+            pwr_set_mode((power_board_mode_t)i);
+            return true;
+        }
+    }
+    return false;
+}
+
 static void pwr_set_sw_enable(bool s)
 {
     sil_state->pwr_status.enabled.software = s;
@@ -167,6 +180,7 @@ wt_hal_t wt_hal = {
     .pwr_get_status     = pwr_get_status,
     .pwr_set_duty       = pwr_set_duty,
     .pwr_set_mode       = pwr_set_mode,
+    .pwr_set_mode_str   = pwr_set_mode_str,
     .pwr_set_sw_enable  = pwr_set_sw_enable,
     .pwr_clear_errors   = empty,
     .pwr_reset          = empty,
