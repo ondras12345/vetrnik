@@ -38,6 +38,6 @@ equation
   annotation(
   Diagram(graphics = {Rectangle(origin = {-20, 20}, extent = {{-20, 20}, {20, -20}}), Text(origin = {-20, 20}, extent = {{-14, 8}, {14, -8}}, textString = "LISP
 controller")}),
-  experiment(StartTime = 0, StopTime = 350, Tolerance = 1e-06, Interval = 0.1),
+  experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.1),
   __OpenModelica_simulationFlags(csvInput = "vwind-ramps.csv", lv = "LOG_STDOUT,LOG_ASSERT,LOG_STATS", s = "dassl", variableFilter = ".*"));
 end SILsimplifiedCsv;

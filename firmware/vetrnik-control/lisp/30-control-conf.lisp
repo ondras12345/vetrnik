@@ -1,5 +1,5 @@
 ; configuration
-(= SA 2) ; step authority
+(= SA 3) ; step authority
 (= RLC 100) ; minimum RPM to switch contactor
 (= RL 100) ; RPM low: leave the turbine unloaded until this RPM
 (= RH 2000) ; RPM high: do not let the turbine get past this
