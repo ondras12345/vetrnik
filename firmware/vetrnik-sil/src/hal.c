@@ -22,7 +22,7 @@ static void pwr_set_mode(power_board_mode_t m)
 
 static bool pwr_set_mode_str(const char * str)
 {
-    for (size_t i = 0; power_board_modes[i] != nullptr; i++)
+    for (size_t i = 0; power_board_modes[i]; i++)
     {
         if (strcmp(str, power_board_modes[i]) == 0)
         {
@@ -58,7 +58,7 @@ static uint8_t pwr_REL_read(uint8_t pin)
 
 static void ctrl_set_strategy(control_strategy_t s)
 {
-    if (s == control_shorted) sil_state->ctrl_contactor_state = false;
+    if (s == control_emergency) sil_state->ctrl_contactor_state = false;
     sil_state->ctrl_strategy = s;
 }
 
