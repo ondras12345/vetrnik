@@ -152,6 +152,25 @@ Equivalent lisp implementation:
 
 ### Return value
 \[number\]
+## `pow`
+### Description
+compute x raised to the power of y
+
+### Signature
+```lisp
+(pow
+    x
+    y
+)
+```
+
+
+### Arguments
+- `x` \[number\]
+- `y` \[number\]
+
+### Return value
+\[number\]
 ## `pwrg`
 ### Description
 Get a value from the power board state object. Numerical values (in SI units without metric prefix) are returned.

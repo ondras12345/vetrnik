@@ -83,6 +83,13 @@ fe_Object* cfunc_lim(fe_Context *ctx, fe_Object *arg)
     return fe_number(ctx, x);
 }
 
+fe_Object* cfunc_pow(fe_Context *ctx, fe_Object *arg)
+{
+    fe_Number x = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    fe_Number y = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
+    return fe_number(ctx, powf(x, y));
+}
+
 
 /**
  * Always returns nil.
@@ -116,4 +123,5 @@ void fe_utils_init(fe_Context *ctx)
     fe_set(ctx, fe_symbol(ctx, "round"), fe_cfunc(ctx, cfunc_round));
     fe_set(ctx, fe_symbol(ctx, "map"), fe_cfunc(ctx, cfunc_map));
     fe_set(ctx, fe_symbol(ctx, "lim"), fe_cfunc(ctx, cfunc_lim));
+    fe_set(ctx, fe_symbol(ctx, "pow"), fe_cfunc(ctx, cfunc_pow));
 }

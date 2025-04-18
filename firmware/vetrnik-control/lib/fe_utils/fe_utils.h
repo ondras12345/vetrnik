@@ -10,6 +10,7 @@ fe_Object* cfunc_rem(fe_Context *ctx, fe_Object *arg);
 fe_Object* cfunc_map(fe_Context *ctx, fe_Object *arg);
 fe_Object* cfunc_round(fe_Context *ctx, fe_Object *arg);
 fe_Object* cfunc_lim(fe_Context *ctx, fe_Object *arg);
+fe_Object* cfunc_pow(fe_Context *ctx, fe_Object *arg);
 fe_Object* cfunc_empty(fe_Context *ctx, fe_Object *arg);
 
 

@@ -138,6 +138,20 @@ functions:
       - '(is (lim 11 0 10) 10)'
       - '(is (lim 2 -10 10) 2)'
 
+  - name: pow
+    description: compute x raised to the power of y
+    nargs: 2
+    args:
+      - name: x
+        type: number
+      - name: y
+        type: number
+    return:
+      type: number
+    tests:
+      - '(is (pow 2 0.5) 1.4142135623731)'
+      - '(is (pow 2 3) 8)'
+
   - name: pwrg
     description: >-
       Get a value from the power board state object.
