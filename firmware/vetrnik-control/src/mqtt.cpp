@@ -161,13 +161,17 @@ void MQTT_loop()
                         MQTTtopic_availability, 2, true, "offline")
                )
             {
-                MQTTClient.subscribe(MQTTtopic_cmnd_raw "+");
-                MQTTClient.subscribe(MQTTtopic_cmnd_power_board "+");
-                MQTTClient.subscribe(MQTTtopic_cmnd_lisp);
-                MQTTClient.subscribe(MQTTtopic_cmnd_control "+");
-                MQTTClient.subscribe(MQTTtopic_cmnd_pump);
-                MQTTClient.subscribe(MQTTtopic_cmnd_display_backlight);
-                MQTTClient.subscribe(MQTTtopic_cmnd_cli);
+                const char * subscribe_topics[] = {
+                    MQTTtopic_cmnd_raw "+",
+                    MQTTtopic_cmnd_power_board "+",
+                    MQTTtopic_cmnd_lisp,
+                    MQTTtopic_cmnd_control "+",
+                    MQTTtopic_cmnd_pump,
+                    MQTTtopic_cmnd_display_backlight,
+                    MQTTtopic_cmnd_cli,
+                };
+                for (uint_fast8_t i = 0; i < sizeof(subscribe_topics)/sizeof(subscribe_topics[0]); i++)
+                    MQTTClient.subscribe(subscribe_topics[i]);
 
                 MQTTClient.publish(MQTTtopic_availability, "online", true);
 
