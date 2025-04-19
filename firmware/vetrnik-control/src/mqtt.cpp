@@ -180,16 +180,20 @@ void MQTT_loop()
                )
             {
                 const char * subscribe_topics[] = {
-                    MQTTtopic_cmnd_raw "+",
-                    MQTTtopic_cmnd_power_board "+",
-                    MQTTtopic_cmnd_lisp,
-                    MQTTtopic_cmnd_control "+",
-                    MQTTtopic_cmnd_pump,
-                    MQTTtopic_cmnd_display_backlight,
-                    MQTTtopic_cmnd_cli,
+                    "raw/+",
+                    "power_board/+",
+                    "lisp",
+                    "cli",
+                    "control/+",
+                    "pump",
+                    "display/backlight",
                 };
                 for (uint_fast8_t i = 0; i < sizeof(subscribe_topics)/sizeof(subscribe_topics[0]); i++)
-                    MQTTClient.subscribe(subscribe_topics[i]);
+                {
+                    char topic[64];
+                    snprintf(topic, sizeof topic, "%s%s", MQTTtopic_cmnd, subscribe_topics[i]);
+                    MQTTClient.subscribe(topic);
+                }
 
                 MQTTClient.publish(MQTTtopic_availability, "online", true);
 
@@ -453,6 +457,110 @@ void MQTT_loop()
     MQTT_last_full_loop = millis();
 }
 
+static void handler_pb_duty(const uint8_t * payload, unsigned int length)
+{
+    if (length > 3) return;
+    char buff[4];
+    memcpy(buff, payload, length);
+    buff[length] = '\0';
+    unsigned int duty;
+    sscanf(buff, "%u", &duty);
+    if (duty > 255) return;
+    wt_hal.pwr_set_duty(duty);
+}
+
+
+static void handler_pb_sw_enable(const uint8_t * payload, unsigned int length)
+{
+    wt_hal.pwr_set_sw_enable(payload[0] == '1');
+}
+
+
+static void handler_pb_command(const uint8_t * payload, unsigned int length)
+{
+    if (strncmp((const char *)payload, "clear_errors", length) == 0)
+        wt_hal.pwr_clear_errors();
+    else if (strncmp((const char *)payload, "reset", length) == 0)
+        wt_hal.pwr_reset();
+    else if (strncmp((const char *)payload, "WDT_test", length) == 0)
+        wt_hal.pwr_test_WDT();
+}
+
+static void handler_pb_mode(const uint8_t * payload, unsigned int length)
+{
+    char buf[32];
+    if (length >= sizeof buf) return;
+    memcpy(buf, payload, length);
+    buf[length] = '\0';
+    wt_hal.pwr_set_mode_str(buf);
+}
+
+static void handler_lisp(const uint8_t * payload, unsigned int length)
+{
+    lisp_run_blind((char*)payload, length);
+}
+
+static void handler_control_strategy(const uint8_t * payload, unsigned int length)
+{
+    char buf[32];
+    if (length >= sizeof buf) return;
+    memcpy(buf, payload, length);
+    buf[length] = '\0';
+    wt_hal.ctrl_set_strategy_str(buf);
+}
+
+static void handler_control_contactor(const uint8_t * payload, unsigned int length)
+{
+    if (payload[0] == '1') wt_hal.ctrl_contactor_set();
+}
+
+static void handler_pump(const uint8_t * payload, unsigned int length)
+{
+    wt_hal.pump_set(payload[0] == '1');
+}
+
+static void handler_display_backlight(const uint8_t * payload, unsigned int length)
+{
+    lcd_hal.backlight_set(payload[0] == '1');
+}
+
+static void handler_cli(const uint8_t * payload, unsigned int length)
+{
+    // payload is not null terminated
+    // TODO commander currently has a bug that causes commands
+    // with length >= COMMANDER_MAX_COMMAND_SIZE to overflow an internal
+    // buffer: https://github.com/dani007200964/Commander-API/issues/19
+    // As a workaround, I will make our buff smaller
+    //char buff[COMMANDER_MAX_COMMAND_SIZE + 1];
+    char buff[COMMANDER_MAX_COMMAND_SIZE];
+    size_t command_length = sizeof(buff) - 1;
+    if (length < command_length) command_length = length;
+    memcpy(buff, payload, command_length);
+    buff[command_length] = '\0';
+    CLI_execute(buff);
+    // TODO capture command response
+    // https://github.com/JAndrassy/StreamLib
+}
+
+
+struct MQTT_handler {
+    const char * cmnd_topic_suffix;
+    void(*handler)(const uint8_t * payload, unsigned int length);
+};
+
+static const MQTT_handler handlers[] = {
+    {"power_board/duty",        handler_pb_duty},
+    {"power_board/sw_enable",   handler_pb_sw_enable},
+    {"power_board/command",     handler_pb_command},
+    {"power_board/mode",        handler_pb_mode},
+    {"lisp",                    handler_lisp},
+    {"control/strategy",        handler_control_strategy},
+    {"control/contactor",       handler_control_contactor},
+    {"pump",                    handler_pump},
+    {"display/backlight",       handler_display_backlight},
+    {"cli",                     handler_cli},
+};
+
 
 void MQTTcallback(char* topic, byte* payload, unsigned int length)
 {
@@ -471,13 +579,18 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
 
     if (length == 0) return;
 
-    if (strstr(topic, MQTTtopic_cmnd_raw) != NULL)
+    // advance past topic_prefix
+    const char * topic_prefix = MQTTtopic_cmnd;
+    while (*topic != '\0' && *(topic++) == *(topic_prefix++));
+    if (*topic_prefix != '\0') return;  // did not start with prefix
+
+    if (strstr(topic, "raw/") != NULL)
     {
         // 1 character longer
-        if (strlen(topic) != sizeof MQTTtopic_cmnd_raw)
+        if (strlen(topic) != sizeof "raw/")
             return;
 
-        char name = topic[sizeof(MQTTtopic_cmnd_raw) - 1];
+        char name = topic[sizeof("raw/") - 1];
         uint8_t value;
         char buff[3+1];
         if (length >= sizeof buff)
@@ -494,103 +607,20 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
         return;
     }
 
-    if (strstr(topic, MQTTtopic_cmnd_power_board) != NULL ||
-        strcmp(topic, MQTTtopic_cmnd_control "strategy") == 0)
+    if (strstr(topic, "power_board/") != NULL ||
+        strcmp(topic, "control/strategy") == 0)
     {
         MQTT_last_command_ms = millis();
     }
 
-    if (strcmp(topic, MQTTtopic_cmnd_power_board "duty") == 0)
-    {
-        if (length > 3) return;
-        char buff[4];
-        memcpy(buff, payload, length);
-        buff[length] = '\0';
-        unsigned int duty;
-        sscanf(buff, "%u", &duty);
-        if (duty > 255) return;
-        wt_hal.pwr_set_duty(duty);
-        return;
-    }
 
-    if (strcmp(topic, MQTTtopic_cmnd_power_board "sw_enable") == 0)
+    for (uint_fast8_t i = 0; i < sizeof(handlers)/sizeof(handlers[0]); i++)
     {
-        wt_hal.pwr_set_sw_enable(payload[0] == '1');
-        return;
-    }
-
-    if (strcmp(topic, MQTTtopic_cmnd_power_board "command") == 0)
-    {
-        if (strncmp((const char *)payload, "clear_errors", length) == 0)
-            wt_hal.pwr_clear_errors();
-        else if (strncmp((const char *)payload, "reset", length) == 0)
-            wt_hal.pwr_reset();
-        else if (strncmp((const char *)payload, "WDT_test", length) == 0)
-            wt_hal.pwr_test_WDT();
-        return;
-    }
-
-    if (strcmp(topic, MQTTtopic_cmnd_power_board "mode") == 0)
-    {
-        char buf[32];
-        if (length >= sizeof buf) return;
-        memcpy(buf, payload, length);
-        buf[length] = '\0';
-        wt_hal.pwr_set_mode_str(buf);
-        return;
-    }
-
-    if (strcmp(topic, MQTTtopic_cmnd_lisp) == 0)
-    {
-        lisp_run_blind((char*)payload, length);
-        return;
-    }
-
-    if (strcmp(topic, MQTTtopic_cmnd_control "strategy") == 0)
-    {
-        char buf[32];
-        if (length >= sizeof buf) return;
-        memcpy(buf, payload, length);
-        buf[length] = '\0';
-        wt_hal.ctrl_set_strategy_str(buf);
-        return;
-    }
-
-    if (strcmp(topic, MQTTtopic_cmnd_control "contactor") == 0)
-    {
-        if (payload[0] == '1') wt_hal.ctrl_contactor_set();
-        return;
-    }
-
-    if (strcmp(topic, MQTTtopic_cmnd_pump) == 0)
-    {
-        wt_hal.pump_set(payload[0] == '1');
-        return;
-    }
-
-    if (strcmp(topic, MQTTtopic_cmnd_display_backlight) == 0)
-    {
-        lcd_hal.backlight_set(payload[0] == '1');
-        return;
-    }
-
-    if (strcmp(topic, MQTTtopic_cmnd_cli) == 0)
-    {
-        // payload is not null terminated
-        // TODO commander currently has a bug that causes commands
-        // with length >= COMMANDER_MAX_COMMAND_SIZE to overflow an internal
-        // buffer: https://github.com/dani007200964/Commander-API/issues/19
-        // As a workaround, I will make our buff smaller
-        //char buff[COMMANDER_MAX_COMMAND_SIZE + 1];
-        char buff[COMMANDER_MAX_COMMAND_SIZE];
-        size_t command_length = sizeof(buff) - 1;
-        if (length < command_length) command_length = length;
-        memcpy(buff, payload, command_length);
-        buff[command_length] = '\0';
-        CLI_execute(buff);
-        // TODO capture command response
-        // https://github.com/JAndrassy/StreamLib
-        return;
+        if (strcmp(topic, handlers[i].cmnd_topic_suffix) == 0)
+        {
+            handlers[i].handler(payload, length);
+            return;
+        }
     }
 }
 

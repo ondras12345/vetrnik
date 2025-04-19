@@ -34,14 +34,6 @@
 #define MQTTtopic_stat                      MQTTtopic_prefix "stat/"
 #define MQTTtopic_availability              MQTTtopic_tele "availability"
 
-#define MQTTtopic_cmnd_raw                  MQTTtopic_cmnd "raw/"
-#define MQTTtopic_cmnd_power_board          MQTTtopic_cmnd "power_board/"
-#define MQTTtopic_cmnd_lisp                 MQTTtopic_cmnd "lisp"
-#define MQTTtopic_cmnd_control              MQTTtopic_cmnd "control/"
-#define MQTTtopic_cmnd_pump                 MQTTtopic_cmnd "pump"
-#define MQTTtopic_cmnd_display_backlight    MQTTtopic_cmnd "display/backlight"
-#define MQTTtopic_cmnd_cli                  MQTTtopic_cmnd "cli"
-
 #define MQTTtopic_tele_raw_RX               MQTTtopic_tele "raw/RX/"
 #define MQTTtopic_tele_power_board          MQTTtopic_tele "power_board/"
 #define MQTTtopic_tele_control              MQTTtopic_tele "control/"
