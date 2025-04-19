@@ -457,6 +457,19 @@ void MQTT_loop()
     MQTT_last_full_loop = millis();
 }
 
+uint16_t topic_hash(const char *str)
+{
+    uint16_t hash = 5381;
+    uint8_t c;
+    while ((c = *str++)) hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+    return hash;
+}
+
+constexpr uint16_t topic_hash_ce(const char* str, uint16_t hash = 5381) {
+    if (*str == '\0') return hash;
+    return topic_hash_ce(str + 1, ((hash << 5) + hash) + static_cast<uint8_t>(*str));
+}
+
 
 void MQTTcallback(char* topic, byte* payload, unsigned int length)
 {
@@ -509,97 +522,84 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
         MQTT_last_command_ms = millis();
     }
 
-    if (strcmp(topic, "power_board/duty") == 0)
+    switch (topic_hash(topic))
     {
-        if (length > 3) return;
-        char buff[4];
-        memcpy(buff, payload, length);
-        buff[length] = '\0';
-        unsigned int duty;
-        sscanf(buff, "%u", &duty);
-        if (duty > 255) return;
-        wt_hal.pwr_set_duty(duty);
-        return;
-    }
+        case topic_hash_ce("power_board/duty"): {
+            if (length > 3) return;
+            char buff[4];
+            memcpy(buff, payload, length);
+            buff[length] = '\0';
+            unsigned int duty;
+            sscanf(buff, "%u", &duty);
+            if (duty > 255) return;
+            wt_hal.pwr_set_duty(duty);
+            break;
+        }
 
-    if (strcmp(topic, "power_board/sw_enable") == 0)
-    {
-        wt_hal.pwr_set_sw_enable(payload[0] == '1');
-        return;
-    }
+        case topic_hash_ce("power_board/sw_enable"):
+            wt_hal.pwr_set_sw_enable(payload[0] == '1');
+            break;
 
-    if (strcmp(topic, "power_board/command") == 0)
-    {
-        if (strncmp((const char *)payload, "clear_errors", length) == 0)
-            wt_hal.pwr_clear_errors();
-        else if (strncmp((const char *)payload, "reset", length) == 0)
-            wt_hal.pwr_reset();
-        else if (strncmp((const char *)payload, "WDT_test", length) == 0)
-            wt_hal.pwr_test_WDT();
-        return;
-    }
+        case topic_hash_ce("power_board/command"):
+            if (strncmp((const char *)payload, "clear_errors", length) == 0)
+                wt_hal.pwr_clear_errors();
+            else if (strncmp((const char *)payload, "reset", length) == 0)
+                wt_hal.pwr_reset();
+            else if (strncmp((const char *)payload, "WDT_test", length) == 0)
+                wt_hal.pwr_test_WDT();
+            break;
 
-    if (strcmp(topic, "power_board/mode") == 0)
-    {
-        char buf[32];
-        if (length >= sizeof buf) return;
-        memcpy(buf, payload, length);
-        buf[length] = '\0';
-        wt_hal.pwr_set_mode_str(buf);
-        return;
-    }
+        case topic_hash_ce("power_board/mode"): {
+            char buf[32];
+            if (length >= sizeof buf) return;
+            memcpy(buf, payload, length);
+            buf[length] = '\0';
+            wt_hal.pwr_set_mode_str(buf);
+            break;
+        }
 
-    if (strcmp(topic, "lisp") == 0)
-    {
-        lisp_run_blind((char*)payload, length);
-        return;
-    }
+        case topic_hash_ce("lisp"):
+            lisp_run_blind((char*)payload, length);
+            break;
 
-    if (strcmp(topic, "control/strategy") == 0)
-    {
-        char buf[32];
-        if (length >= sizeof buf) return;
-        memcpy(buf, payload, length);
-        buf[length] = '\0';
-        wt_hal.ctrl_set_strategy_str(buf);
-        return;
-    }
+        case topic_hash_ce("control/strategy"): {
+            char buf[32];
+            if (length >= sizeof buf) return;
+            memcpy(buf, payload, length);
+            buf[length] = '\0';
+            wt_hal.ctrl_set_strategy_str(buf);
+            break;
+        }
 
-    if (strcmp(topic, "control/contactor") == 0)
-    {
-        if (payload[0] == '1') wt_hal.ctrl_contactor_set();
-        return;
-    }
+        case topic_hash_ce("control/contactor"):
+            if (payload[0] == '1') wt_hal.ctrl_contactor_set();
+            break;
 
-    if (strcmp(topic, "pump") == 0)
-    {
-        wt_hal.pump_set(payload[0] == '1');
-        return;
-    }
+        case topic_hash_ce("pump"):
+            wt_hal.pump_set(payload[0] == '1');
+            break;
 
-    if (strcmp(topic, "display/backlight") == 0)
-    {
-        lcd_hal.backlight_set(payload[0] == '1');
-        return;
-    }
+        case topic_hash_ce("display/backlight"):
+            lcd_hal.backlight_set(payload[0] == '1');
+            break;
 
-    if (strcmp(topic, "cli") == 0)
-    {
-        // payload is not null terminated
-        // TODO commander currently has a bug that causes commands
-        // with length >= COMMANDER_MAX_COMMAND_SIZE to overflow an internal
-        // buffer: https://github.com/dani007200964/Commander-API/issues/19
-        // As a workaround, I will make our buff smaller
-        //char buff[COMMANDER_MAX_COMMAND_SIZE + 1];
-        char buff[COMMANDER_MAX_COMMAND_SIZE];
-        size_t command_length = sizeof(buff) - 1;
-        if (length < command_length) command_length = length;
-        memcpy(buff, payload, command_length);
-        buff[command_length] = '\0';
-        CLI_execute(buff);
-        // TODO capture command response
-        // https://github.com/JAndrassy/StreamLib
-        return;
+        case topic_hash_ce("cli"): {
+            // payload is not null terminated
+            // TODO commander currently has a bug that causes commands
+            // with length >= COMMANDER_MAX_COMMAND_SIZE to overflow an internal
+            // buffer: https://github.com/dani007200964/Commander-API/issues/19
+            // As a workaround, I will make our buff smaller
+            //char buff[COMMANDER_MAX_COMMAND_SIZE + 1];
+            char buff[COMMANDER_MAX_COMMAND_SIZE];
+            size_t command_length = sizeof(buff) - 1;
+            if (length < command_length) command_length = length;
+            memcpy(buff, payload, command_length);
+            buff[command_length] = '\0';
+            CLI_execute(buff);
+            // TODO capture command response
+            // https://github.com/JAndrassy/StreamLib
+            break;
+        }
     }
 }
 
