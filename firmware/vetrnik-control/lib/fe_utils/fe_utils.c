@@ -87,7 +87,8 @@ fe_Object* cfunc_pow(fe_Context *ctx, fe_Object *arg)
 {
     fe_Number x = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
     fe_Number y = fe_tonumber(ctx, fe_nextarg(ctx, &arg));
-    return fe_number(ctx, powf(x, y));
+    // this uses 1076 bytes of flash less than powf
+    return fe_number(ctx, expf(y * logf(x)));
 }
 
 
