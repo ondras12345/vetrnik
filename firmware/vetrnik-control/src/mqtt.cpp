@@ -493,6 +493,8 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
     while (*topic != '\0' && *(topic++) == *(topic_prefix++));
     if (*topic_prefix != '\0') return;  // did not start with prefix
 
+    unsigned long now = millis();
+
     if (strstr(topic, "raw/") != NULL)
     {
         // 1 character longer
@@ -512,14 +514,13 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
 
         TX_datapoints_set(name, value);
 
-        MQTT_last_command_ms = millis();
+        MQTT_last_command_ms = now;
         return;
     }
 
-    if (strstr(topic, "power_board/") != NULL ||
-        strcmp(topic, "control/strategy") == 0)
+    if (strstr(topic, "power_board/") != NULL)
     {
-        MQTT_last_command_ms = millis();
+        MQTT_last_command_ms = now;  // also set for control/strategy
     }
 
     // some command handlers expect a null terminated string
@@ -568,6 +569,7 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
 
         case topic_hash_ce("control/strategy"): {
             wt_hal.ctrl_set_strategy_str(payload_str);
+            MQTT_last_command_ms = now;
             break;
         }
 
