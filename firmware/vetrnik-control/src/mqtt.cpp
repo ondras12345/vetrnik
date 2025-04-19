@@ -257,7 +257,9 @@ uint_fast8_t log_id = 0;
     {                                                                       \
         prev_pb_stat.name = pb_stat.name;                                   \
         maketmp                                                             \
-        PUBLISH_LOG(MQTTtopic_tele_power_board topic, tmp, true);           \
+        char tmp_topic[sizeof(MQTTtopic_tele_power_board) + 32];            \
+        snprintf(tmp_topic, sizeof tmp_topic, "%s%s", MQTTtopic_tele_power_board, topic); \
+        PUBLISH_LOG(tmp_topic, tmp, true);                                  \
     }
 
 /// Report a uint16_t power board datapoint, COND_NEQ
