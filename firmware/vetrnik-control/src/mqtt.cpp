@@ -85,6 +85,17 @@ uint8_t MQTT_init()
     return result;
 }
 
+static uint32_t log_skipped;
+static uint32_t log_succeeded;
+static uint_fast8_t log_id;
+
+static void publish_log(const char * topic, const char * payload, bool retain=true)
+{
+    log_skipped &= ~(1<<log_id);
+    bool success = MQTTClient.publish(topic, payload, retain);
+    log_succeeded |= ((success ? 1 : 0)<<log_id);
+}
+
 
 void MQTT_loop()
 {
@@ -196,17 +207,8 @@ void MQTT_loop()
     MQTTClient.loop();
 
     // report values here, use force_report to detect reconnection
-
-uint32_t log_skipped = -1;
-uint32_t log_succeeded = 0;
-uint_fast8_t log_id = 0;
-#define PUBLISH_LOG(topic, payload, retain) \
-    do { \
-        log_skipped &= ~(1<<log_id); \
-        bool success = MQTTClient.publish(topic, payload, retain); \
-        log_succeeded |= ((success ? 1 : 0)<<log_id); \
-    } while (0)
-
+    log_skipped = -1;
+    log_succeeded = 0;
 
     log_id = 0;
     // Starting with c = '!' is not OK because MQTT does not seem to like #, $
@@ -223,7 +225,7 @@ uint_fast8_t log_id = 0;
             {
                 char tmp[3*sizeof(RX_datapoint_t) + 1];  // >= number of digits required + null
                 snprintf(tmp, sizeof tmp, "%lu", dp.value);
-                PUBLISH_LOG(top, tmp, true);
+                publish_log(top, tmp);
                 dp.changed = false;
                 RX_datapoints_set(c, dp);
             }
@@ -233,7 +235,7 @@ uint_fast8_t log_id = 0;
             if (force_report)
             {
                 // clean up retained messages
-                PUBLISH_LOG(top, "", true);
+                publish_log(top, "");
             }
         }
     }
@@ -244,7 +246,7 @@ uint_fast8_t log_id = 0;
         INFO->print("Raw text message: ");
         INFO->println(power_text_message);
         log_id = 1;
-        PUBLISH_LOG(MQTTtopic_tele_raw_errors, power_text_message, false);
+        publish_log(MQTTtopic_tele_raw_errors, power_text_message, false);
         power_text_message_complete = false;
     }
 
@@ -259,7 +261,7 @@ uint_fast8_t log_id = 0;
         maketmp                                                             \
         char tmp_topic[sizeof(MQTTtopic_tele_power_board) + 32];            \
         snprintf(tmp_topic, sizeof tmp_topic, "%s%s", MQTTtopic_tele_power_board, topic); \
-        PUBLISH_LOG(tmp_topic, tmp, true);                                  \
+        publish_log(tmp_topic, tmp);                                        \
     }
 
 /// Report a uint16_t power board datapoint, COND_NEQ
@@ -297,7 +299,7 @@ uint_fast8_t log_id = 0;
             ) / 1000;
         MAKETMP_DECIMAL(power, 1)
         log_id = 2;
-        PUBLISH_LOG(MQTTtopic_tele_power_board "power", tmp, true);
+        publish_log(MQTTtopic_tele_power_board "power", tmp);
     }
 
     log_id = 3;
@@ -350,8 +352,8 @@ uint_fast8_t log_id = 0;
     {
         prev_control_strategy = control_strategy;
         log_id = 20;
-        PUBLISH_LOG(MQTTtopic_tele_control "strategy",
-                    control_strategies[control_strategy], true);
+        publish_log(MQTTtopic_tele_control "strategy",
+                    control_strategies[control_strategy]);
     }
 
     // minutes remaining before contactor switches off, 255 ==> contactor is
@@ -365,7 +367,7 @@ uint_fast8_t log_id = 0;
         prev_control_contactor_min = control_contactor_min;
         MAKETMP_UINT(control_contactor_min);
         log_id = 21;
-        PUBLISH_LOG(MQTTtopic_tele_control "contactor", tmp, true);
+        publish_log(MQTTtopic_tele_control "contactor", tmp);
     }
 
     static stats_t prev_stats = {0};
@@ -375,7 +377,7 @@ uint_fast8_t log_id = 0;
         prev_stats.energy = stats.energy;
         MAKETMP_DECIMAL(stats.energy, 3);
         log_id = 22;
-        PUBLISH_LOG(MQTTtopic_tele_stats "energy", tmp, true);
+        publish_log(MQTTtopic_tele_stats "energy", tmp);
     }
 
     if (COND_NEQ(stats.energy_Ws10) || force_report)
@@ -383,7 +385,7 @@ uint_fast8_t log_id = 0;
         prev_stats.energy_Ws10 = stats.energy_Ws10;
         MAKETMP_DECIMAL(stats.energy_Ws10, 1);
         log_id = 23;
-        PUBLISH_LOG(MQTTtopic_tele_stats "energy_Ws", tmp, true);
+        publish_log(MQTTtopic_tele_stats "energy_Ws", tmp);
     }
 
     static uint16_t prev_DS18B20_readings[SENSOR_DS18B20_COUNT] = { 0 };
@@ -408,7 +410,7 @@ uint_fast8_t log_id = 0;
         MAKETMP_DECIMAL(reading, 1);
         // Not ideal, will show up as succeeded if at least one call succeeded.
         log_id = 24;
-        PUBLISH_LOG(topic, tmp, true);
+        publish_log(topic, tmp);
     }
 
     static bool prev_pump = false;
@@ -418,7 +420,7 @@ uint_fast8_t log_id = 0;
         prev_pump = pump;
         MAKETMP_BOOL(pump);
         log_id = 25;
-        PUBLISH_LOG(MQTTtopic_tele_pump, tmp, true);
+        publish_log(MQTTtopic_tele_pump, tmp);
     }
 
 
@@ -429,7 +431,7 @@ uint_fast8_t log_id = 0;
         prev_backlight = backlight;
         MAKETMP_BOOL(backlight);
         log_id = 26;
-        PUBLISH_LOG(MQTTtopic_tele_display_backlight, tmp, true);
+        publish_log(MQTTtopic_tele_display_backlight, tmp);
     }
 
     static float prev_vwind = 0.0;
@@ -440,7 +442,7 @@ uint_fast8_t log_id = 0;
         log_id = 27;
         char tmp[sizeof "123.4"];
         snprintf(tmp, sizeof tmp, "%.1f", vwind);
-        PUBLISH_LOG(MQTTtopic_tele_control "vwind", tmp, true);
+        publish_log(MQTTtopic_tele_control "vwind", tmp);
     }
 
     // Only log if there was a publish that wasn't skipped and did not succeed.
