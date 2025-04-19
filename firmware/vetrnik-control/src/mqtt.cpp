@@ -522,15 +522,23 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
         MQTT_last_command_ms = millis();
     }
 
+    // some command handlers expect a null terminated string
+    // TODO commander currently has a bug that causes commands
+    // with length >= COMMANDER_MAX_COMMAND_SIZE to overflow an internal
+    // buffer: https://github.com/dani007200964/Commander-API/issues/19
+    // As a workaround, I will make our buff smaller
+    //char payload_str[COMMANDER_MAX_COMMAND_SIZE + 1];
+    char payload_str[COMMANDER_MAX_COMMAND_SIZE];
+    size_t str_len = sizeof(payload_str) - 1;
+    if (length < str_len) str_len = length;
+    memcpy(payload_str, payload, str_len);
+    payload_str[str_len] = '\0';
+
     switch (topic_hash(topic))
     {
         case topic_hash_ce("power_board/duty"): {
-            if (length > 3) return;
-            char buff[4];
-            memcpy(buff, payload, length);
-            buff[length] = '\0';
             unsigned int duty;
-            sscanf(buff, "%u", &duty);
+            sscanf(payload_str, "%u", &duty);
             if (duty > 255) return;
             wt_hal.pwr_set_duty(duty);
             break;
@@ -550,11 +558,7 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
             break;
 
         case topic_hash_ce("power_board/mode"): {
-            char buf[32];
-            if (length >= sizeof buf) return;
-            memcpy(buf, payload, length);
-            buf[length] = '\0';
-            wt_hal.pwr_set_mode_str(buf);
+            wt_hal.pwr_set_mode_str(payload_str);
             break;
         }
 
@@ -563,11 +567,7 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
             break;
 
         case topic_hash_ce("control/strategy"): {
-            char buf[32];
-            if (length >= sizeof buf) return;
-            memcpy(buf, payload, length);
-            buf[length] = '\0';
-            wt_hal.ctrl_set_strategy_str(buf);
+            wt_hal.ctrl_set_strategy_str(payload_str);
             break;
         }
 
@@ -584,18 +584,7 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
             break;
 
         case topic_hash_ce("cli"): {
-            // payload is not null terminated
-            // TODO commander currently has a bug that causes commands
-            // with length >= COMMANDER_MAX_COMMAND_SIZE to overflow an internal
-            // buffer: https://github.com/dani007200964/Commander-API/issues/19
-            // As a workaround, I will make our buff smaller
-            //char buff[COMMANDER_MAX_COMMAND_SIZE + 1];
-            char buff[COMMANDER_MAX_COMMAND_SIZE];
-            size_t command_length = sizeof(buff) - 1;
-            if (length < command_length) command_length = length;
-            memcpy(buff, payload, command_length);
-            buff[command_length] = '\0';
-            CLI_execute(buff);
+            CLI_execute(payload_str);
             // TODO capture command response
             // https://github.com/JAndrassy/StreamLib
             break;
