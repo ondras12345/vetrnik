@@ -96,6 +96,13 @@ static void publish_log(const char * topic, const char * payload, bool retain=tr
     log_succeeded |= ((success ? 1 : 0)<<log_id);
 }
 
+static void publish_log_prefix(const char * topic_prefix, const char * topic_suffix, const char * payload, bool retain=true)
+{
+    char topic[80];
+    snprintf(topic, sizeof topic, "%s%s", topic_prefix, topic_suffix);
+    publish_log(topic, payload, retain);
+}
+
 
 void MQTT_loop()
 {
@@ -246,7 +253,7 @@ void MQTT_loop()
         INFO->print("Raw text message: ");
         INFO->println(power_text_message);
         log_id = 1;
-        publish_log(MQTTtopic_tele_raw_errors, power_text_message, false);
+        publish_log_prefix(MQTTtopic_tele, "raw/errors", power_text_message, false);
         power_text_message_complete = false;
     }
 
@@ -259,9 +266,7 @@ void MQTT_loop()
     {                                                                       \
         prev_pb_stat.name = pb_stat.name;                                   \
         maketmp                                                             \
-        char tmp_topic[sizeof(MQTTtopic_tele_power_board) + 32];            \
-        snprintf(tmp_topic, sizeof tmp_topic, "%s%s", MQTTtopic_tele_power_board, topic); \
-        publish_log(tmp_topic, tmp);                                        \
+        publish_log_prefix(MQTTtopic_tele_power_board, topic, tmp);         \
     }
 
 /// Report a uint16_t power board datapoint, COND_NEQ
@@ -299,7 +304,7 @@ void MQTT_loop()
             ) / 1000;
         MAKETMP_DECIMAL(power, 1)
         log_id = 2;
-        publish_log(MQTTtopic_tele_power_board "power", tmp);
+        publish_log_prefix(MQTTtopic_tele_power_board, "power", tmp);
     }
 
     log_id = 3;
@@ -352,8 +357,8 @@ void MQTT_loop()
     {
         prev_control_strategy = control_strategy;
         log_id = 20;
-        publish_log(MQTTtopic_tele_control "strategy",
-                    control_strategies[control_strategy]);
+        publish_log_prefix(MQTTtopic_tele_control, "strategy",
+                           control_strategies[control_strategy]);
     }
 
     // minutes remaining before contactor switches off, 255 ==> contactor is
@@ -367,7 +372,7 @@ void MQTT_loop()
         prev_control_contactor_min = control_contactor_min;
         MAKETMP_UINT(control_contactor_min);
         log_id = 21;
-        publish_log(MQTTtopic_tele_control "contactor", tmp);
+        publish_log_prefix(MQTTtopic_tele_control, "contactor", tmp);
     }
 
     static stats_t prev_stats = {0};
@@ -377,7 +382,7 @@ void MQTT_loop()
         prev_stats.energy = stats.energy;
         MAKETMP_DECIMAL(stats.energy, 3);
         log_id = 22;
-        publish_log(MQTTtopic_tele_stats "energy", tmp);
+        publish_log_prefix(MQTTtopic_tele_stats, "energy", tmp);
     }
 
     if (COND_NEQ(stats.energy_Ws10) || force_report)
@@ -385,7 +390,7 @@ void MQTT_loop()
         prev_stats.energy_Ws10 = stats.energy_Ws10;
         MAKETMP_DECIMAL(stats.energy_Ws10, 1);
         log_id = 23;
-        publish_log(MQTTtopic_tele_stats "energy_Ws", tmp);
+        publish_log_prefix(MQTTtopic_tele_stats, "energy_Ws", tmp);
     }
 
     static uint16_t prev_DS18B20_readings[SENSOR_DS18B20_COUNT] = { 0 };
@@ -400,17 +405,12 @@ void MQTT_loop()
 
         prev_DS18B20_readings[i] = reading;
 
-        char topic[sizeof(MQTTtopic_tele_temperature)+sizeof(settings.DS18B20s[0].name)];
-        snprintf(topic, sizeof topic,
-                 "%s%s",
-                 MQTTtopic_tele_temperature, settings.DS18B20s[i].name);
-
         // reduce resolution (+5 for mathematical round instead of truncate)
         reading = (reading + 5) / 10;
         MAKETMP_DECIMAL(reading, 1);
         // Not ideal, will show up as succeeded if at least one call succeeded.
         log_id = 24;
-        publish_log(topic, tmp);
+        publish_log_prefix(MQTTtopic_tele_temperature, settings.DS18B20s[i].name, tmp);
     }
 
     static bool prev_pump = false;
@@ -420,7 +420,7 @@ void MQTT_loop()
         prev_pump = pump;
         MAKETMP_BOOL(pump);
         log_id = 25;
-        publish_log(MQTTtopic_tele_pump, tmp);
+        publish_log_prefix(MQTTtopic_tele, "pump", tmp);
     }
 
 
@@ -431,7 +431,7 @@ void MQTT_loop()
         prev_backlight = backlight;
         MAKETMP_BOOL(backlight);
         log_id = 26;
-        publish_log(MQTTtopic_tele_display_backlight, tmp);
+        publish_log_prefix(MQTTtopic_tele, "display/backlight", tmp);
     }
 
     static float prev_vwind = 0.0;
@@ -442,7 +442,7 @@ void MQTT_loop()
         log_id = 27;
         char tmp[sizeof "123.4"];
         snprintf(tmp, sizeof tmp, "%.1f", vwind);
-        publish_log(MQTTtopic_tele_control "vwind", tmp);
+        publish_log_prefix(MQTTtopic_tele_control, "vwind", tmp);
     }
 
     // Only log if there was a publish that wasn't skipped and did not succeed.
