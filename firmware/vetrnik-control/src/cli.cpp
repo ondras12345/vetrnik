@@ -1039,7 +1039,7 @@ static Commander::API_t API_tree[] = {
     apiElement("log",           "Print log / postmort",                     cmnd_log),
     apiElement("onewirescan",   "Scan devices on onewire bus",              cmnd_onewirescan),
     apiElement("ds18b20",       "Print out DS18B20 sensor readings",        cmnd_ds18b20),
-    apiElement("free",          "Print out amount of free memory.",         cmnd_free),
+    //apiElement("free",          "Print out amount of free memory.",         cmnd_free),  // leaving this out saves 1312 bytes of flash
     apiElement("dfu",           "Switch to DFU firmware download mode.",    cmnd_dfu),
     apiElement("ota",           "Switch to over-the-air firmware dl mode.", cmnd_ota),
     apiElement("pump",          "Control circulation pump.",                cmnd_pump),
