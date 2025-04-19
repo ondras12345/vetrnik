@@ -65,6 +65,13 @@ compile_commands.json:  ## For youcompleteme
 compile_commands.json: platformio.ini
 	pio run --target compiledb
 
+.PHONY: puncover
+puncover:               ## Run puncover to analyze flash usage
+	puncover --gcc_tools_base ~/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi- \
+	    --elf-file .pio/build/blackpill_f401cc/firmware.elf \
+	    --build_dir .pio/build/blackpill_f401cc/ \
+	    --src_root .
+
 # This needs to be regenerated on every run to be able to
 # detect -dirty state.
 .PHONY: include/version.h
