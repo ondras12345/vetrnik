@@ -11,7 +11,7 @@ model SILsimplifiedCsv "Simplified model for software-in-the-loop simulations wi
   Modelica.Units.NonSI.AngularVelocity_rpm rpm "turbine revolutions per minute";
   parameter SI.Resistance Rload = 2.90 "load resistance";
   parameter SI.Time Ts = 0.5 "controller sampling time";
-  SimplifiedOpenLoop simplifiedOpenLoop annotation(
+  SimplifiedOpenLoop simplifiedOpenLoop(inertia(w(start=0, fixed = true), phi(start=0, fixed=true))) annotation(
     Placement(transformation(origin = {60, 0}, extent = {{-20, -20}, {20, 20}})));
   Modelica.Blocks.Routing.RealPassThrough omega annotation(
     Placement(transformation(origin = {-44, 20}, extent = {{-6, -6}, {6, 6}})));
@@ -19,6 +19,8 @@ model SILsimplifiedCsv "Simplified model for software-in-the-loop simulations wi
     Placement(transformation(origin = {4, 20}, extent = {{-6, -6}, {6, 6}})));
   Modelica.Blocks.Interfaces.RealInput vwind annotation(
     Placement(transformation(origin = {0, -20}, extent = {{-20, -20}, {20, 20}}), iconTransformation(origin = {0, -20}, extent = {{-20, -20}, {20, 20}})));
+initial equation
+  duty = 0;
 equation
   R = Rload/max(duty, 1e-12);
   Idc = simplifiedOpenLoop.load.lossPower/Udc;
