@@ -1,6 +1,6 @@
 within Vetrnik;
 
-model TSRsimplified "TSR MPP algorithm testing with SimplifiedOpenLoop"
+model TSRsimplified "TSR MPPT algorithm testing with SimplifiedOpenLoop"
   SimplifiedOpenLoop plant annotation(
     Placement(transformation(origin = {80, 0}, extent = {{-20, -20}, {20, 20}})));
   Modelica.Blocks.Interfaces.RealInput vwind annotation(

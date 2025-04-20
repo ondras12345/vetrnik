@@ -59,9 +59,9 @@ if __name__ == "__main__":
         vetrnik_package = MODEL_DIR / "Vetrnik" / "package.mo"
         mod = ModelicaSystem(
             vetrnik_package, "Vetrnik.SILsimplifiedCsv", ["Modelica"],
-            variableFilter=r"(vwind|rpm|duty|simplifiedOpenLoop.windTurbine.Cp|simplifiedOpenLoop.load.lossPower)",
-            #raiseerrors=True  # it complained about the Jacobian, because
-                               # OMPython issues --generateSymbolicLinearization by default
+            variableFilter=r"(rpm|duty|simplifiedOpenLoop.windTurbine.Cp|simplifiedOpenLoop.load.lossPower)",
+            #raiseerrors=True,  # it complained about the Jacobian, because
+                                # OMPython issues --generateSymbolicLinearization by default
         )
         stop_time: float = wind_profile.time.iloc[-1]
         time_interval: float = 0.1
@@ -79,8 +79,9 @@ if __name__ == "__main__":
         result_dir = DATA_DIR / "controller_comparison"
         shutil.rmtree(result_dir, ignore_errors=True)
         result_dir.mkdir()
+        wind_profile.to_csv(result_dir / "vwind.csv", index=False)
         for controller in controllers:
-            print("\n\ncontroller:", controller)
+            print("\ncontroller:", controller.name)
             select_controller(controller)
             result_file = result_dir / (controller.name + ".csv")
             mod.simulate(resultfile=result_file)
@@ -89,3 +90,21 @@ if __name__ == "__main__":
         LISP_CONTROLLER_SYMLINK.unlink(missing_ok=True)
         LISP_CONTROLLER_SYMLINK_ORIG.rename(LISP_CONTROLLER_SYMLINK)
         build_lisp()
+        del mod
+
+    print("controller: TSR-PI")
+    mod_TSR = ModelicaSystem(
+        vetrnik_package, "Vetrnik.TSRsimplifiedDuty", ["Modelica"],
+        variableFilter=r"(rpm|duty|plant.windTurbine.Cp|plant.load.lossPower)",
+        #raiseerrors=True,  # generateSymbolicJacobian fails
+    )
+    mod_TSR.setSimulationOptions([
+        f"stopTime={stop_time}",
+        f"stepSize={time_interval}",
+    ])
+    mod_TSR.setInputs("vwind="+repr(list(wind_profile.itertuples(index=False, name=None))))
+    mod_TSR.setSimulationOptions("outputFormat=csv")
+    print("simulating...")
+    result_file = result_dir / "TSR-PI.csv"
+    mod_TSR.simulate(resultfile=result_file)
+    print("done")
