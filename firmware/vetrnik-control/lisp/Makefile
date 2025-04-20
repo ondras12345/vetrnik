@@ -19,7 +19,6 @@ all:                    ## Compile everything (default target).
 all: out.lisp spec.md
 
 out.lisp: ${sources}
-	#cat ${sources} | ../tools/lisp-minify > $@
 	@for file in ${sources} ; do \
 	    echo "; BEGIN $$file" ; \
 	    ../tools/lisp-minify $$file ; \

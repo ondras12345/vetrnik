@@ -44,7 +44,6 @@
     (is (< ps 0) (< dr 0)) ; omega does not follow duty inversely
     (and (< p pp) (< pp ppp)) ; power has gone down two times in a row
     ))
-  (print dv)
 
   (let s ; step direction
     (if (is m 0)
@@ -57,7 +56,6 @@
             (if (and (< p pp) (not dv) (not pdv)) (do
                 (= m 1)
                 (= ko (/ pp (pow pr 3)))
-                (print "ko" ko)
                 (= ro pr)
                 (= po pp) ; Popt
                 (- 0 ps) ; step value
@@ -94,6 +92,5 @@
   (= pr r)
   (= ps s)
   (= pdv dv)
-  (print m)
   (/ s SA)  ; return step; 31-control-MPPT will multiply it by SA
 ))
