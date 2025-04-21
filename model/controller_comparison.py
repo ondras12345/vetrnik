@@ -59,7 +59,7 @@ if __name__ == "__main__":
         vetrnik_package = MODEL_DIR / "Vetrnik" / "package.mo"
         mod = ModelicaSystem(
             vetrnik_package, "Vetrnik.SILsimplifiedCsv", ["Modelica"],
-            variableFilter=r"(rpm|duty|simplifiedOpenLoop.windTurbine.Cp|simplifiedOpenLoop.load.lossPower)",
+            variableFilter=r"(rpm|duty|simplifiedOpenLoop.windTurbine.Cp)",
             #raiseerrors=True,  # it complained about the Jacobian, because
                                 # OMPython issues --generateSymbolicLinearization by default
         )
@@ -74,7 +74,7 @@ if __name__ == "__main__":
         # model_tempdir = pathlib.Path(mod.getWorkDirectory())
         # shutil.copy(wind_profile_csv, model_tempdir)
 
-        mod.setSimulationOptions("outputFormat=csv")
+        # mod.setSimulationOptions("outputFormat=csv")
 
         result_dir = DATA_DIR / "controller_comparison"
         shutil.rmtree(result_dir, ignore_errors=True)
@@ -84,7 +84,19 @@ if __name__ == "__main__":
             print("\ncontroller:", controller.name)
             select_controller(controller)
             result_file = result_dir / (controller.name + ".csv")
-            mod.simulate(resultfile=result_file)
+            # mod.simulate(resultfile=result_file)
+            print("simulating...")
+            mod.simulate()
+            sln_names = ["time", "rpm", "duty", "simplifiedOpenLoop.windTurbine.Cp"]
+            print("getting solutions...")
+            sln = mod.getSolutions(sln_names)
+            print("saving...")
+            df = pd.DataFrame({n: sln[i] for i, n in enumerate(sln_names)})
+            del sln
+            sampling_interval = 0.5
+            df.drop_duplicates("time", inplace=True)
+            df[df["time"] % sampling_interval == 0].to_csv(result_file, index=False)
+            del df
     finally:
         # clean up: restore the old symlink
         LISP_CONTROLLER_SYMLINK.unlink(missing_ok=True)
