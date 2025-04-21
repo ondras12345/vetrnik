@@ -3,7 +3,7 @@ block DiscreteLimPI
   extends Modelica.Clocked.RealSignals.Interfaces.PartialClockedSISO;
   parameter Real kd "Gain of discrete PI controller";
   parameter Real Td(min=Modelica.Constants.small) "Time constant of discrete PI controller";
-  parameter Real Tt(min=Modelica.Constants.small) "anti-windup gain coefficient";
+  parameter Real Kaw(min=Modelica.Constants.small) "anti-windup gain coefficient";
   parameter Real ymax "upper limit of output";
   parameter Real ymin "lower limit of output";
   Modelica.Blocks.Nonlinear.Limiter limiter(uMax = ymax, uMin = ymin)  annotation(
@@ -16,7 +16,7 @@ block DiscreteLimPI
     Placement(transformation(origin = {30, 0}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Clocked.RealSignals.NonPeriodic.UnitDelay unitDelay1(final y_start = 0)  annotation(
     Placement(transformation(origin = {-40, 40}, extent = {{10, -10}, {-10, 10}}, rotation = -0)));
-  Modelica.Blocks.Math.Gain gain1(k = Tt)  annotation(
+  Modelica.Blocks.Math.Gain gain1(k = Kaw)  annotation(
     Placement(transformation(origin = {20, -60}, extent = {{10, -10}, {-10, 10}})));
   Modelica.Blocks.Math.Gain gain2(k = 1/Td)  annotation(
     Placement(transformation(origin = {-80, 0}, extent = {{-10, -10}, {10, 10}})));

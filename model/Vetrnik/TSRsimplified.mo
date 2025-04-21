@@ -26,7 +26,7 @@ model TSRsimplified "TSR MPPT algorithm testing with SimplifiedOpenLoop"
     Placement(transformation(origin = {-100, 20}, extent = {{-6, -6}, {6, 6}})));
   Modelica.Clocked.ClockSignals.Clocks.PeriodicRealClock periodicClock2(period = vwindTs)  annotation(
     Placement(transformation(origin = {-180, -40}, extent = {{-6, -6}, {6, 6}})));
-  DiscreteLimPI discreteLimPI(kd = kd, Td = Td, Tt = 50, ymax = 0.9851, ymin = 0) annotation(
+  DiscreteLimPI discreteLimPI(kd = kd, Td = Td, ymax = 0.9851, ymin = 0, Kaw = 50) annotation(
     Placement(transformation(origin = {10, 20}, extent = {{-10, -10}, {10, 10}})));
 equation
   connect(vwind, plant.vwind) annotation(
