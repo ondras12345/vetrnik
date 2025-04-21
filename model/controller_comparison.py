@@ -74,8 +74,6 @@ if __name__ == "__main__":
         # model_tempdir = pathlib.Path(mod.getWorkDirectory())
         # shutil.copy(wind_profile_csv, model_tempdir)
 
-        # mod.setSimulationOptions("outputFormat=csv")
-
         result_dir = DATA_DIR / "controller_comparison"
         shutil.rmtree(result_dir, ignore_errors=True)
         result_dir.mkdir()
@@ -84,7 +82,6 @@ if __name__ == "__main__":
             print("\ncontroller:", controller.name)
             select_controller(controller)
             result_file = result_dir / (controller.name + ".csv")
-            # mod.simulate(resultfile=result_file)
             print("simulating...")
             mod.simulate()
             sln_names = ["time", "rpm", "duty", "simplifiedOpenLoop.windTurbine.Cp"]
@@ -104,10 +101,10 @@ if __name__ == "__main__":
         build_lisp()
         del mod
 
-    print("controller: TSR-PI")
+    print("\n\ncontroller: TSR-PI")
     mod_TSR = ModelicaSystem(
         vetrnik_package, "Vetrnik.TSRsimplifiedDuty", ["Modelica"],
-        variableFilter=r"(rpm|duty|plant.windTurbine.Cp|plant.load.lossPower)",
+        variableFilter=r"(rpm|duty|plant.windTurbine.Cp)",
         #raiseerrors=True,  # generateSymbolicJacobian fails
     )
     mod_TSR.setSimulationOptions([
@@ -115,8 +112,17 @@ if __name__ == "__main__":
         f"stepSize={time_interval}",
     ])
     mod_TSR.setInputs("vwind="+repr(list(wind_profile.itertuples(index=False, name=None))))
-    mod_TSR.setSimulationOptions("outputFormat=csv")
     print("simulating...")
     result_file = result_dir / "TSR-PI.csv"
-    mod_TSR.simulate(resultfile=result_file)
+    mod_TSR.simulate()
+    sln_names = ["time", "rpm", "duty", "plant.windTurbine.Cp"]
+    print("getting solutions...")
+    sln = mod_TSR.getSolutions(sln_names)
+    print("saving...")
+    df = pd.DataFrame({n: sln[i] for i, n in enumerate(sln_names)})
+    del sln
+    sampling_interval = 0.5
+    df.drop_duplicates("time", inplace=True)
+    df[df["time"] % sampling_interval == 0].to_csv(result_file, index=False)
+    del df
     print("done")
