@@ -18,8 +18,6 @@ model TSRsimplified "TSR MPPT algorithm testing with SimplifiedOpenLoop"
     Placement(transformation(origin = {40, 20}, extent = {{-6, -6}, {6, 6}})));
   Modelica.Clocked.ClockSignals.Clocks.PeriodicRealClock periodicClock1(period = Ts)  annotation(
     Placement(transformation(origin = {-180, -60}, extent = {{-6, -6}, {6, 6}})));
-  Modelica.Clocked.RealSignals.Periodic.PI PI1(kd = kd, Td = Td)  annotation(
-    Placement(transformation(origin = {10, 20}, extent = {{-10, -10}, {10, 10}})));
   Modelica.Clocked.RealSignals.Sampler.SampleClocked sample2 annotation(
     Placement(transformation(origin = {-140, 20}, extent = {{-6, -6}, {6, 6}})));
   Modelica.Clocked.RealSignals.Sampler.SampleClocked sample1 annotation(
@@ -28,19 +26,15 @@ model TSRsimplified "TSR MPPT algorithm testing with SimplifiedOpenLoop"
     Placement(transformation(origin = {-100, 20}, extent = {{-6, -6}, {6, 6}})));
   Modelica.Clocked.ClockSignals.Clocks.PeriodicRealClock periodicClock2(period = vwindTs)  annotation(
     Placement(transformation(origin = {-180, -40}, extent = {{-6, -6}, {6, 6}})));
+  DiscreteLimPI discreteLimPI(kd = kd, Td = Td, Tt = 50, ymax = 0.9851, ymin = 0) annotation(
+    Placement(transformation(origin = {10, 20}, extent = {{-10, -10}, {10, 10}})));
 equation
   connect(vwind, plant.vwind) annotation(
     Line(points = {{-184, -8}, {64, -8}}, color = {0, 0, 127}));
   connect(gain.y, feedback.u1) annotation(
     Line(points = {{-53, 20}, {-48, 20}}, color = {0, 0, 127}));
-  connect(hold1.y, plant.b) annotation(
-    Line(points = {{47, 20}, {48.5, 20}, {48.5, 12}, {64, 12}}, color = {0, 0, 127}));
-  connect(PI1.y, hold1.u) annotation(
-    Line(points = {{21, 20}, {33, 20}}, color = {0, 0, 127}));
   connect(sample2.u, vwind) annotation(
     Line(points = {{-148, 20}, {-160, 20}, {-160, -8}, {-184, -8}}, color = {0, 0, 127}));
-  connect(sample1.y, PI1.u) annotation(
-    Line(points = {{-14, 20}, {-2, 20}}, color = {0, 0, 127}));
   connect(feedback.y, sample1.u) annotation(
     Line(points = {{-30, 20}, {-28, 20}}, color = {0, 0, 127}));
   connect(plant.omega, feedback.u2) annotation(
@@ -53,9 +47,15 @@ equation
     Line(points = {{-134, 20}, {-108, 20}}, color = {0, 0, 127}));
   connect(periodicClock2.y, sample2.clock) annotation(
     Line(points = {{-174, -40}, {-140, -40}, {-140, 12}}, color = {175, 175, 175}));
+  connect(discreteLimPI.y, hold1.u) annotation(
+    Line(points = {{21, 20}, {33, 20}}, color = {0, 0, 127}));
+  connect(hold1.y, plant.b) annotation(
+    Line(points = {{46, 20}, {50, 20}, {50, 12}, {64, 12}}, color = {0, 0, 127}));
+  connect(sample1.y, discreteLimPI.u) annotation(
+    Line(points = {{-14, 20}, {-2, 20}}, color = {0, 0, 127}));
   annotation(
-    Diagram(coordinateSystem(extent = {{-200, -100}, {200, 100}})),
-    Icon(coordinateSystem(extent = {{-200, -100}, {200, 100}})),
+    Diagram(coordinateSystem(extent = {{-200, -100}, {120, 100}})),
+    Icon(coordinateSystem(extent = {{-200, -100}, {120, 100}})),
   experiment(StartTime = 0, StopTime = 400, Tolerance = 1e-06, Interval = 0.1),
   __OpenModelica_simulationFlags(csvInput = "vwind-ramps.csv", lv = "LOG_STDOUT,LOG_ASSERT,LOG_STATS", s = "dassl", variableFilter = ".*"));
 end TSRsimplified;
