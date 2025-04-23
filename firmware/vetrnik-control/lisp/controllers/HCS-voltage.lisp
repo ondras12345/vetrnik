@@ -1,8 +1,7 @@
 ; HCS / P&O MPPT: voltage variant
-; This algorithm might not work too well, ADC resolution for voltage
-; measurement is a bit too low.
-; However, it does much better than the -duty variant under changing wind
-; speeds.
+; parameters
+(= SA 3) ; step authority
+(= Ts 12) ; MPPT sampling period in seconds
 
 ; previous values
 (= pp 0) ; previous power
@@ -26,5 +25,5 @@
   ; save previous values
   (= pp p)
   (= pv v)
-  s  ; return step
+  (* s SA)  ; return step
 ))

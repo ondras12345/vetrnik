@@ -48,7 +48,7 @@
   (if (<= Ts ti)
     (do
       (= ti (- ti Ts)) ; prevent loss of precision in float numbers
-      (let s (mppt))  ; step (normally either -1 or 1)
+      (let s (mppt))  ; step
       ; RPM limits
       (let r (pwrg "RPM"))
       (ctrls "contactor" (< RLC r))
@@ -56,8 +56,7 @@
         (if
           (< r RL) 0
           (< RH r) 255
-          ; give the step more authority
-          (+ d (* s SA))
+          (+ d s)
         )
       )
       ; check power mode & apply duty limits

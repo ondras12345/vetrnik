@@ -1,9 +1,10 @@
 ; Adaptive HCS based on doi 10.1109/TIE.2010.2044732
 
 ; parameters
-(= be 0.08)  ; beta: angular velocity error gain
-(= d0 2)  ; initial step size for mode 0
-(= ep 30)  ; epsilon: bound for wind change detection
+(= be 0.08) ; beta: angular velocity error gain
+(= d0 2)    ; initial step size for mode 0
+(= ep 30)   ; epsilon: bound for wind change detection
+(= Ts 8)  ; MPPT sampling period in seconds
 
 ; previous values
 (= pp 0) ; previous power
@@ -92,5 +93,5 @@
   (= pr r)
   (= ps s)
   (= pdv dv)
-  (/ s SA)  ; return step; 31-control-MPPT will multiply it by SA
+  s  ; return step
 ))

@@ -101,7 +101,7 @@ if __name__ == "__main__":
         build_lisp()
         del mod
 
-    print("\n\ncontroller: TSR-PI")
+    print("\n\ncontroller: TSR-PI-modelica")
     mod_TSR = ModelicaSystem(
         vetrnik_package, "Vetrnik.TSRsimplifiedDuty", ["Modelica"],
         variableFilter=r"(rpm|duty|plant.windTurbine.Cp)",
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     ])
     mod_TSR.setInputs("vwind="+repr(list(wind_profile.itertuples(index=False, name=None))))
     print("simulating...")
-    result_file = result_dir / "TSR-PI.csv"
+    result_file = result_dir / "TSR-PI-modelica.csv"
     mod_TSR.simulate()
     sln_names = ["time", "rpm", "duty", "plant.windTurbine.Cp"]
     print("getting solutions...")
