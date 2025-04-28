@@ -1,9 +1,9 @@
-; HCS / P&O MPPT: voltage variant
-; parameters
+;;; HCS / P&O MPPT: voltage variant
+;; parameters
 (= SA 3) ; step authority
 (= Ts 12) ; MPPT sampling period in seconds
 
-; previous values
+;; previous values
 (= pp 0) ; previous power
 (= pv 0) ; previous voltage
 
@@ -17,13 +17,12 @@
   (let s ; step direction
     (if (is (< pp p) (< pv v)) -1 1))
 
-  ; don't get stuck at 0
-  (if (is d 0) (= s 1))
-  ; don't get stuck at 255
-  (if (is d 255) (= s -1))
+  (= s (if
+    (is d 0) 1 ; don't get stuck at 0
+    (is d 255) -1 ; don't get stuck at 255
+    s))
 
   ; save previous values
   (= pp p)
   (= pv v)
-  (* s SA)  ; return step
-))
+  (* s SA)))  ; return step

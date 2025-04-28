@@ -81,6 +81,7 @@ if __name__ == "__main__":
         for controller in controllers:
             print("\ncontroller:", controller.name)
             select_controller(controller)
+            shutil.copy(LISP_DIR / "out.lisp", result_dir / f"out-{controller.name}.lisp")
             result_file = result_dir / (controller.name + ".csv")
             print("simulating...")
             mod.simulate()

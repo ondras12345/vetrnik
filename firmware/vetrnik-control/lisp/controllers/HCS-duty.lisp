@@ -1,10 +1,10 @@
-; HCS / P&O MPPT: prev duty cycle variant
+;;; HCS / P&O MPPT: prev duty cycle variant
 
-; parameters
+;; parameters
 (= SA 3) ; step authority
 (= Ts 12) ; MPPT sampling period in seconds
 
-; previous values
+;; previous values
 (= pp 0) ; previous power
 (= ps 0) ; previous step
 
@@ -20,13 +20,12 @@
   (let s
     (if (is (< p pp) (< ps 0)) 1 -1))
 
-  ; don't get stuck at 0
-  (if (is d 0) (= s 2))
-  ; don't get stuck at 255
-  (if (is d 255) (= s -1))
+  (= s (if
+    (is d 0) 2 ; don't get stuck at 0
+    (is d 255) -1 ; don't get stuck at 255
+    s))
 
   ; save previous values
   (= pp p)
   (= ps s)
-  (* s SA)  ; return step
-))
+  (* s SA)))  ; return step
