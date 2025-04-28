@@ -490,7 +490,11 @@ void MQTTcallback(char* topic, byte* payload, unsigned int length)
 
     // advance past topic_prefix
     const char * topic_prefix = MQTTtopic_cmnd;
-    while (*topic != '\0' && *(topic++) == *(topic_prefix++));
+    while (*topic != '\0' && *topic == *topic_prefix)
+    {
+        topic++;
+        topic_prefix++;
+    }
     if (*topic_prefix != '\0') return;  // did not start with prefix
 
     unsigned long now = millis();
