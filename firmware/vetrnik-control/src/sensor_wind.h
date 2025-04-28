@@ -1,6 +1,6 @@
 #pragma once
 
-#define SENSOR_WIND_READ_TIMEOUT 250UL
+#define SENSOR_WIND_READ_TIMEOUT 350UL
 
 /**
  * Delay before sending data after DE is asserted,
