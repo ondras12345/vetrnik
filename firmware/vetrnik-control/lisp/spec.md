@@ -448,8 +448,7 @@ overwrite this function with their own implementation.
 
 ### Example
 ```lisp
-A simple "blink" control function:
-```lisp
+;;; A simple "blink" control function:
 (= dl 50) ; off state duty
 (= dh 200) ; on state duty
 (= p 5) ; period in seconds
@@ -465,10 +464,8 @@ A simple "blink" control function:
     )
   )
 ))
-```
 
-Simple RPM threshold-based control:
-```lisp
+;;; Simple RPM threshold-based control:
 (= ctrl (fn ()
   (let r (pwrg "RPM")) ; current RPM
   (pwrs "duty"
@@ -483,7 +480,6 @@ Simple RPM threshold-based control:
     )
   )
 ))
-```
 ```
 
 ## `disp`
