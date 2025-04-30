@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+import argparse
 import yaml
 import logging
 import jinja2
 import pathlib
 import sexpdata
+import sys
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
@@ -153,10 +155,19 @@ def parse_file(filename: str) -> Spec:
     return parse_dict(d)
 
 
-def render_markdown(spec: Spec) -> str:
-    template = jinja_env.get_template("spec.md.jinja")
-    return template.render(functions=spec.functions,
-                           categories=spec.categories)
+def render_template(spec: Spec, template) -> str:
+    return template.render(functions=spec.functions, categories=spec.categories)
+
+
+def render_template_file(spec: Spec, filename: pathlib.Path) -> None:
+    assert filename.suffix == ".jinja"
+    r = render_template(spec, jinja_env.get_template(filename.as_posix()))
+    out_file = filename.with_suffix("")
+    out_file.write_text(r)
+
+
+def render_template_str(spec: Spec, template: str) -> str:
+    return render_template(spec, jinja_env.from_string(template))
 
 
 def generate_tests(spec: Spec) -> None:
@@ -177,12 +188,35 @@ def generate_tests(spec: Spec) -> None:
 
 
 def main():
-    spec = parse_file("spec.yaml")
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--render-file", "-f", type=pathlib.Path, action="append",
+        help="render template from this file. The result will be written to "
+             "the same location, but without the .jinja suffix. "
+             "can be specified multiple times."
+    )
+    parser.add_argument(
+        "--render-stdin", action="store_true",
+        help="read a template from stdin, render it, and output the result "
+             "to stdout"
+    )
+    parser.add_argument("--generate-tests", action="store_true")
+    args = parser.parse_args()
+
+    # either way, parse and validate the spec
+    wd = pathlib.Path(__file__).resolve().parent
+    spec = parse_file(wd / "spec.yaml")
     _LOGGER.debug("parsed spec: %r", spec)
-    md = render_markdown(spec)
-    with open("spec.md", "w") as f:
-        f.write(md)
-    generate_tests(spec)
+
+    if args.generate_tests:
+        generate_tests(spec)
+
+    for f in args.render_file or []:
+        render_template_file(spec, f)
+
+    if args.render_stdin:
+        template = sys.stdin.read()
+        print(render_template_str(spec, template))
 
 
 if __name__ == "__main__":

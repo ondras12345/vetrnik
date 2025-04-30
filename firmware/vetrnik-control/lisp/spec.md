@@ -17,9 +17,7 @@ for more information about the language and built-in functions.
 # Custom functions
 ## `rem`
 ### Description
-Remainder function.
-
-Performs the operation truncate on number and divisor and returns the
+Perform the operation truncate on number and divisor and return the
 remainder of the truncate operation.
 
 https://stackoverflow.com/questions/5706398/how-to-get-the-modulus-in-lisp
@@ -27,15 +25,15 @@ https://stackoverflow.com/questions/5706398/how-to-get-the-modulus-in-lisp
 ### Signature
 ```lisp
 (rem
-    x
-    y
+    number
+    divisor
 )
 ```
 
 
 ### Arguments
-- `x` \[number\]
-- `y` \[number\]
+- `number` \[number\]
+- `divisor` \[number\]
 
 ### Return value
 \[number\]: `(int)x % (int)y`
@@ -77,19 +75,17 @@ Return the closest integer to x, rounding to even when x is halfway between two 
 
 ## `map`
 ### Description
-[Arduino-like
-map](https://docs.arduino.cc/language-reference/en/functions/math/map/)
-function, but isn't as broken (uses floating point
-arithmetic).
+Linearly map a value from one range to another.
 
-This could be easily implemented in Lisp, but a cfunc takes up less memory.
+This could be easily implemented in Lisp, but a cfunc takes up less
+memory.
 Equivalent lisp implementation:
 ```lisp
 (= map (fn (v fl fh tl th)
   (+ tl
-    (/ (* (- v fl) (- th tl)) (- fh fl))
-  )
-))
+     (/ (* (- v fl)
+           (- th tl))
+        (- fh fl)))))
 ```
 
 ### Signature
@@ -130,9 +126,7 @@ Equivalent lisp implementation:
   (if
     (< x l) l
     (< h x) h
-    x
-  )
-))
+    x)))
 ```
 
 ### Signature
@@ -204,7 +198,10 @@ Get a value from the power board state object. Numerical values (in SI units wit
 \[any\]
 ## `pwrs`
 ### Description
-Set parameters on the power board. Variables are added for the constants from `power_board_mode_t` enum. They are prefixed with `pwr_`, e.g. `pwr_start`.
+Set parameters on the power board.
+
+Variables are added for the constants from `power_board_mode_t` enum.
+They are prefixed with `pwr_`, e.g. `pwr_start`.
 
 ### Signature
 ```lisp
@@ -430,9 +427,8 @@ Category: callbacks
 ### Description
 If set up for `LISP` control strategy, the device will call this function
 each time a new state object is received.
-
-The `ctrl` function is empty by default, the user is expected to
-overwrite this function with their own implementation.
+This function is empty by default, the user is expected to overwrite it
+with their own implementation.
 
 ### Signature
 ```lisp
@@ -488,9 +484,8 @@ Category: callbacks
 ### Description
 The `disp` function is executed every 0.5 s. It is meant to be used to
 control the display.
-
-The `disp` function is empty by default, the user is expected to
-overwrite this function with their own implementation.
+This function is empty by default, the user is expected to overwrite it
+with their own implementation.
 
 ### Signature
 ```lisp
@@ -507,7 +502,7 @@ overwrite this function with their own implementation.
 Category: callbacks
 
 ### Description
-The functions `btn1_short`, `btn1_long`, `btn2_short`, and `btn2_long` are called when the respective button is short / long pressed. (To be more precise, they are only called once the button is released.)
+Called when button 1 is released after a short press.
 
 ### Signature
 ```lisp
@@ -524,7 +519,7 @@ The functions `btn1_short`, `btn1_long`, `btn2_short`, and `btn2_long` are calle
 Category: callbacks
 
 ### Description
-The functions `btn1_short`, `btn1_long`, `btn2_short`, and `btn2_long` are called when the respective button is short / long pressed. (To be more precise, they are only called once the button is released.)
+Called when button 1 is released after a long press.
 
 ### Signature
 ```lisp
@@ -541,7 +536,7 @@ The functions `btn1_short`, `btn1_long`, `btn2_short`, and `btn2_long` are calle
 Category: callbacks
 
 ### Description
-The functions `btn1_short`, `btn1_long`, `btn2_short`, and `btn2_long` are called when the respective button is short / long pressed. (To be more precise, they are only called once the button is released.)
+Called when button 2 is released after a short press.
 
 ### Signature
 ```lisp
@@ -558,7 +553,7 @@ The functions `btn1_short`, `btn1_long`, `btn2_short`, and `btn2_long` are calle
 Category: callbacks
 
 ### Description
-The functions `btn1_short`, `btn1_long`, `btn2_short`, and `btn2_long` are called when the respective button is short / long pressed. (To be more precise, they are only called once the button is released.)
+Called when button 2 is released after a long press.
 
 ### Signature
 ```lisp

@@ -26,7 +26,7 @@ out.lisp: ${sources}
 	done > $@
 
 spec.md: spec.md.jinja spec.yaml spec.py test.lisp.jinja
-	./spec.py
+	./spec.py -f $< --generate-tests
 
 .PHONY: clean
 clean:                  ## Remove generated files.
