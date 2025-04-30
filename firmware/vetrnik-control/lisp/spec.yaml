@@ -133,7 +133,7 @@ functions:
       - '(is (lim 2 -10 10) 2)'
 
   - name: pow
-    description: compute x raised to the power of y
+    description: Compute x raised to the power of y.
     nargs: 2
     args:
       - name: x

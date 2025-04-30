@@ -148,7 +148,7 @@ Equivalent lisp implementation:
 \[number\]
 ## `pow`
 ### Description
-compute x raised to the power of y
+Compute x raised to the power of y.
 
 ### Signature
 ```lisp
