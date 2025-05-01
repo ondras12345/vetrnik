@@ -4,6 +4,10 @@
 	(generator_version "8.0")
 	(uuid "4278127a-363c-40b2-8658-9e1457395950")
 	(paper "A4")
+	(title_block
+		(title "vetrnik-wind-sensor")
+		(company "Ondřej Sluka")
+	)
 	(lib_symbols
 		(symbol "Connector_Generic:Conn_01x08"
 			(pin_names
@@ -5958,7 +5962,7 @@
 	)
 	(wire
 		(pts
-			(xy 25.4 78.74) (xy 34.29 78.74)
+			(xy 43.18 77.47) (xy 52.07 77.47)
 		)
 		(stroke
 			(width 0)
@@ -6448,7 +6452,7 @@
 	)
 	(wire
 		(pts
-			(xy 25.4 76.2) (xy 34.29 76.2)
+			(xy 43.18 74.93) (xy 52.07 74.93)
 		)
 		(stroke
 			(width 0)
@@ -6978,7 +6982,7 @@
 	)
 	(wire
 		(pts
-			(xy 29.21 81.28) (xy 25.4 81.28)
+			(xy 46.99 80.01) (xy 43.18 80.01)
 		)
 		(stroke
 			(width 0)
@@ -6998,7 +7002,7 @@
 	)
 	(wire
 		(pts
-			(xy 25.4 73.66) (xy 34.29 73.66)
+			(xy 43.18 72.39) (xy 52.07 72.39)
 		)
 		(stroke
 			(width 0)
@@ -7008,7 +7012,7 @@
 	)
 	(wire
 		(pts
-			(xy 29.21 82.55) (xy 29.21 81.28)
+			(xy 46.99 81.28) (xy 46.99 80.01)
 		)
 		(stroke
 			(width 0)
@@ -7658,11 +7662,12 @@
 	)
 	(text "Sensor current < 15mA (specified <= 0.3W)\n28V TVS -> up to 16% out-of-spec 24V allowed.\nDC-DC Vout accuracy is +-3% & 1.2% Vout / 1% Vin"
 		(exclude_from_sim no)
-		(at 78.994 164.084 0)
+		(at 51.308 164.846 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
+			(justify left)
 		)
 		(uuid "5242e22e-e7e1-4945-93ac-730b557353ee")
 	)
@@ -7698,7 +7703,7 @@
 		(uuid "ecdf26e8-feda-4314-82a0-eef0645e5c32")
 	)
 	(label "DE"
-		(at 34.29 78.74 180)
+		(at 52.07 77.47 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -7748,7 +7753,7 @@
 		(uuid "525ffb50-0af8-4acf-9ef0-c0bd39ce0b01")
 	)
 	(label "TX"
-		(at 34.29 76.2 180)
+		(at 52.07 74.93 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -7778,7 +7783,7 @@
 		(uuid "ab74c150-81cf-4b39-b03d-e57d333946a0")
 	)
 	(label "RX"
-		(at 34.29 73.66 180)
+		(at 52.07 72.39 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13721,7 +13726,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 29.21 82.55 0)
+		(at 46.99 81.28 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -13730,7 +13735,7 @@
 		(fields_autoplaced yes)
 		(uuid "bf9243e7-dea4-485b-9124-7a9c2b1bcb88")
 		(property "Reference" "#PWR03"
-			(at 29.21 88.9 0)
+			(at 46.99 87.63 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13739,7 +13744,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 29.21 86.6831 0)
+			(at 46.99 85.4131 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13747,7 +13752,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 29.21 82.55 0)
+			(at 46.99 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13756,7 +13761,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 29.21 82.55 0)
+			(at 46.99 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13765,7 +13770,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 29.21 82.55 0)
+			(at 46.99 81.28 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14261,7 +14266,7 @@
 	)
 	(symbol
 		(lib_id "inventree:NS25-W4P")
-		(at 20.32 76.2 0)
+		(at 38.1 74.93 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -14269,23 +14274,25 @@
 		(dnp no)
 		(uuid "e0270254-05cf-4584-ab3a-c8d6e63b084c")
 		(property "Reference" "J1"
-			(at 20.955 71.8637 0)
+			(at 37.3888 73.7757 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify right)
 			)
 		)
 		(property "Value" "NS25-W4P"
-			(at 20.955 69.4394 0)
+			(at 37.3888 76.2 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify right)
 			)
 		)
 		(property "Footprint" "Connector_Molex:Molex_KK-254_AE-6410-04A_1x04_P2.54mm_Vertical"
-			(at 20.32 76.2 0)
+			(at 38.1 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14294,7 +14301,7 @@
 			)
 		)
 		(property "Datasheet" "http://inventree.rpi.lab.lan/media/attachments/part/452/ns25-w2p.pdf"
-			(at 20.32 76.2 0)
+			(at 38.1 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14303,7 +14310,7 @@
 			)
 		)
 		(property "Description" "Connector: wire-board; socket; male; NS25; 2.54mm; PIN: 4; THT; 250V"
-			(at 20.32 76.2 0)
+			(at 38.1 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14312,7 +14319,7 @@
 			)
 		)
 		(property "Connector Type" "socket"
-			(at 20.32 76.2 0)
+			(at 38.1 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14321,7 +14328,7 @@
 			)
 		)
 		(property "InvenTree" "452"
-			(at 20.32 76.2 0)
+			(at 38.1 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14330,7 +14337,7 @@
 			)
 		)
 		(property "Mounting Type" "THT"
-			(at 20.32 76.2 0)
+			(at 38.1 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14339,7 +14346,7 @@
 			)
 		)
 		(property "Number of Contacts" "4"
-			(at 20.32 76.2 0)
+			(at 38.1 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14348,7 +14355,7 @@
 			)
 		)
 		(property "Number of Rows" "1x4"
-			(at 20.32 76.2 0)
+			(at 38.1 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14357,7 +14364,7 @@
 			)
 		)
 		(property "Part URL" "http://inventree.rpi.lab.lan/part/452/"
-			(at 20.32 76.2 0)
+			(at 38.1 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14366,7 +14373,7 @@
 			)
 		)
 		(property "Pitch" "2.54mm"
-			(at 20.32 76.2 0)
+			(at 38.1 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14375,7 +14382,7 @@
 			)
 		)
 		(property "Rated Current" "3A"
-			(at 20.32 76.2 0)
+			(at 38.1 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14384,12 +14391,21 @@
 			)
 		)
 		(property "Rated Voltage" "0.25kV"
-			(at 20.32 76.2 0)
+			(at 38.1 74.93 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(hide yes)
+			)
+		)
+		(property "Label" "TO VETRNIK-CONTROL"
+			(at 37.3888 78.6243 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
 			)
 		)
 		(pin "4"
