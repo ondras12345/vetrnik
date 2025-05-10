@@ -1,0 +1,5 @@
+#!/bin/sh
+# Process csv outputs from
+# controller_comparison_slow_parallel.py and drop all
+# samples except every 0.5 seconds.
+grep '^\("\|[0-9]\+\.[05]0*,\|[0-9]\+,\)' | awk -F"," '!a[$1]++'

@@ -28,6 +28,9 @@ data/linearize.p: linearize.py $(wildcard Vetrnik/*.mo)
 data/linearize_b_tfs.p: linearize_analyze.py data/linearize.p
 	./linearize_analyze.py
 
+data/controller_comparison_slow/%-reduced.csv: data/controller_comparison_slow/%.csv csvreduce
+	./csvreduce < $< > $@
+
 .PHONY: clean
 clean:
 	rm -f data/windCp.csv data/linearize*.p data/linearize*.mat listings/*.listing diagrams/*-converted.pdf

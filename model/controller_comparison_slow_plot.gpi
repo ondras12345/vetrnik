@@ -1,0 +1,75 @@
+#!/usr/bin/env gnuplot
+set output "data/controller_comparison_slow/plot.pdf"
+set terminal pdfcairo size 21cm,29.7cm
+set datafile separator ','
+
+unset key
+set xrange [0:*]
+set xtics 100
+set mxtics 5
+set format x ''  # hide labels
+set lmargin at screen 0.15
+
+set multiplot layout 4,1
+
+F1="data/controller_comparison_slow/HCS-voltage-reduced.csv"
+F2="data/controller_comparison_slow/HCS-duty-reduced.csv"
+F3="data/controller_comparison_slow/HCS-adaptive-reduced.csv"
+F4="data/controller_comparison_slow/TSR-PI-reduced.csv"
+N1="HCS-voltage"
+N2="HCS-duty"
+N3="HCS-adaptive"
+N4="TSR-PI"
+N5="TSR-PI-modelica"
+
+set ylabel 'rychlost větru v [m/sl]'
+set yrange [3:13]
+# wind velocity profile is the same in all data files
+#C2="vwind"
+#plot \
+#    F1 u (column("time")):(column(C2)) w lines ls 1 t N1, \
+#    F2 u (column("time")):(column(C2)) w lines ls 2 t N2, \
+#    F3 u (column("time")):(column(C2)) w lines ls 3 t N3
+plot "data/controller_comparison/vwind.csv" u (column("time")):(column("vwind")) w lines ls 1 notitle
+
+set key outside horizontal center top # width -2.8
+set ylabel 'rychlost turbíny [RPM]'
+set yrange [0:*]
+C2="rpm"
+plot \
+    F1 u (column("time")):(column(C2)) w lines ls 1 t N1, \
+    F2 u (column("time")):(column(C2)) w lines ls 2 t N2, \
+    F3 u (column("time")):(column(C2)) w lines ls 3 t N3, \
+    F4 u (column("time")):(column(C2)) w lines ls 4 t N4
+    #F5 u (column("time")):(column(C2)) w lines ls 5 t N5
+
+unset key
+set ylabel 'střída d'
+set yrange [0:*]
+set ytics 0.1
+set mytics 5
+#set format y '$\num[round-mode=places,round-precision=2]{%g}$'
+C2="duty"
+plot \
+    F1 u (column("time")):(column(C2)) w steps ls 1 dt 1 t N1, \
+    F2 u (column("time")):(column(C2)) w steps ls 2 dt 1 t N2, \
+    F3 u (column("time")):(column(C2)) w steps ls 3 dt 1 t N3, \
+    F4 u (column("time")):(column(C2)) w steps ls 4 dt 1 t N4
+    #F5 u (column("time")):(column(C2)) w steps ls 5 dt 1 t N5
+
+set ylabel 'součinitel výkonu Cp'
+set yrange [0:*]
+set ytics 0.1
+set mytics 5
+
+# last plot: show time axis
+set xlabel 'čas t [s]'
+
+C2="windTurbine.Cp"
+plot \
+    F1 u (column("time")):(column(C2)) w lines ls 1 t N1, \
+    F2 u (column("time")):(column(C2)) w lines ls 2 t N2, \
+    F3 u (column("time")):(column(C2)) w lines ls 3 t N3, \
+    F4 u (column("time")):(column(C2)) w lines ls 4 t N4
+    #F5 u (column("time")):(column("plant.windTurbine.Cp")) w lines ls 5 t N5
+
