@@ -328,7 +328,7 @@ functions:
       min: 1
       max: 2
     args:
-      - name: out_number
+      - name: out_id
         type: string
         values:
           - '"LED_BLUE"'  # LED_BUILTIN

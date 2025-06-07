@@ -388,14 +388,14 @@ Get or set state of digital outputs (LEDs and relays) on the control board.
 ### Signature
 ```lisp
 (out
-    out_number
+    out_id
     [state]
 )
 ```
 
 
 ### Arguments
-- `out_number` \[string\]
+- `out_id` \[string\]
     - `"LED_BLUE"`
     - `"LED_RED"`
     - `"PUMP"`
