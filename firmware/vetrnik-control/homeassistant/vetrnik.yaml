@@ -10,71 +10,83 @@ mqtt:
   sensor:
     - name: Vetrnik RPM
       unit_of_measurement: RPM
+      state_class: measurement
       state_topic: vetrnik/tele/power_board/RPM
       availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik napeti
       unit_of_measurement: V
       device_class: voltage
+      state_class: measurement
       state_topic: vetrnik/tele/power_board/voltage
       availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik proud
       unit_of_measurement: A
       device_class: current
+      state_class: measurement
       state_topic: vetrnik/tele/power_board/current
       availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik vykon
       unit_of_measurement: W
       device_class: power
+      state_class: measurement
       state_topic: vetrnik/tele/power_board/power
       availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik teplota chladice s tranzistory
       unit_of_measurement: "°C"
       device_class: temperature
+      state_class: measurement
       state_topic: vetrnik/tele/power_board/temperature/heatsink
       availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik teplota chladice s usmernovacem
       unit_of_measurement: "°C"
       device_class: temperature
+      state_class: measurement
       state_topic: vetrnik/tele/power_board/temperature/rectifier
       availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik teplota vody
       unit_of_measurement: "°C"
       device_class: temperature
+      state_class: measurement
       state_topic: vetrnik/tele/temperature/voda
       availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik pocet chyb
       unit_of_measurement: errors
+      state_class: measurement
       state_topic: vetrnik/tele/power_board/error_count
       availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik strida
       unit_of_measurement: "%"
+      state_class: measurement
       value_template: '{{ ((value|int(0))*100/255)|round(1)  }}'
       state_topic: vetrnik/tele/power_board/duty
       availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik maximalni strida
       unit_of_measurement: "%"
+      state_class: measurement
       value_template: '{{ ((value|int(0))*100/255)|round(1) }}'
       state_topic: vetrnik/tele/power_board/OCP_max_duty
       availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik energie
       unit_of_measurement: kWh
-      state_topic: vetrnik/tele/stats/energy
-      state_class: total_increasing
       device_class: energy
+      state_class: total_increasing
+      state_topic: vetrnik/tele/stats/energy
       availability_topic: vetrnik/tele/availability
 
     - name: Vetrnik energie Ws
       unit_of_measurement: Ws
+      # device_class: energy  # probably not allowed for Ws
+      state_class: total_increasing
       state_topic: vetrnik/tele/stats/energy_Ws
       availability_topic: vetrnik/tele/availability
 
@@ -159,6 +171,13 @@ mqtt:
       command_topic: vetrnik/cmnd/display/backlight
       payload_on: "1"
       payload_off: "0"
+      availability_topic: vetrnik/tele/availability
+
+    # TODO predelat
+    - name: Vetrnik relay 2
+      command_topic: vetrnik/cmnd/lisp
+      payload_on: '(out "REL2" t)'
+      payload_off: '(out "REL2" nil)'
       availability_topic: vetrnik/tele/availability
 
   button:
